@@ -10,8 +10,8 @@ window.ARTHUR = {
   naissance: "2008-12-20T00:00:00+01:00",
 
   // Photo principale (carte joueur). Ex : "images/arthur.jpg" — laisse vide en attendant.
-  photoProfil: "images/galerie/arthur-13-parc-des-princes.jpg",
-  photoProfilPos: "50% 62%",
+  photoProfil: "images/arthur-carte.jpg", // photo recadrée sur le visage
+  photoProfilPos: "50% 50%",
 
   // ---------- LA LETTRE (juste après l'accueil) ----------
   // ⚠️ Texte d'exemple : remplace-le par tes vrais mots.
@@ -46,7 +46,7 @@ window.ARTHUR = {
     { annee: "2008", titre: "Le coup d'envoi", texte: "20 décembre 2008 : tu entres sur le terrain. Premier cri, premier transfert… vers les bras de tes parents.", photo: "" },
     { annee: "2010", titre: "Premiers dribbles", texte: "À peine debout, tu shootais déjà dans tout ce qui roule. Les meubles du salon s'en souviennent.", photo: "" },
     { annee: "2014", titre: "Signature en club", texte: "Ton premier maillot, tes premiers crampons, tes premiers buts (et tes premières glissades dans la boue).", photo: "" },
-    { annee: "2016", titre: "La raquette entre en jeu", texte: "Tu découvres le tennis — et le t-shirt Roland-Garros ne te quitte plus. Coup droit, revers, et une passion qui ne te lâchera plus.", photo: "images/galerie/arthur-07-le-trio.jpg" },
+    { annee: "2015", titre: "La raquette entre en jeu", texte: "Tu découvres le tennis — et le t-shirt Roland-Garros ne te quitte plus. Coup droit, revers, et une passion qui ne te lâchera plus.", photo: "images/galerie/arthur-06-le-trio.jpg" },
     { annee: "2020", titre: "L'athlète complet", texte: "Foot, tennis, ski nautique, plongée et tous les sports qui passent : tu ne tiens pas en place.", photo: "images/galerie/arthur-11-ski-nautique.jpg" },
     { annee: "2026", titre: "18 ans — Statut de légende", texte: "20 décembre 2026 : ta majorité. Le meilleur reste à jouer.", photo: "images/galerie/arthur-17-bateau.jpg" },
   ],
@@ -56,7 +56,7 @@ window.ARTHUR = {
   // puis ajouter une ligne { age, src, legende, pos } (pos = cadrage, ex. "50% 30%").
   // Une ligne sans src affiche une case « photo à venir ».
   saisons: [
-    { age: 9, src: "images/galerie/arthur-09-guitare.jpg", legende: "Premiers accords", pos: "50% 30%" },
+    { age: 11, src: "images/galerie/arthur-11-guitare.jpg", legende: "Premiers accords", pos: "50% 30%" },
     { age: 10, src: "images/galerie/arthur-10-diner.jpg", legende: "Le dîner aux chandelles, menu fait main", pos: "60% 45%" },
     { age: 10, src: "images/galerie/arthur-10-peignoir.jpg", legende: "Version palace", pos: "50% 30%" },
     { age: 11, src: "images/galerie/arthur-11-ski-nautique.jpg", legende: "Prêt pour le ski nautique", pos: "50% 40%" },
@@ -67,7 +67,7 @@ window.ARTHUR = {
     { age: 12, src: "images/galerie/arthur-12-plongee.jpg", legende: "Baptême de plongée", pos: "70% 35%" },
     { age: 12, src: "images/galerie/arthur-12-velo.jpg", legende: "En selle dans Paris", pos: "60% 50%" },
     { age: 12, src: "images/galerie/arthur-12-rencontre.jpg", legende: "Belle rencontre", pos: "40% 35%" },
-    { age: 13, src: "images/galerie/arthur-13-salle-de-sport.jpg", legende: "Les biceps du champion", pos: "50% 45%" },
+    { age: 12, src: "images/galerie/arthur-12-salle-de-sport.jpg", legende: "Les biceps du champion", pos: "50% 45%" },
     { age: 13, src: "images/galerie/arthur-13-glace.jpg", legende: "Ray-Ban et glace à la fraise", pos: "50% 40%" },
     { age: 13, src: "images/galerie/arthur-13-parc-des-princes.jpg", legende: "Au Parc, avec bonnet et écharpe", pos: "50% 45%" },
     { age: 14, src: "images/galerie/arthur-14-terrasse.jpg", legende: "Pause en terrasse", pos: "50% 30%" },
@@ -76,7 +76,7 @@ window.ARTHUR = {
     { age: 16, src: "images/galerie/arthur-16-jardinage.jpg", legende: "Bûcheron d'un jour", pos: "40% 35%" },
     { age: 17, src: "images/galerie/arthur-17-pizza.jpg", legende: "Pizza du soir", pos: "50% 45%" },
     { age: 17, src: "images/galerie/arthur-17-bateau.jpg", legende: "Capitaine Arthur", pos: "70% 45%" },
-    { age: 7, src: "images/galerie/arthur-07-le-trio.jpg", legende: "Le trio inséparable", pos: "41% 40%" },
+    { age: 6, src: "images/galerie/arthur-06-le-trio.jpg", legende: "Le trio inséparable", pos: "41% 40%" },
     { age: 6, src: "images/galerie/arthur-06-photo-de-famille.jpg", legende: "La photo de famille", pos: "36% 30%" },
     { age: 7, src: "images/galerie/arthur-07-new-york.jpg", legende: "New York, au MoMA", pos: "50% 65%" },
     { age: 8, src: "images/galerie/arthur-08-coucher-de-soleil.jpg", legende: "Surfeur au coucher du soleil", pos: "28% 50%" },
