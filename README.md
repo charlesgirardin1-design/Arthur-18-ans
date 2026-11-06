@@ -15,7 +15,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 8. **Défi jongles** — mini-jeu, record enregistré dans le navigateur.
 9. **Tes supporters** — messages de ses proches.
 10. **Tes 18 bougies** — à souffler au clic ou dans le micro.
-11. **Ton trophée** — ticket à gratter qui révèle le cadeau.
+11. **Ton billet pour le Parc** — billet de match PARIS vs MARSEILLE (20/12/2026, au nom d’Arthur) avec zone à gratter qui révèle le cadeau, puis tampon « VALIDÉ ». Infos du billet modifiables dans `billet` (js/data.js).
 12. **Le casier n°18** — verrouillé jusqu'au 20/12/2026 à minuit (tester avant : ajouter `?jourj` à l'adresse).
 13. **Coup de sifflet final** — feu d'artifice.
 

@@ -503,14 +503,56 @@ body:not(.entered) .hero__sub, body:not(.entered) .countdown, body:not(.entered)
 .cake-actions { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; }
 .cake-wish { font-family: var(--hand); font-weight: 700; font-size: clamp(2rem, 5vw, 2.6rem); color: var(--gold); min-height: 1.4em; text-align: center; }
 
-/* ===================== TICKET À GRATTER ===================== */
-.ticket { display: flex; max-width: 760px; margin: 0 auto; filter: drop-shadow(0 30px 50px rgba(0,0,0,.5)); }
-.ticket__side { flex: 0 0 90px; background: var(--red); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; border-radius: 14px 0 0 14px; border-right: 3px dashed rgba(255,255,255,.6); }
-.ticket__side span { writing-mode: vertical-rl; rotate: 180deg; font-family: var(--display); letter-spacing: .3em; font-size: 1rem; }
-.ticket__side b { font-family: var(--display); font-weight: 400; font-size: 2.6rem; }
-.ticket__main { flex: 1; background: linear-gradient(135deg, #fffaf0, #f3e7c8); color: #2a1d00; border-radius: 0 14px 14px 0; padding: 1.2rem; min-width: 0; }
-.ticket__top { font-family: var(--display); letter-spacing: .14em; font-size: .95rem; color: var(--gold-deep); margin-bottom: .8rem; }
-.scratch { position: relative; aspect-ratio: 2.2 / 1; border-radius: 10px; overflow: hidden; }
+/* ===================== BILLET DE MATCH + ZONE À GRATTER ===================== */
+.mticket-wrap { display: grid; place-items: center; perspective: 1200px; }
+.mticket {
+  position: relative; width: min(420px, 100%); background: #fbfcff; color: #0b1640; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.4); animation: ticketFloat 5s ease-in-out infinite;
+  -webkit-mask: radial-gradient(circle 11px at 0 64%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 64%, #0000 98%, #000) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle 11px at 0 64%, #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% 64%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+@keyframes ticketFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.mticket__head { position: relative; padding: 1.1rem 1.2rem .8rem; color: #fff; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 120%, #2c56d6 0%, #13266f 45%, #070f33 100%); border-bottom: 5px solid var(--red); }
+.mticket__lights { position: absolute; inset: 0; opacity: .9;
+  background:
+    radial-gradient(circle at 12% 30%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+    radial-gradient(circle at 22% 26%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 28%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+    radial-gradient(circle at 88% 32%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+    radial-gradient(ellipse at 17% 28%, rgba(160,200,255,.45), transparent 30%),
+    radial-gradient(ellipse at 83% 30%, rgba(160,200,255,.45), transparent 30%),
+    linear-gradient(180deg, transparent 60%, rgba(227,6,19,.25)); }
+.mticket__brand { position: relative; font-family: var(--display); font-size: clamp(1.9rem, 7vw, 2.5rem); letter-spacing: .14em; text-align: center; line-height: 1; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.mticket__brand b { font-weight: 400; color: #fff; background: var(--red); padding: 0 .3em; border-radius: 3px; }
+.mticket__meta { position: relative; display: flex; justify-content: space-between; margin-top: .7rem; font-family: var(--display); letter-spacing: .1em; font-size: .9rem; color: #cfd8ff; }
+.mticket__body { padding: 1rem 1.2rem 1.1rem; text-align: center; background: repeating-linear-gradient(135deg, #fbfcff 0 12px, #f4f6fc 12px 24px); }
+.mticket__comp { font-family: var(--display); letter-spacing: .12em; font-size: 1.15rem; color: #2a3666; }
+.mticket__match { font-family: var(--display); font-size: clamp(2.3rem, 9vw, 3rem); line-height: 1; letter-spacing: .03em; margin: .15rem 0 0; }
+.mticket__match i { font-style: normal; font-size: .5em; color: var(--red); vertical-align: middle; margin: 0 .2em; }
+.mticket__code { font-family: var(--display); letter-spacing: .2em; color: #5a6694; }
+.mticket__holder { display: flex; justify-content: space-between; align-items: baseline; margin-top: .5rem; padding: 0 .2rem; font-family: var(--display); letter-spacing: .08em; }
+.mticket__holder b { font-weight: 400; font-size: 1.6rem; }
+.mticket__holder span { font-size: 1rem; color: var(--red); }
+.mticket__tarif { font-family: var(--display); letter-spacing: .14em; font-size: 1.05rem; margin: .1rem 0 .6rem; }
+.mticket__seat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: 8px; overflow: hidden; }
+.mticket__seat div { background: #d7e0f5; }
+.mticket__seat small { display: block; background: linear-gradient(180deg, #1d3584, #13245f); color: #fff; font-family: var(--display); letter-spacing: .12em; font-size: 1rem; padding: .25rem 0 .15rem; line-height: 1; }
+.mticket__seat small i { display: block; font-style: normal; font-size: .6rem; letter-spacing: .2em; opacity: .7; }
+.mticket__seat b { display: block; font-family: var(--display); font-weight: 400; font-size: 2.2rem; padding: .2rem 0; color: #0b1640; }
+.mticket__scratch-label { margin: .9rem 0 .35rem; font-family: var(--display); letter-spacing: .2em; font-size: .85rem; color: #8a6a12; border-top: 2px dashed #c9d2ea; padding-top: .8rem; }
+.mticket__barcode { margin-top: .9rem; display: grid; justify-items: center; gap: .2rem; }
+.mticket__barcode svg { width: 86%; height: 54px; display: block; }
+.mticket__barcode span { font-family: "Courier New", monospace; letter-spacing: .14em; font-size: .8rem; color: #333; }
+.mticket__holo { position: absolute; right: 14px; top: 92px; width: 46px; height: 46px; border-radius: 50%; pointer-events: none; opacity: .85;
+  background: conic-gradient(from 0deg, #ff6ad5, #c774e8, #ad8cff, #8795e8, #94d0ff, #7ef9c6, #f9f871, #ff6ad5); filter: saturate(.8); mix-blend-mode: multiply; animation: spin 8s linear infinite; }
+.mticket__stamp { position: absolute; left: 50%; top: 52%; translate: -50% -50%; rotate: -14deg; pointer-events: none; z-index: 5;
+  font-family: var(--display); font-size: 3.4rem; letter-spacing: .12em; line-height: .9; color: rgba(227,6,19,.85); text-align: center;
+  border: 5px solid currentColor; border-radius: 12px; padding: .2rem .8rem .3rem; opacity: 0; transform: scale(2.2); }
+.mticket__stamp small { display: block; font-size: .9rem; letter-spacing: .3em; }
+.mticket.validated .mticket__stamp { animation: stamp .45s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes stamp { to { opacity: 1; transform: scale(1); } }
+.scratch { position: relative; aspect-ratio: 2 / 1; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 2px #e6d9a8; }
 .scratch__prize { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 1rem;
   background: repeating-linear-gradient(45deg, #fff 0 14px, #fff7e0 14px 28px); }
 .scratch__title { font-family: var(--display); font-size: clamp(1.8rem, 6vw, 3rem); color: var(--red); line-height: 1; }
@@ -587,8 +629,7 @@ body:not(.entered) .hero__sub, body:not(.entered) .countdown, body:not(.entered)
   .tl-card { grid-template-columns: 1fr; } .tl-photo { width: 100%; aspect-ratio: 16/9; }
   .board { gap: .8rem; font-size: 1.05rem; padding: .5rem .8rem; }
   .film__nav { display: none; }
-  .ticket__side { flex-basis: 54px; } .ticket__side b { font-size: 1.8rem; }
-  .scratch { aspect-ratio: 1.5 / 1; }
+  .scratch { aspect-ratio: 1.7 / 1; }
   .letter__stamp { width: 70px; height: 84px; right: 12px; } .letter__stamp span { font-size: 2.2rem; }
 }
 

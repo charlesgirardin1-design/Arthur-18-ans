@@ -306,24 +306,43 @@
     </section>
 
     <!-- ===================== CADEAU À GRATTER ===================== -->
-    <section id="cadeau" class="section section--gold" data-menu="Ton trophée">
+    <section id="cadeau" class="section section--gold" data-menu="Ton billet pour le Parc">
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">10</span><span class="sh__kicker">Le trophée</span></div>
-        <h2 class="sh__title">Gratte ton cadeau</h2>
-        <p class="sh__lead">Un ticket gagnant à 100 %. Gratte la zone dorée avec la souris ou le doigt.</p>
+        <h2 class="sh__title">Ton billet pour le Parc</h2>
+        <p class="sh__lead">Une place rien que pour toi. Gratte la zone dorée du billet pour découvrir ton cadeau.</p>
       </header>
-      <div class="ticket">
-        <div class="ticket__side" aria-hidden="true"><span>ADMIT ONE</span><b>18</b></div>
-        <div class="ticket__main">
-          <p class="ticket__top">Ticket gagnant · Tribune d'honneur · Place n°18</p>
-          <div class="scratch" id="scratch">
-            <div class="scratch__prize">
-              <p class="scratch__title" id="giftTitle"></p>
-              <p class="scratch__text" id="giftText"></p>
-            </div>
-            <canvas class="scratch__cover" id="scratchCanvas" aria-label="Zone à gratter"></canvas>
+      <div class="mticket-wrap">
+        <article class="mticket" id="mticket" aria-label="Billet de match">
+          <div class="mticket__head">
+            <div class="mticket__lights" aria-hidden="true"></div>
+            <p class="mticket__brand">ICI C'EST <b>PARIS</b></p>
+            <div class="mticket__meta"><span id="tkSaison"></span><span id="tkDate"></span></div>
           </div>
-        </div>
+          <div class="mticket__body">
+            <p class="mticket__comp" id="tkComp"></p>
+            <p class="mticket__match"><span id="tkHome"></span> <i>vs</i> <span id="tkAway"></span></p>
+            <p class="mticket__code">2012</p>
+            <div class="mticket__holder"><b id="tkHolder"></b><span id="tkMention"></span></div>
+            <p class="mticket__tarif" id="tkTarif"></p>
+            <div class="mticket__seat">
+              <div><small>ACCÈS<i>ENTRY</i></small><b id="tkAcces"></b></div>
+              <div><small>RANG<i>ROW</i></small><b id="tkRang"></b></div>
+              <div><small>SIÈGE<i>SEAT</i></small><b id="tkSiege"></b></div>
+            </div>
+            <p class="mticket__scratch-label">Surprise · zone à gratter</p>
+            <div class="scratch" id="scratch">
+              <div class="scratch__prize">
+                <p class="scratch__title" id="giftTitle"></p>
+                <p class="scratch__text" id="giftText"></p>
+              </div>
+              <canvas class="scratch__cover" id="scratchCanvas" aria-label="Zone à gratter"></canvas>
+            </div>
+            <div class="mticket__barcode"><svg id="tkBarcode" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"></svg><span id="tkBarNum"></span></div>
+          </div>
+          <div class="mticket__holo" aria-hidden="true"></div>
+          <div class="mticket__stamp" aria-hidden="true">VALIDÉ<small>20·12·2026</small></div>
+        </article>
       </div>
     </section>
 

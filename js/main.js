@@ -704,6 +704,22 @@
      TICKET À GRATTER
      ================================================================= */
   (() => {
+    const B = D.billet || {};
+    const setT = (id, v) => { const el = $(id); if (el && v != null) el.textContent = v; };
+    setT("#tkSaison", B.saison); setT("#tkDate", B.date); setT("#tkComp", B.competition);
+    setT("#tkHome", B.domicile); setT("#tkAway", B.exterieur); setT("#tkHolder", B.titulaire);
+    setT("#tkMention", B.mention); setT("#tkTarif", B.tarif); setT("#tkAcces", B.acces); setT("#tkRang", B.rang); setT("#tkSiege", B.siege);
+    // code-barres (barres générées à partir de la date de naissance et du 18e anniversaire)
+    const code = "2012200818" + "20122026";
+    setT("#tkBarNum", code.replace(/(\d{4})(?=\d)/g, "$1 "));
+    let bars = "", x = 4;
+    for (const ch of code + code.split("").reverse().join("")) {
+      const n = +ch;
+      bars += `<rect x="${x}" y="0" width="${1 + (n % 3)}" height="60" fill="#111"/>`;
+      x += 2 + (n % 3) + ((n * 7) % 4);
+    }
+    $("#tkBarcode").setAttribute("viewBox", `0 0 ${x + 4} 60`);
+    $("#tkBarcode").innerHTML = bars;
     $("#giftTitle").textContent = D.cadeau.titre;
     $("#giftText").textContent = D.cadeau.texte;
     const cv = $("#scratchCanvas"), ctx = cv.getContext("2d");
@@ -744,6 +760,7 @@
     function reveal() {
       if (done) return; done = true;
       cv.classList.add("done"); confetti(260, ["#f5c542", "#ffffff", "#e30613"]); SFX.fanfare(); SFX.cheer(0.6);
+      setTimeout(() => $("#mticket").classList.add("validated"), 500);
     }
     cv.addEventListener("pointerdown", e => { scratching = true; lastPt = null; cv.setPointerCapture(e.pointerId); scratchAt(pos(e)); });
     cv.addEventListener("pointermove", e => { if (scratching) scratchAt(pos(e)); });
