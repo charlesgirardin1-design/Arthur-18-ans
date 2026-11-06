@@ -20,7 +20,7 @@
     <a href="#accueil" class="scorebar__brand">
       <span class="scorebar__team">ARTHUR</span>
       <span class="scorebar__score">18</span>
-      <span class="scorebar__live"><i></i> LIVE</span>
+      <span class="scorebar__live"><i></i> <span id="matchMinute">0'</span></span>
     </a>
     <nav class="scorebar__nav" aria-label="Sections">
       <a href="#carte">Carte</a>
@@ -30,13 +30,16 @@
       <a href="#quiz">Quiz</a>
       <a href="#galerie">Photos</a>
       <a href="#supporters">Messages</a>
+      <a href="#bougies">Bougies</a>
     </nav>
+    <div class="scorebar__progress" id="progress" aria-hidden="true"></div>
   </header>
 
   <!-- ===== HERO ===== -->
   <section id="accueil" class="hero">
     <div class="hero__lights" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <div class="hero__pitch" aria-hidden="true"></div>
+    <div class="hero__flashes" id="flashes" aria-hidden="true"></div>
     <div class="hero__content">
       <p class="hero__kicker">Pour toi, Arthur · Saison 2026</p>
       <h1 class="hero__title">
@@ -54,6 +57,9 @@
       <p class="hero__hint">Tape le ballon… ou écris <kbd>psg</kbd> au clavier 😉</p>
     </div>
     <a href="#carte" class="scroll-cue" aria-label="Descendre">↓</a>
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__track" id="ticker"></div>
+    </div>
   </section>
 
   <!-- ===== CARTE JOUEUR ===== -->
@@ -122,11 +128,55 @@
         <div class="penalty__dots" id="pkDots"></div>
         <div>BUTS <b id="pkGoals">0</b></div>
       </div>
-      <div class="goal" id="goal">
-        <div class="goal__net"></div>
-        <div class="goal__zones" id="goalZones"></div>
-        <div class="keeper" id="keeper"><div class="keeper__body">🧤</div></div>
-        <div class="pk-ball" id="pkBall">⚽</div>
+      <div class="pk-scene" id="pkScene">
+        <div class="pk-crowd" aria-hidden="true"></div>
+        <div class="goal" id="goal">
+          <div class="goal__net" id="goalNet"></div>
+          <div class="keeper" id="keeper">
+            <svg viewBox="0 0 120 170" aria-hidden="true">
+              <defs>
+                <linearGradient id="kJersey" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3cf08a"/><stop offset="1" stop-color="#11a855"/></linearGradient>
+                <linearGradient id="kSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6d0a8"/><stop offset="1" stop-color="#e2ad7e"/></linearGradient>
+              </defs>
+              <ellipse class="k-shadow" cx="60" cy="166" rx="34" ry="4" fill="rgba(0,0,0,.35)"/>
+              <!-- jambes -->
+              <g class="k-legs">
+                <path d="M47 112 L41 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
+                <path d="M73 112 L79 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
+                <path d="M42 140 L40 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
+                <path d="M78 140 L80 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
+                <path d="M32 161 h15 a4 4 0 0 0 -3 -7 h-9 z" fill="#111"/>
+                <path d="M88 161 h-15 a4 4 0 0 1 3 -7 h9 z" fill="#111"/>
+              </g>
+              <!-- short -->
+              <path d="M40 100 h40 l4 22 h-19 l-5 -8 l-5 8 h-19 z" fill="#14214f"/>
+              <!-- bras -->
+              <g class="k-arm k-arm--l">
+                <path d="M42 62 L22 46 L12 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <g transform="translate(11 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
+              </g>
+              <g class="k-arm k-arm--r">
+                <path d="M78 62 L98 46 L108 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <g transform="translate(109 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
+              </g>
+              <!-- maillot -->
+              <path d="M38 56 q22 -10 44 0 l2 48 h-48 z" fill="url(#kJersey)"/>
+              <path d="M38 80 h46" stroke="#0b7a3d" stroke-width="3" opacity=".5"/>
+              <text x="60" y="92" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="22" fill="#0b4a26">1</text>
+              <!-- tête -->
+              <rect x="54" y="44" width="12" height="10" fill="#e2ad7e"/>
+              <circle cx="60" cy="33" r="15" fill="url(#kSkin)"/>
+              <path d="M45 31 q2 -18 18 -17 q13 1 12 15 q-6 -7 -15 -6 q-9 0 -15 8 z" fill="#3b2414"/>
+              <circle class="k-eye" cx="54.5" cy="35" r="1.8" fill="#1a1a1a"/>
+              <circle class="k-eye" cx="65.5" cy="35" r="1.8" fill="#1a1a1a"/>
+              <path class="k-mouth" d="M55 42 q5 3 10 0" stroke="#7a3b2a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="goal__zones" id="goalZones"></div>
+        </div>
+        <div class="pk-spot" aria-hidden="true"></div>
+        <div class="pk-ball-shadow" id="pkShadow" aria-hidden="true"></div>
+        <div class="pk-ball" id="pkBall" aria-hidden="true">⚽</div>
         <div class="goal__msg" id="pkMsg"></div>
       </div>
       <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
@@ -135,6 +185,7 @@
 
   <!-- ===== QUIZ TENNIS ===== -->
   <section id="quiz" class="section section--court">
+    <div class="court-ball" aria-hidden="true"><span>🎾</span></div>
     <h2 class="section__title"><span>05</span> Jeu, set et quiz</h2>
     <p class="section__lead">Connais-tu vraiment Arthur ? Chaque bonne réponse marque un point… façon tennis.</p>
     <div class="quiz">
@@ -158,6 +209,27 @@
     <h2 class="section__title"><span>07</span> Tes supporters</h2>
     <p class="section__lead">Ceux qui t'aiment ont un message pour toi.</p>
     <div class="wall" id="wall"></div>
+  </section>
+
+  <!-- ===== BOUGIES ===== -->
+  <section id="bougies" class="section section--party">
+    <h2 class="section__title"><span>08</span> Souffle tes 18 bougies</h2>
+    <p class="section__lead">Clique sur les bougies une par une… ou souffle pour de vrai dans le micro. Et n'oublie pas de faire un vœu.</p>
+    <div class="cake-zone">
+      <div class="cake" id="cake">
+        <div class="cake__candles" id="candles"></div>
+        <div class="cake__top"></div>
+        <div class="cake__layer cake__layer--1"><span>ARTHUR</span></div>
+        <div class="cake__layer cake__layer--2"><span>18</span></div>
+        <div class="cake__plate"></div>
+      </div>
+      <div class="cake-actions">
+        <button class="btn" id="blowAll">💨 Souffler</button>
+        <button class="btn btn--ghost" id="blowMic">🎤 Souffler dans le micro</button>
+        <button class="btn btn--ghost" id="relight" hidden>🔥 Rallumer</button>
+      </div>
+      <p class="cake-wish" id="cakeWish" aria-live="polite"></p>
+    </div>
   </section>
 
   <footer class="footer">

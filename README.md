@@ -8,10 +8,13 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008) : il lui est adr
 2. **Carte joueur** — carte collector dorée, effet 3D au survol, se retourne au clic (fiche technique).
 3. **Stats en direct** — secondes vécues, battements de cœur, pas courus… mis à jour chaque seconde.
 4. **La carrière** — frise chronologique 2008 → 2026.
-5. **Séance de tirs au but** — mini-jeu : 5 tirs contre le gardien.
+5. **Séance de tirs au but** — mini-jeu : 5 tirs contre un gardien dessiné qui plonge, ballon en courbe, filet qui tremble, tribune qui s'enflamme.
 6. **Jeu, set et quiz** — quiz « Connais-tu Arthur ? » compté comme au tennis (15, 30, 40, JEU…).
 7. **Vestiaire photo** — galerie polaroïds (emplacements « photo à venir » en attendant).
 8. **Tes supporters** — messages de ses proches pour lui, en post-it.
+9. **Souffle tes 18 bougies** — gâteau avec 18 bougies à souffler au clic… ou pour de vrai dans le micro.
+
+Animations : minute de match qui avance avec le défilement (0' → 90+'), bandeau LED, flashs photo dans les tribunes, apparition des sections au défilement, compteurs qui s'emballent, balle de tennis qui rebondit sur le court.
 
 Easter eggs : taper `psg`, `arthur` ou `ace` au clavier, ou cliquer sur le ballon.
 
