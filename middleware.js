@@ -12,7 +12,7 @@
    ===================================================================== */
 
 // ⬇️ RÉGLAGES
-const VERROU_ACTIF = true;
+const VERROU_ACTIF = false; // true = site verrouillé jusqu’à OUVERTURE
 const OUVERTURE = "2026-12-20T00:00:00+01:00"; // heure de Paris — à remplacer par l'heure exacte de naissance
 // ⬆️ RÉGLAGES
 
