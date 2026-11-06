@@ -1,34 +1,33 @@
 # ⚽🎾 Arthur · 18 ans
 
-Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008) : il lui est adressé directement, à la 2e personne.
-100 % statique (HTML / CSS / JS), aucune installation : ouvrir `index.html` dans un navigateur.
+Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adressé directement.
+100 % statique (HTML / CSS / JS), aucune installation. En ligne : https://arthur18ans.vercel.app
 
-## Sections
-1. **Hero stade** — projecteurs, « ARTHUR 18 », compte à rebours jusqu'au 20/12/2026 (bascule automatiquement en mode « Joyeux anniversaire » le jour J, avec confettis).
-2. **Carte joueur** — carte collector dorée, effet 3D au survol, se retourne au clic (fiche technique).
-3. **Stats en direct** — secondes vécues, battements de cœur, pas courus… mis à jour chaque seconde.
-4. **La carrière** — frise chronologique 2008 → 2026.
-5. **Séance de tirs au but** — mini-jeu : 5 tirs contre un gardien dessiné qui plonge, ballon en courbe, filet qui tremble, tribune qui s'enflamme.
-6. **Jeu, set et quiz** — quiz « Connais-tu Arthur ? » compté comme au tennis (15, 30, 40, JEU…).
-7. **Vestiaire photo** — galerie polaroïds (emplacements « photo à venir » en attendant).
-8. **Tes supporters** — messages de ses proches pour lui, en post-it.
-9. **Souffle tes 18 bougies** — gâteau avec 18 bougies à souffler au clic… ou pour de vrai dans le micro.
+## Le déroulé (« programme du match »)
+0. **Entrée des joueurs** — intro dans le tunnel, avec ou sans le son (coup de sifflet, ambiance de stade).
+1. **Coup d'envoi** — « ARTHUR 18 », projecteurs qui s'allument, compte à rebours jusqu'au 20/12/2026.
+2. **Le mot d'avant-match** — une lettre manuscrite qui s'écrit paragraphe par paragraphe.
+3. **Ta carte de joueur** — carte collector holographique, se retourne au clic.
+4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.
+5. **Ta carrière** — frise 2008 → 2026.
+6. **Ta vie en 18 saisons** — pellicule photo, une photo par âge (0 à 18 ans).
+7. **Tirs au but** — 5 tirs contre un gardien qui plonge.
+8. **Défi jongles** — mini-jeu, record enregistré dans le navigateur.
+9. **Jeu, set et quiz** — quiz compté comme au tennis.
+10. **Tes supporters** — messages de ses proches.
+11. **Tes 18 bougies** — à souffler au clic ou dans le micro.
+12. **Ton trophée** — ticket à gratter qui révèle le cadeau.
+13. **Le casier n°18** — verrouillé jusqu'au 20/12/2026 à minuit (tester avant : ajouter `?jourj` à l'adresse).
+14. **Coup de sifflet final** — feu d'artifice.
 
-Animations : minute de match qui avance avec le défilement (0' → 90+'), bandeau LED, flashs photo dans les tribunes, apparition des sections au défilement, compteurs qui s'emballent, balle de tennis qui rebondit sur le court.
-
-Easter eggs : taper `psg`, `arthur` ou `ace` au clavier, ou cliquer sur le ballon.
+Bonus : minute de match qui avance avec le défilement, menu « Programme », sons synthétisés (aucun fichier audio),
+easter eggs au clavier (`psg`, `arthur`, `ace`).
 
 ## Personnaliser
-Tout le contenu est dans **`js/data.js`** (textes, quiz, frise, messages, photos).
+Tout le contenu est dans **`js/data.js`** : lettre, frise, photos par âge, quiz, messages, cadeau à gratter, message du casier.
 
 **Ajouter des photos** : déposer les fichiers dans `images/galerie/`, puis dans `js/data.js` :
 ```js
-photos: [
-  { src: "images/galerie/plage-2015.jpg", legende: "Été 2015" },
-],
+saisons: [ { age: 5, src: "images/galerie/age-05.jpg", legende: "Premier maillot" }, … ],
 photoProfil: "images/arthur.jpg",   // photo de la carte joueur
 ```
-Une photo peut aussi être ajoutée à chaque étape de la frise (`photo: "images/…"`).
-
-## Mise en ligne
-N'importe quel hébergeur statique : GitHub Pages, Netlify, Vercel (glisser-déposer le dossier).

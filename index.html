@@ -2,239 +2,373 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Arthur · 18 ans</title>
   <meta name="description" content="Pour toi, Arthur, pour tes 18 ans." />
-  <meta name="theme-color" content="#0b1640" />
+  <meta name="theme-color" content="#050a22" />
+  <meta property="og:title" content="Arthur · 18 ans" />
+  <meta property="og:description" content="20.12.2008 → 20.12.2026 — Le match de ta vie." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;800&family=Caveat:wght@500;700&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="locked">
   <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
 
-  <!-- ===== BARRE DE SCORE / NAVIGATION ===== -->
+  <!-- ===================== INTRO : LE TUNNEL ===================== -->
+  <div class="intro" id="intro" role="dialog" aria-label="Entrée sur le terrain">
+    <div class="intro__tunnel" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="intro__content">
+      <p class="intro__line" style="--d:.3s">20 décembre 2026</p>
+      <p class="intro__line intro__line--big" style="--d:1.1s">Le match de ta vie</p>
+      <p class="intro__line" style="--d:1.9s">Les joueurs entrent sur le terrain…</p>
+      <div class="intro__actions intro__line" style="--d:2.6s">
+        <button class="btn btn--xl" id="enterSound">🔊 Entrer sur le terrain</button>
+        <button class="intro__mute" id="enterMute">Entrer sans le son</button>
+      </div>
+    </div>
+    <div class="intro__flash" aria-hidden="true"></div>
+  </div>
+
+  <!-- ===================== BARRE DE SCORE ===================== -->
   <header class="scorebar">
-    <a href="#accueil" class="scorebar__brand">
+    <a href="#accueil" class="scorebar__brand" aria-label="Retour en haut">
       <span class="scorebar__team">ARTHUR</span>
       <span class="scorebar__score">18</span>
-      <span class="scorebar__live"><i></i> <span id="matchMinute">0'</span></span>
     </a>
-    <nav class="scorebar__nav" aria-label="Sections">
-      <a href="#carte">Carte</a>
-      <a href="#compteur">Stats</a>
-      <a href="#carriere">Carrière</a>
-      <a href="#penalty">Penalty</a>
-      <a href="#quiz">Quiz</a>
-      <a href="#galerie">Photos</a>
-      <a href="#supporters">Messages</a>
-      <a href="#bougies">Bougies</a>
-    </nav>
+    <div class="scorebar__clock" aria-hidden="true"><i></i><span id="matchMinute">0'</span></div>
+    <div class="scorebar__tools">
+      <button class="icon-btn" id="soundToggle" aria-label="Activer le son" aria-pressed="false">🔇</button>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu"><span></span><span></span><b>Programme</b></button>
+    </div>
     <div class="scorebar__progress" id="progress" aria-hidden="true"></div>
   </header>
 
-  <!-- ===== HERO ===== -->
-  <section id="accueil" class="hero">
-    <div class="hero__lights" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-    <div class="hero__pitch" aria-hidden="true"></div>
-    <div class="hero__flashes" id="flashes" aria-hidden="true"></div>
-    <div class="hero__content">
-      <p class="hero__kicker">Pour toi, Arthur · Saison 2026</p>
-      <h1 class="hero__title">
-        <span class="hero__name">ARTHUR</span>
-        <span class="hero__age" id="heroAge">18</span>
-      </h1>
-      <p class="hero__sub" id="heroSub">Coup d'envoi de ta majorité dans</p>
-      <div class="countdown" id="countdown" role="timer" aria-live="off">
-        <div><b id="cdD">00</b><small>jours</small></div>
-        <div><b id="cdH">00</b><small>heures</small></div>
-        <div><b id="cdM">00</b><small>min</small></div>
-        <div><b id="cdS">00</b><small>sec</small></div>
-      </div>
-      <button class="ball" id="heroBall" aria-label="Frappe le ballon !">⚽</button>
-      <p class="hero__hint">Tape le ballon… ou écris <kbd>psg</kbd> au clavier 😉</p>
-    </div>
-    <a href="#carte" class="scroll-cue" aria-label="Descendre">↓</a>
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker__track" id="ticker"></div>
-    </div>
-  </section>
+  <!-- ===================== MENU « PROGRAMME DU MATCH » ===================== -->
+  <nav class="menu" id="menu" aria-label="Programme du match" hidden>
+    <p class="menu__kicker">Programme du match</p>
+    <ol class="menu__list" id="menuList"></ol>
+  </nav>
 
-  <!-- ===== CARTE JOUEUR ===== -->
-  <section id="carte" class="section section--dark">
-    <h2 class="section__title"><span>01</span> Ta carte de joueur</h2>
-    <p class="section__lead">Édition unique, un seul exemplaire au monde : la tienne. Clique pour la retourner.</p>
-    <div class="card-wrap">
-      <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur">
-        <div class="pcard__inner">
-          <div class="pcard__face pcard__front">
-            <div class="pcard__top">
-              <div class="pcard__rating" id="cardRating">99</div>
-              <div class="pcard__pos" id="cardPos">ATT</div>
-              <div class="pcard__flag" aria-hidden="true"><i></i><i></i><i></i></div>
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section id="accueil" class="hero" data-menu="Coup d'envoi">
+      <div class="hero__sky" aria-hidden="true"></div>
+      <div class="hero__lights" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="hero__flashes" id="flashes" aria-hidden="true"></div>
+      <div class="hero__pitch" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="hero__kicker">Pour toi, Arthur · Saison 2026</p>
+        <h1 class="hero__title" aria-label="Arthur 18">
+          <span class="hero__name" id="heroName">ARTHUR</span>
+          <span class="hero__age">18</span>
+        </h1>
+        <p class="hero__sub" id="heroSub">Coup d'envoi de ta majorité dans</p>
+        <div class="countdown" id="countdown" role="timer">
+          <div><b id="cdD">00</b><small>jours</small></div>
+          <div><b id="cdH">00</b><small>heures</small></div>
+          <div><b id="cdM">00</b><small>min</small></div>
+          <div><b id="cdS">00</b><small>sec</small></div>
+        </div>
+        <button class="ball" id="heroBall" aria-label="Frappe le ballon"><span>⚽</span></button>
+      </div>
+      <a href="#lettre" class="scroll-cue" aria-label="Descendre"><span></span></a>
+      <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
+    </section>
+
+    <!-- ===================== LETTRE ===================== -->
+    <section id="lettre" class="section section--letter" data-menu="Le mot d'avant-match">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">01</span><span class="sh__kicker">Le mot d'avant-match</span></div>
+        <h2 class="sh__title">Avant d'entrer sur le terrain</h2>
+      </header>
+      <article class="letter" id="letter">
+        <div class="letter__stamp" aria-hidden="true"><span>18</span><small>20·12·2026</small></div>
+        <h3 class="letter__title" id="letterTitle"></h3>
+        <div class="letter__body" id="letterBody"></div>
+        <p class="letter__sign" id="letterSign"></p>
+      </article>
+    </section>
+
+    <!-- ===================== CARTE JOUEUR ===================== -->
+    <section id="carte" class="section section--navy" data-menu="Ta carte de joueur">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">02</span><span class="sh__kicker">Composition d'équipe</span></div>
+        <h2 class="sh__title">Ta carte de joueur</h2>
+        <p class="sh__lead">Édition unique, un seul exemplaire au monde : la tienne. Clique pour la retourner.</p>
+      </header>
+      <div class="card-wrap">
+        <div class="card-glow" aria-hidden="true"></div>
+        <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur">
+          <div class="pcard__inner">
+            <div class="pcard__face pcard__front">
+              <div class="pcard__top">
+                <div class="pcard__rating" id="cardRating">99</div>
+                <div class="pcard__pos" id="cardPos">ATT</div>
+                <div class="pcard__flag" aria-hidden="true"><i></i><i></i><i></i></div>
+                <div class="pcard__club" aria-hidden="true">🔴🔵</div>
+              </div>
+              <div class="pcard__photo" id="cardPhoto"><span>A</span></div>
+              <div class="pcard__name">ARTHUR</div>
+              <div class="pcard__stats" id="cardStats"></div>
+              <div class="pcard__holo" aria-hidden="true"></div>
             </div>
-            <div class="pcard__photo" id="cardPhoto"><span>A</span></div>
-            <div class="pcard__name">ARTHUR</div>
-            <div class="pcard__stats" id="cardStats"></div>
-            <div class="pcard__shine" aria-hidden="true"></div>
+            <div class="pcard__face pcard__back">
+              <h3>Fiche technique</h3>
+              <dl>
+                <dt>Né le</dt><dd>20 décembre 2008</dd>
+                <dt>Âge</dt><dd id="backAge">18 ans</dd>
+                <dt>Signe</dt><dd>Sagittaire ♐</dd>
+                <dt>Club de cœur</dt><dd>Paris 🔴🔵</dd>
+                <dt>Sports</dt><dd id="backSports"></dd>
+                <dt>Pied fort</dt><dd>Les deux (évidemment)</dd>
+                <dt>Valeur</dt><dd>Inestimable</dd>
+              </dl>
+            </div>
           </div>
-          <div class="pcard__face pcard__back">
-            <h3>Fiche technique</h3>
-            <dl>
-              <dt>Né le</dt><dd>20 décembre 2008</dd>
-              <dt>Âge</dt><dd id="backAge">18 ans</dd>
-              <dt>Signe</dt><dd>Sagittaire ♐</dd>
-              <dt>Club de cœur</dt><dd>Paris 🔴🔵</dd>
-              <dt>Sports</dt><dd id="backSports"></dd>
-              <dt>Pied fort</dt><dd>Les deux (évidemment)</dd>
-              <dt>Valeur</dt><dd>Inestimable</dd>
-            </dl>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== STATS ===================== -->
+    <section id="compteur" class="section" data-menu="Tes stats en direct">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">03</span><span class="sh__kicker">Statistiques officielles</span></div>
+        <h2 class="sh__title">Tes stats en direct</h2>
+        <p class="sh__lead">Depuis ton coup d'envoi le 20/12/2008, mises à jour chaque seconde.</p>
+      </header>
+      <div class="stats-grid">
+        <div class="stat stat--big"><b data-stat="secondes">0</b><span>secondes que tu as jouées</span></div>
+        <div class="stat"><b data-stat="jours">0</b><span>jours sur le terrain</span></div>
+        <div class="stat"><b data-stat="coeur">0</b><span>battements de ton cœur (environ)</span></div>
+        <div class="stat"><b data-stat="nuits">0</b><span>nuits de récup'</span></div>
+        <div class="stat"><b data-stat="weekends">0</b><span>week-ends de matchs</span></div>
+        <div class="stat"><b data-stat="pas">0</b><span>pas courus (estimation très sérieuse)</span></div>
+      </div>
+    </section>
+
+    <!-- ===================== CARRIÈRE ===================== -->
+    <section id="carriere" class="section section--pitch" data-menu="Ta carrière">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">04</span><span class="sh__kicker">Le parcours</span></div>
+        <h2 class="sh__title">Ta carrière</h2>
+        <p class="sh__lead">De la maternité au statut de légende : tes grands moments.</p>
+      </header>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+
+    <!-- ===================== 18 SAISONS ===================== -->
+    <section id="saisons" class="section section--film" data-menu="Ta vie en 18 saisons">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">05</span><span class="sh__kicker">Les archives</span></div>
+        <h2 class="sh__title">Ta vie en 18 saisons</h2>
+        <p class="sh__lead">Une photo par année, de ton tout premier jour jusqu'à aujourd'hui. Fais défiler la pellicule.</p>
+      </header>
+      <div class="film">
+        <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes">‹</button>
+        <div class="film__strip" id="filmStrip" tabindex="0" aria-label="Pellicule photo"></div>
+        <button class="film__nav film__nav--next" id="filmNext" aria-label="Photos suivantes">›</button>
+      </div>
+      <div class="film__ages" id="filmAges" aria-hidden="true"></div>
+    </section>
+
+    <!-- ===================== PENALTY ===================== -->
+    <section id="penalty" class="section section--navy" data-menu="Tirs au but">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">06</span><span class="sh__kicker">Séance de tirs au but</span></div>
+        <h2 class="sh__title">À toi de tirer</h2>
+        <p class="sh__lead">5 tirs pour battre le gardien. Clique dans le but pour viser.</p>
+      </header>
+      <div class="penalty">
+        <div class="board">
+          <div>TIRS <b id="pkShots">0/5</b></div>
+          <div class="board__dots" id="pkDots"></div>
+          <div>BUTS <b id="pkGoals">0</b></div>
+        </div>
+        <div class="pk-scene" id="pkScene">
+          <div class="pk-crowd" aria-hidden="true"></div>
+          <div class="goal" id="goal">
+            <div class="goal__net" id="goalNet"></div>
+            <div class="keeper" id="keeper">
+              <svg viewBox="0 0 120 170" aria-hidden="true">
+                <defs>
+                  <linearGradient id="kJersey" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3cf08a"/><stop offset="1" stop-color="#11a855"/></linearGradient>
+                  <linearGradient id="kSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6d0a8"/><stop offset="1" stop-color="#e2ad7e"/></linearGradient>
+                </defs>
+                <ellipse cx="60" cy="166" rx="34" ry="4" fill="rgba(0,0,0,.35)"/>
+                <g>
+                  <path d="M47 112 L41 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
+                  <path d="M73 112 L79 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
+                  <path d="M42 140 L40 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
+                  <path d="M78 140 L80 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
+                  <path d="M32 161 h15 a4 4 0 0 0 -3 -7 h-9 z" fill="#111"/>
+                  <path d="M88 161 h-15 a4 4 0 0 1 3 -7 h9 z" fill="#111"/>
+                </g>
+                <path d="M40 100 h40 l4 22 h-19 l-5 -8 l-5 8 h-19 z" fill="#14214f"/>
+                <g class="k-arm k-arm--l">
+                  <path d="M42 62 L22 46 L12 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <g transform="translate(11 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
+                </g>
+                <g class="k-arm k-arm--r">
+                  <path d="M78 62 L98 46 L108 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <g transform="translate(109 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
+                </g>
+                <path d="M38 56 q22 -10 44 0 l2 48 h-48 z" fill="url(#kJersey)"/>
+                <path d="M38 80 h46" stroke="#0b7a3d" stroke-width="3" opacity=".5"/>
+                <text x="60" y="92" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="22" fill="#0b4a26">1</text>
+                <rect x="54" y="44" width="12" height="10" fill="#e2ad7e"/>
+                <circle cx="60" cy="33" r="15" fill="url(#kSkin)"/>
+                <path d="M45 31 q2 -18 18 -17 q13 1 12 15 q-6 -7 -15 -6 q-9 0 -15 8 z" fill="#3b2414"/>
+                <circle cx="54.5" cy="35" r="1.8" fill="#1a1a1a"/>
+                <circle cx="65.5" cy="35" r="1.8" fill="#1a1a1a"/>
+                <path class="k-mouth" d="M55 42 q5 3 10 0" stroke="#7a3b2a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="goal__zones" id="goalZones"></div>
+          </div>
+          <div class="pk-spot" aria-hidden="true"></div>
+          <div class="pk-ball-shadow" id="pkShadow" aria-hidden="true"></div>
+          <div class="pk-ball" id="pkBall" aria-hidden="true">⚽</div>
+          <div class="big-msg" id="pkMsg"></div>
+        </div>
+        <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
+      </div>
+    </section>
+
+    <!-- ===================== JONGLES ===================== -->
+    <section id="jongles" class="section" data-menu="Défi jongles">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">07</span><span class="sh__kicker">Échauffement</span></div>
+        <h2 class="sh__title">Le défi des jongles</h2>
+        <p class="sh__lead">Clique (ou tape) sur le ballon pour le garder en l'air. Objectif : au moins 18 jongles, un par année.</p>
+      </header>
+      <div class="juggle">
+        <div class="board">
+          <div>JONGLES <b id="jgScore">0</b></div>
+          <div>RECORD <b id="jgBest">0</b></div>
+        </div>
+        <div class="juggle__stage">
+          <canvas id="jgCanvas" aria-label="Jeu de jongles"></canvas>
+          <div class="juggle__overlay" id="jgOverlay">
+            <p id="jgText">Prêt pour l'échauffement ?</p>
+            <button class="btn" id="jgStart">▶ Commencer</button>
           </div>
         </div>
-      </button>
-    </div>
-  </section>
-
-  <!-- ===== COMPTEUR DE VIE ===== -->
-  <section id="compteur" class="section">
-    <h2 class="section__title"><span>02</span> Tes stats en direct</h2>
-    <p class="section__lead">Depuis ton coup d'envoi le 20/12/2008, en temps réel.</p>
-    <div class="stats-grid">
-      <div class="stat"><b data-stat="secondes">0</b><span>secondes que tu as jouées</span></div>
-      <div class="stat"><b data-stat="jours">0</b><span>jours sur le terrain</span></div>
-      <div class="stat"><b data-stat="coeur">0</b><span>battements de ton cœur (environ)</span></div>
-      <div class="stat"><b data-stat="nuits">0</b><span>nuits de récup'</span></div>
-      <div class="stat"><b data-stat="weekends">0</b><span>week-ends de matchs</span></div>
-      <div class="stat"><b data-stat="pas">0</b><span>pas courus (estimation très sérieuse)</span></div>
-    </div>
-  </section>
-
-  <!-- ===== CARRIÈRE ===== -->
-  <section id="carriere" class="section section--pitch">
-    <h2 class="section__title"><span>03</span> Ta carrière</h2>
-    <p class="section__lead">De la maternité au statut de légende : tes grands moments.</p>
-    <ol class="timeline" id="timeline"></ol>
-  </section>
-
-  <!-- ===== PENALTY ===== -->
-  <section id="penalty" class="section section--dark">
-    <h2 class="section__title"><span>04</span> La séance de tirs au but</h2>
-    <p class="section__lead">À toi de tirer, Arthur : 5 tirs pour battre le gardien. Clique dans le but pour viser.</p>
-    <div class="penalty">
-      <div class="penalty__board">
-        <div>TIRS <b id="pkShots">0/5</b></div>
-        <div class="penalty__dots" id="pkDots"></div>
-        <div>BUTS <b id="pkGoals">0</b></div>
       </div>
-      <div class="pk-scene" id="pkScene">
-        <div class="pk-crowd" aria-hidden="true"></div>
-        <div class="goal" id="goal">
-          <div class="goal__net" id="goalNet"></div>
-          <div class="keeper" id="keeper">
-            <svg viewBox="0 0 120 170" aria-hidden="true">
-              <defs>
-                <linearGradient id="kJersey" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3cf08a"/><stop offset="1" stop-color="#11a855"/></linearGradient>
-                <linearGradient id="kSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6d0a8"/><stop offset="1" stop-color="#e2ad7e"/></linearGradient>
-              </defs>
-              <ellipse class="k-shadow" cx="60" cy="166" rx="34" ry="4" fill="rgba(0,0,0,.35)"/>
-              <!-- jambes -->
-              <g class="k-legs">
-                <path d="M47 112 L41 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
-                <path d="M73 112 L79 150" stroke="#14214f" stroke-width="13" stroke-linecap="round"/>
-                <path d="M42 140 L40 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
-                <path d="M78 140 L80 156" stroke="#11a855" stroke-width="11" stroke-linecap="round"/>
-                <path d="M32 161 h15 a4 4 0 0 0 -3 -7 h-9 z" fill="#111"/>
-                <path d="M88 161 h-15 a4 4 0 0 1 3 -7 h9 z" fill="#111"/>
-              </g>
-              <!-- short -->
-              <path d="M40 100 h40 l4 22 h-19 l-5 -8 l-5 8 h-19 z" fill="#14214f"/>
-              <!-- bras -->
-              <g class="k-arm k-arm--l">
-                <path d="M42 62 L22 46 L12 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <g transform="translate(11 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
-              </g>
-              <g class="k-arm k-arm--r">
-                <path d="M78 62 L98 46 L108 26" stroke="url(#kJersey)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <g transform="translate(109 21)"><rect x="-8" y="-9" width="16" height="17" rx="6" fill="#fff"/><rect x="-8" y="2" width="16" height="5" rx="2" fill="#e30613"/></g>
-              </g>
-              <!-- maillot -->
-              <path d="M38 56 q22 -10 44 0 l2 48 h-48 z" fill="url(#kJersey)"/>
-              <path d="M38 80 h46" stroke="#0b7a3d" stroke-width="3" opacity=".5"/>
-              <text x="60" y="92" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="22" fill="#0b4a26">1</text>
-              <!-- tête -->
-              <rect x="54" y="44" width="12" height="10" fill="#e2ad7e"/>
-              <circle cx="60" cy="33" r="15" fill="url(#kSkin)"/>
-              <path d="M45 31 q2 -18 18 -17 q13 1 12 15 q-6 -7 -15 -6 q-9 0 -15 8 z" fill="#3b2414"/>
-              <circle class="k-eye" cx="54.5" cy="35" r="1.8" fill="#1a1a1a"/>
-              <circle class="k-eye" cx="65.5" cy="35" r="1.8" fill="#1a1a1a"/>
-              <path class="k-mouth" d="M55 42 q5 3 10 0" stroke="#7a3b2a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="goal__zones" id="goalZones"></div>
+    </section>
+
+    <!-- ===================== QUIZ ===================== -->
+    <section id="quiz" class="section section--court" data-menu="Jeu, set et quiz">
+      <div class="court-ball" aria-hidden="true"><span>🎾</span></div>
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">08</span><span class="sh__kicker">Jeu décisif</span></div>
+        <h2 class="sh__title">Jeu, set et quiz</h2>
+        <p class="sh__lead">Connais-tu vraiment Arthur ? Chaque bonne réponse marque un point… façon tennis.</p>
+      </header>
+      <div class="quiz">
+        <div class="tscore">
+          <div class="tscore__row"><span>TOI</span><b id="qScore">0</b></div>
+          <div class="tscore__row"><span>ARTHUR</span><b id="qScoreA">0</b></div>
         </div>
-        <div class="pk-spot" aria-hidden="true"></div>
-        <div class="pk-ball-shadow" id="pkShadow" aria-hidden="true"></div>
-        <div class="pk-ball" id="pkBall" aria-hidden="true">⚽</div>
-        <div class="goal__msg" id="pkMsg"></div>
+        <div class="quiz__card" id="quizCard"></div>
       </div>
-      <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
+    </section>
+
+    <!-- ===================== SUPPORTERS ===================== -->
+    <section id="supporters" class="section section--navy" data-menu="Tes supporters">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">09</span><span class="sh__kicker">Les tribunes</span></div>
+        <h2 class="sh__title">Tes supporters</h2>
+        <p class="sh__lead">Ceux qui t'aiment ont un message pour toi.</p>
+      </header>
+      <div class="wall" id="wall"></div>
+    </section>
+
+    <!-- ===================== BOUGIES ===================== -->
+    <section id="bougies" class="section section--party" data-menu="Tes 18 bougies">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">10</span><span class="sh__kicker">Troisième mi-temps</span></div>
+        <h2 class="sh__title">Souffle tes 18 bougies</h2>
+        <p class="sh__lead">Clique sur les bougies une par une… ou souffle pour de vrai dans le micro. Et n'oublie pas de faire un vœu.</p>
+      </header>
+      <div class="cake-zone">
+        <div class="cake" id="cake">
+          <div class="cake__candles" id="candles"></div>
+          <div class="cake__top"></div>
+          <div class="cake__layer cake__layer--1"><span>ARTHUR</span></div>
+          <div class="cake__layer cake__layer--2"><span>18</span></div>
+          <div class="cake__plate"></div>
+        </div>
+        <div class="cake-actions">
+          <button class="btn" id="blowAll">💨 Souffler</button>
+          <button class="btn btn--ghost" id="blowMic">🎤 Souffler dans le micro</button>
+          <button class="btn btn--ghost" id="relight" hidden>🔥 Rallumer</button>
+        </div>
+        <p class="cake-wish" id="cakeWish" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ===================== CADEAU À GRATTER ===================== -->
+    <section id="cadeau" class="section section--gold" data-menu="Ton trophée">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">11</span><span class="sh__kicker">Le trophée</span></div>
+        <h2 class="sh__title">Gratte ton cadeau</h2>
+        <p class="sh__lead">Un ticket gagnant à 100 %. Gratte la zone dorée avec la souris ou le doigt.</p>
+      </header>
+      <div class="ticket">
+        <div class="ticket__side" aria-hidden="true"><span>ADMIT ONE</span><b>18</b></div>
+        <div class="ticket__main">
+          <p class="ticket__top">Ticket gagnant · Tribune d'honneur · Place n°18</p>
+          <div class="scratch" id="scratch">
+            <div class="scratch__prize">
+              <p class="scratch__title" id="giftTitle"></p>
+              <p class="scratch__text" id="giftText"></p>
+            </div>
+            <canvas class="scratch__cover" id="scratchCanvas" aria-label="Zone à gratter"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CASIER N°18 ===================== -->
+    <section id="casier" class="section section--locker" data-menu="Le casier n°18">
+      <header class="sh">
+        <div class="sh__meta"><span class="sh__num">12</span><span class="sh__kicker">Le vestiaire</span></div>
+        <h2 class="sh__title">Le casier n°18</h2>
+        <p class="sh__lead" id="lockerLead">Il est fermé à clé. Il ne s'ouvrira que le 20 décembre 2026, à minuit pile.</p>
+      </header>
+      <div class="locker-zone">
+        <div class="locker" id="locker">
+          <div class="locker__inside">
+            <p class="locker__title" id="lockerTitle"></p>
+            <p class="locker__text" id="lockerText"></p>
+            <span class="locker__jersey" aria-hidden="true">👕</span>
+          </div>
+          <button class="locker__door" id="lockerDoor" aria-label="Ouvrir le casier">
+            <span class="locker__vents" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="locker__plate">18</span>
+            <span class="locker__name">ARTHUR</span>
+            <span class="locker__lock" id="lockerLock" aria-hidden="true">🔒</span>
+            <span class="locker__handle" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p class="locker__count" id="lockerCount"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FINAL ===================== -->
+  <footer class="finale" id="finale" data-menu="Coup de sifflet final">
+    <canvas id="fireworks" aria-hidden="true"></canvas>
+    <div class="finale__content">
+      <p class="finale__kicker">Coup de sifflet final</p>
+      <p class="finale__big">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
+      <p class="finale__sub">20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer.<br />On est fiers de toi.</p>
+      <button class="btn btn--light" id="replayFireworks">🎆 Encore un feu d'artifice</button>
     </div>
-  </section>
-
-  <!-- ===== QUIZ TENNIS ===== -->
-  <section id="quiz" class="section section--court">
-    <div class="court-ball" aria-hidden="true"><span>🎾</span></div>
-    <h2 class="section__title"><span>05</span> Jeu, set et quiz</h2>
-    <p class="section__lead">Connais-tu vraiment Arthur ? Chaque bonne réponse marque un point… façon tennis.</p>
-    <div class="quiz">
-      <div class="tscore">
-        <div class="tscore__row"><span>TOI</span><b id="qScore">0</b></div>
-        <div class="tscore__row"><span>ARTHUR</span><b id="qScoreA">0</b></div>
-      </div>
-      <div class="quiz__card" id="quizCard"></div>
-    </div>
-  </section>
-
-  <!-- ===== GALERIE ===== -->
-  <section id="galerie" class="section">
-    <h2 class="section__title"><span>06</span> Ton vestiaire photo</h2>
-    <p class="section__lead">Tes 18 ans de carrière en images.</p>
-    <div class="gallery" id="gallery"></div>
-  </section>
-
-  <!-- ===== SUPPORTERS ===== -->
-  <section id="supporters" class="section section--dark">
-    <h2 class="section__title"><span>07</span> Tes supporters</h2>
-    <p class="section__lead">Ceux qui t'aiment ont un message pour toi.</p>
-    <div class="wall" id="wall"></div>
-  </section>
-
-  <!-- ===== BOUGIES ===== -->
-  <section id="bougies" class="section section--party">
-    <h2 class="section__title"><span>08</span> Souffle tes 18 bougies</h2>
-    <p class="section__lead">Clique sur les bougies une par une… ou souffle pour de vrai dans le micro. Et n'oublie pas de faire un vœu.</p>
-    <div class="cake-zone">
-      <div class="cake" id="cake">
-        <div class="cake__candles" id="candles"></div>
-        <div class="cake__top"></div>
-        <div class="cake__layer cake__layer--1"><span>ARTHUR</span></div>
-        <div class="cake__layer cake__layer--2"><span>18</span></div>
-        <div class="cake__plate"></div>
-      </div>
-      <div class="cake-actions">
-        <button class="btn" id="blowAll">💨 Souffler</button>
-        <button class="btn btn--ghost" id="blowMic">🎤 Souffler dans le micro</button>
-        <button class="btn btn--ghost" id="relight" hidden>🔥 Rallumer</button>
-      </div>
-      <p class="cake-wish" id="cakeWish" aria-live="polite"></p>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <p class="footer__big">JOYEUX ANNIVERSAIRE ARTHUR</p>
-    <p>20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer. On est fiers de toi.</p>
   </footer>
 
   <div class="lightbox" id="lightbox" hidden>
@@ -245,6 +379,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="js/data.js"></script>
+  <script src="js/sound.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
