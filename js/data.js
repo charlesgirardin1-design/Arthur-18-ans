@@ -119,9 +119,11 @@ window.ARTHUR = {
     texte: "Une surprise t'attend… (texte à compléter)",
   },
 
-  // ---------- LE CASIER N°18 (ne s'ouvre que le 20/12/2026 à minuit) ----------
-  // Pour le tester avant : ajouter ?jourj à la fin de l'adresse du site.
+  // ---------- LE CASIER N°18 ----------
+  // verrouille: true  → fermé à clé jusqu'au 20/12/2026 (test possible avec ?jourj dans l'adresse)
+  // verrouille: false → ouvert dès maintenant (réglage actuel, à remettre sur true plus tard)
   casier: {
+    verrouille: false,
     titre: "Bienvenue chez les majeurs.",
     texte: "Ce message t'attendait depuis longtemps. (texte secret à compléter)",
   },
