@@ -118,6 +118,23 @@ window.SFX = (() => {
     src.start(t); src.stop(t + 1.3);
   }
 
+  /* aboiement de bulldog (« wouf wouf ») */
+  function bark() {
+    if (!on()) return;
+    [0, 0.2].forEach((d, i) => {
+      const t = ctx.currentTime + d;
+      const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+      o.type = "sawtooth"; o.frequency.setValueAtTime(i ? 400 : 470, t); o.frequency.exponentialRampToValueAtTime(170, t + 0.13);
+      f.type = "bandpass"; f.frequency.value = 850; f.Q.value = 1.1;
+      o.connect(f); f.connect(g); g.connect(master); env(g, t, 0.008, 0.35, 0.13);
+      o.start(t); o.stop(t + 0.18);
+      const n = ctx.createBufferSource(), ng = ctx.createGain(), nf = ctx.createBiquadFilter();
+      n.buffer = noiseBuffer(0.2); nf.type = "bandpass"; nf.frequency.value = 1400;
+      n.connect(nf); nf.connect(ng); ng.connect(master); env(ng, t, 0.005, 0.14, 0.08);
+      n.start(t); n.stop(t + 0.12);
+    });
+  }
+
   /* ambiance de stade en fond (boucle douce) */
   function crowdStart() {
     if (!on() || crowd) return;
@@ -145,5 +162,5 @@ window.SFX = (() => {
     if (v) { ensure(); crowdStart(); } else crowdStop();
   }
 
-  return { setEnabled, get enabled() { return enabled; }, whistle, cheer, ooh, kick, pop, fanfare, boom };
+  return { setEnabled, get enabled() { return enabled; }, whistle, cheer, ooh, kick, pop, fanfare, boom, bark };
 })();

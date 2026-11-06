@@ -41,6 +41,28 @@ window.ARTHUR = {
     sports: ["Foot", "Tennis", "Multisport"],
   },
 
+  // ---------- TES PRÉFÉRÉS ----------
+  preferes: {
+    plats: [
+      { illu: "pizza", nom: "Pizza", texte: "La base. Une part, deux parts… on ne compte pas.", prix: "À volonté" },
+      { illu: "pates", nom: "Pâtes", texte: "Le carburant officiel avant chaque match.", prix: "Plein d'énergie" },
+      { illu: "burger", nom: "Burger", texte: "Le trophée du week-end, frites comprises.", prix: "Double cheese" },
+    ],
+    chien: {
+      race: "Le bulldog",
+      texte: "Petite taille, gros caractère et une bouille irrésistible : ta race de chien préférée.",
+      stats: [
+        { label: "Bouille", valeur: 99 },
+        { label: "Câlins", valeur: 96 },
+        { label: "Ronflements", valeur: 94 },
+        { label: "Têtu", valeur: 90 },
+        { label: "Vitesse", valeur: 18 },
+      ],
+      // ce que dit le bulldog quand on clique dessus
+      repliques: ["WOUF !", "Une part de pizza ?", "Allez Paris !", "WOUF WOUF !", "18 ans ? Wouf !", "Burger ce soir ?", "Des pâtes, des pâtes !"],
+    },
+  },
+
   // ---------- TA CARRIÈRE (frise chronologique) ----------
   carriere: [
     { annee: "2008", titre: "Le coup d'envoi", texte: "20 décembre 2008 : tu entres sur le terrain. Premier cri, premier transfert… vers les bras de tes parents.", photo: "" },

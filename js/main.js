@@ -132,6 +132,7 @@
     b.classList.remove("kick"); void b.offsetWidth; b.classList.add("kick");
     SFX.kick();
     setTimeout(() => { confetti(120); SFX.cheer(); toast("GOOOOOAAAAL !"); }, 500);
+    dispatchEvent(new Event("ball-kick"));
   });
 
   $("#flashes").innerHTML = Array.from({ length: 28 }, () =>
@@ -173,7 +174,7 @@
   /* =================================================================
      APPARITION AU DÉFILEMENT
      ================================================================= */
-  const revealEls = $$(".sh, .letter, .card-wrap, .stats-grid, .film, .penalty, .juggle, .wall, .cake-zone, .ticket, .locker-zone");
+  const revealEls = $$(".sh, .letter, .card-wrap, .buvette, .dogcard, .stats-grid, .film, .penalty, .juggle, .wall, .cake-zone, .ticket, .locker-zone");
   revealEls.forEach(el => el.classList.add("reveal"));
   const revealIO = new IntersectionObserver(entries => entries.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add("visible"); revealIO.unobserve(en.target); }
@@ -218,6 +219,78 @@
     });
     card.addEventListener("pointerleave", () => (card.style.transform = ""));
   }
+
+  /* =================================================================
+     TES PRÉFÉRÉS + LE BULLDOG MASCOTTE
+     ================================================================= */
+  (() => {
+    const P = D.preferes;
+    if (!P) return;
+    $("#menuItems").innerHTML = P.plats.map(m => `
+      <article class="dish" tabindex="0">
+        <div class="dish__illu">${FIG.foodSVG(m.illu)}</div>
+        <h3>${m.nom}</h3><p>${m.texte}</p><span class="dish__price">${m.prix}</span>
+      </article>`).join("");
+    $("#dogRace").textContent = P.chien.race;
+    $("#dogText").textContent = P.chien.texte;
+    $("#dogStats").innerHTML = P.chien.stats.map(st => `<div><span>${st.label}</span><i style="--v:${st.valeur}%"></i><b>${st.valeur}</b></div>`).join("");
+    $("#dogcardSvg").innerHTML = FIG.bulldogSVG();
+
+    const dog = $("#bulldog"), bubble = $("#dogBubble"), cball = $("#chaseBall");
+    $("#dogFig").innerHTML = FIG.bulldogSVG();
+    cball.innerHTML = FIG.ballSVG();
+    const lines = P.chien.repliques || ["WOUF !"];
+    let li = 0, busy = false;
+    function bark(el, bub) {
+      el.classList.remove("barking"); void el.offsetWidth; el.classList.add("barking");
+      SFX.bark();
+      if (bub) {
+        bub.textContent = lines[li++ % lines.length];
+        bub.classList.add("show");
+        clearTimeout(bub._t); bub._t = setTimeout(() => bub.classList.remove("show"), 1700);
+      }
+      setTimeout(() => el.classList.remove("barking"), 700);
+    }
+    dog.addEventListener("click", () => { if (!busy) bark(dog, bubble); });
+    $("#dogcardFig").addEventListener("click", () => bark($("#dogcardFig"), $("#dogcardBubble")));
+
+    const run = (el, frames, ms, easing) => el.animate(frames, { duration: ms, easing, fill: "forwards" }).finished;
+    async function trotIn() {
+      dog.classList.add("running");
+      await run(dog, [{ transform: `translateX(${-dog.offsetWidth - 40}px)` }, { transform: "translateX(0)" }], 1400, "cubic-bezier(.2,.8,.3,1)");
+      dog.getAnimations().forEach(a => a.cancel());
+      dog.classList.remove("running");
+    }
+    async function chase() {
+      if (busy || reduceMotion || !document.body.classList.contains("entered")) return;
+      busy = true;
+      const W = innerWidth, start = dog.getBoundingClientRect();
+      cball.style.opacity = "1";
+      const ballRun = cball.animate([
+        { transform: `translateX(${start.right - 10}px) rotate(0deg)` },
+        { transform: `translateX(${W + 80}px) rotate(1260deg)` },
+      ], { duration: 2100, easing: "cubic-bezier(.25,.6,.45,1)", fill: "forwards" });
+      await new Promise(r => setTimeout(r, 260));
+      dog.classList.add("running", "panting");
+      await run(dog, [{ transform: "translateX(0)" }, { transform: `translateX(${W + 40}px)` }], 2300, "cubic-bezier(.45,0,.65,1)");
+      ballRun.cancel(); cball.style.opacity = "0";
+      dog.getAnimations().forEach(a => a.cancel());
+      await trotIn();
+      bark(dog, bubble);
+      setTimeout(() => dog.classList.remove("panting"), 2500);
+      busy = false;
+    }
+    addEventListener("ball-kick", () => setTimeout(chase, 300));
+    // arrivée du bulldog après l'entrée sur le terrain
+    const arrive = () => setTimeout(async () => { if (reduceMotion) return; busy = true; await trotIn(); bark(dog, bubble); busy = false; }, 2600);
+    if (document.body.classList.contains("entered")) arrive();
+    else {
+      const mo = new MutationObserver(() => { if (document.body.classList.contains("entered")) { mo.disconnect(); arrive(); } });
+      mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    }
+    // de temps en temps, il part chercher un ballon
+    setInterval(() => { if (!document.hidden && Math.random() < 0.7) chase(); }, 75000);
+  })();
 
   /* =================================================================
      STATS EN DIRECT (comptage animé puis mise à jour chaque seconde)
