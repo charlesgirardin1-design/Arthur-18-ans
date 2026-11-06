@@ -5,7 +5,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 
 ## Le déroulé (« programme du match »)
 0. **Entrée des joueurs** — intro dans le tunnel, avec ou sans le son (coup de sifflet, ambiance de stade).
-1. **Coup d'envoi** — « ARTHUR 18 », projecteurs qui s'allument, compte à rebours jusqu'au 20/12/2026.
+1. **Coup d'envoi** — maillot de foot floqué « ARTHUR 18 » qui tombe et se balance, projecteurs qui s'allument, compte à rebours jusqu'au 20/12/2026.
 2. **Le mot d'avant-match** — une lettre manuscrite qui s'écrit paragraphe par paragraphe.
 3. **Ta carte de joueur** — carte collector holographique, se retourne au clic.
 4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.

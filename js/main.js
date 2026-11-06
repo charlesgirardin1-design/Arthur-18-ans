@@ -75,7 +75,15 @@
      INTRO : LE TUNNEL
      ================================================================= */
   const intro = $("#intro");
-  $("#heroName").innerHTML = [...$("#heroName").textContent].map((l, i) => `<span style="--i:${i}">${l}</span>`).join("");
+  // maillot du hero : inclinaison 3D qui suit la souris
+  const jersey = $("#jersey");
+  if (!reduceMotion && matchMedia("(hover: hover)").matches) {
+    addEventListener("pointermove", e => {
+      const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+      jersey.style.setProperty("--ry", (x * 16).toFixed(2) + "deg");
+      jersey.style.setProperty("--rx", (-y * 10).toFixed(2) + "deg");
+    }, { passive: true });
+  }
   let entered = false;
   function enter(withSound) {
     if (entered) return; entered = true;
