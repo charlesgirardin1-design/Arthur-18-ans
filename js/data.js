@@ -31,12 +31,12 @@ window.ARTHUR = {
   // ---------- LA CARRIÈRE (frise chronologique) ----------
   // Ajoute / modifie librement. "photo" est optionnelle.
   carriere: [
-    { annee: "2008", titre: "Le coup d'envoi", texte: "20 décembre 2008 : Arthur entre sur le terrain. Premier cri, premier transfert… vers les bras de ses parents.", photo: "" },
-    { annee: "2010", titre: "Premiers dribbles", texte: "À peine debout, déjà en train de shooter dans tout ce qui roule. Les meubles du salon s'en souviennent.", photo: "" },
-    { annee: "2014", titre: "Signature en club", texte: "Premier maillot, premiers crampons, premiers buts (et premières glissades dans la boue).", photo: "" },
-    { annee: "2016", titre: "La raquette entre en jeu", texte: "Découverte du tennis. Coup droit, revers, et une passion qui ne le lâchera plus.", photo: "" },
-    { annee: "2020", titre: "L'athlète complet", texte: "Foot, tennis, et tous les sports qui passent : Arthur ne tient pas en place.", photo: "" },
-    { annee: "2026", titre: "18 ans — Statut de légende", texte: "20 décembre 2026 : la majorité. Le meilleur reste à jouer.", photo: "" },
+    { annee: "2008", titre: "Le coup d'envoi", texte: "20 décembre 2008 : tu entres sur le terrain. Premier cri, premier transfert… vers les bras de tes parents.", photo: "" },
+    { annee: "2010", titre: "Premiers dribbles", texte: "À peine debout, tu shootais déjà dans tout ce qui roule. Les meubles du salon s'en souviennent.", photo: "" },
+    { annee: "2014", titre: "Signature en club", texte: "Ton premier maillot, tes premiers crampons, tes premiers buts (et tes premières glissades dans la boue).", photo: "" },
+    { annee: "2016", titre: "La raquette entre en jeu", texte: "Tu découvres le tennis. Coup droit, revers, et une passion qui ne te lâchera plus.", photo: "" },
+    { annee: "2020", titre: "L'athlète complet", texte: "Foot, tennis, et tous les sports qui passent : tu ne tiens pas en place.", photo: "" },
+    { annee: "2026", titre: "18 ans — Statut de légende", texte: "20 décembre 2026 : ta majorité. Le meilleur reste à jouer.", photo: "" },
   ],
 
   // ---------- QUIZ (scoré comme au tennis : 15, 30, 40, JEU…) ----------
@@ -56,11 +56,10 @@ window.ARTHUR = {
   photos: [],
   nbEmplacementsVides: 8, // nombre de cases "photo à venir" affichées tant qu'il n'y a pas de photos
 
-  // ---------- MESSAGES DES SUPPORTERS ----------
+  // ---------- MESSAGES POUR ARTHUR (famille, amis…) ----------
   messages: [
     { auteur: "La famille", texte: "Joyeux anniversaire champion ! 18 ans, et toujours le plus beau but de notre vie. ❤️" },
     { auteur: "Les potes du foot", texte: "Majeur, vacciné, et toujours pas capable de faire une passe 😂 On t'aime frérot." },
     { auteur: "Le club de tennis", texte: "Que ton année soit pleine d'aces et sans double faute !" },
-    { auteur: "Ton message ici", texte: "Envoie ton petit mot pour qu'il soit ajouté au mur des supporters !" },
-  ],
+      ],
 };

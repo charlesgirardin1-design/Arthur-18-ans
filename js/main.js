@@ -67,8 +67,8 @@
       $("#countdown").classList.add("done");
       const days = Math.floor(-diff / 86400000);
       $("#heroSub").innerHTML = days === 0
-        ? "<strong>C'EST AUJOURD'HUI ! JOYEUX ANNIVERSAIRE ! 🎉</strong>"
-        : `Majeur et vacciné depuis <strong>${fmt.format(days)}</strong> jour${days > 1 ? "s" : ""} 🏆`;
+        ? "<strong>C'EST AUJOURD'HUI ! JOYEUX ANNIVERSAIRE ARTHUR ! 🎉</strong>"
+        : `Tu es majeur depuis <strong>${fmt.format(days)}</strong> jour${days > 1 ? "s" : ""} 🏆`;
       if (!updateCountdown.celebrated) { updateCountdown.celebrated = true; setTimeout(() => confetti(260), 600); }
     }
   }
@@ -85,7 +85,7 @@
   let keys = "";
   const EGGS = {
     psg: () => { confetti(300, ["#0b1640", "#e30613", "#ffffff"]); toast("ALLEZ PARIS ! 🔴🔵"); },
-    arthur: () => { confetti(200, ["#f5c542", "#ffffff"]); toast("Le GOAT 🐐 c'est lui."); },
+    arthur: () => { confetti(200, ["#f5c542", "#ffffff"]); toast("Le GOAT 🐐 c'est toi."); },
     ace: () => { confetti(150, ["#d7ff3a", "#ffffff", "#c8643b"]); toast("ACE ! 🎾 Service gagnant."); },
   };
   addEventListener("keydown", e => {
@@ -199,7 +199,7 @@
   });
   function pkEnd() {
     $$("button", zonesEl).forEach(b => (b.disabled = true));
-    const verdict = goals === 5 ? "5/5, Ballon d'Or direct ! 🏆" : goals >= 3 ? `${goals}/5 — Qualifié ! Arthur est fier de toi.` : `${goals}/5… Arthur aurait fait mieux 😏`;
+    const verdict = goals === 5 ? "5/5, Ballon d'Or direct ! 🏆" : goals >= 3 ? `${goals}/5 — Qualifié, champion !` : `${goals}/5… même les légendes ratent, rejoue ! 😏`;
     toast(verdict);
     if (goals >= 4) confetti(220);
     $("#pkReset").hidden = false;
