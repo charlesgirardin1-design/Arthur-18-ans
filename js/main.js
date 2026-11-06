@@ -234,9 +234,9 @@
     cball.innerHTML = FIG.ballSVG();
     const ballPat = cball.querySelector(".ball-pattern");
     const lines = P.chien.repliques || ["WOUF !"];
-    let li = 0, busy = false;
+    let li = 0, busy = false, chasing = false;
     const small = () => innerWidth < 640;
-    const dog = new DOG.Dog($("#dogCanvas"), { scale: small() ? 0.2 : 0.3, x: -300 });
+    const dog = new DOG.Dog($("#dogCanvas"), { scale: small() ? 0.2 : 0.3, x: -300, mover: dogEl });
     addEventListener("resize", () => dog.setScale(small() ? 0.2 : 0.3));
     const home = () => 8;
     const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -267,8 +267,8 @@
       ballRaf = requestAnimationFrame(ballFollow);
     }
     async function chase() {
-      if (busy || reduceMotion || !document.body.classList.contains("entered")) return;
-      busy = true;
+      if (chasing || reduceMotion || !document.body.classList.contains("entered")) return;
+      chasing = busy = true;
       const W = innerWidth;
       ballX = dog.x + dog.width + 30; cball.style.opacity = "1"; ballFollow();
       bark(); await wait(350);
@@ -276,19 +276,18 @@
       cball.style.opacity = "0"; cancelAnimationFrame(ballRaf); ballX = null;
       dog.x = -dog.width - 60;                 // revient par la gauche
       await wait(600);
-      await dog.moveTo(home(), TROT());
+      await dog.moveTo(home() + Math.random() * innerWidth * 0.4, TROT());
       await wait(250); bark();
-      busy = false;
+      chasing = busy = false;
     }
-    async function stroll() {                  // petite promenade spontanée
-      if (busy || reduceMotion || document.hidden || !document.body.classList.contains("entered")) return;
+    async function stroll() {                  // promenade : il traverse l'écran au pas, s'arrête, repart
+      if (busy || chasing || reduceMotion || document.hidden || !document.body.classList.contains("entered")) return;
       busy = true;
-      const far = Math.min(innerWidth * 0.35, small() ? 140 : 320) * (0.5 + Math.random() * 0.5);
-      await dog.moveTo(home() + far, WALK());
-      await wait(900 + Math.random() * 1200);
-      await dog.moveTo(home(), WALK());
-      dog.face = 1;
-      busy = false;
+      const maxX = Math.max(home(), innerWidth - dog.width - 8);
+      let to = home() + Math.random() * (maxX - home());
+      if (Math.abs(to - dog.x) < innerWidth * 0.2) to = dog.x > maxX / 2 ? home() + Math.random() * maxX * 0.3 : maxX - Math.random() * maxX * 0.3;
+      await dog.moveTo(to, Math.random() < 0.25 ? TROT() : WALK());
+      if (!chasing) busy = false;
     }
     addEventListener("ball-kick", () => setTimeout(chase, 250));
     const arrive = () => setTimeout(async () => {
@@ -301,7 +300,7 @@
       const mo = new MutationObserver(() => { if (document.body.classList.contains("entered")) { mo.disconnect(); arrive(); } });
       mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
     }
-    setInterval(stroll, 17000);
+    setInterval(stroll, 6500);
     setInterval(() => { if (!document.hidden && Math.random() < 0.5) chase(); }, 70000);
   })();
 

@@ -4,11 +4,11 @@
    demi-tour, saut d'aboiement. Le ballon est poussé devant lui.
    ===================================================================== */
 window.DOG = (() => {
-  const RIG = { // repère de la photo source (490 × 299), le chien regarde à gauche
-    w: 490, h: 299,
+  const RIG = { // repère de la photo source, le chien regarde à gauche (pattes prolongées jusqu'aux pieds)
+    w: 490, h: 318,
     legs: {
-      front: { x: 160, y: 193, w: 86, h: 106, px: 204, py: 196 },
-      back:  { x: 385, y: 179, w: 87, h: 102, px: 430, py: 182 },
+      front: { x: 146, y: 193, w: 100, h: 123, px: 204, py: 196 },
+      back:  { x: 371, y: 179, w: 101, h: 137, px: 430, py: 182 },
     },
   };
   const SRC = {
@@ -23,6 +23,7 @@ window.DOG = (() => {
   class Dog {
     constructor(host, opts = {}) {
       this.host = host;
+      this.mover = opts.mover || host;   // élément déplacé à l'écran (le chien + sa bulle)
       this.scale = opts.scale || 0.3;
       this.canvas = document.createElement("canvas");
       this.ctx = this.canvas.getContext("2d");
@@ -84,7 +85,7 @@ window.DOG = (() => {
       const stride = this.speed / (this.scale * 260);
       this.phase += dt * Math.PI * 2 * Math.min(4.6, stride * 1.6);
       this.hop = Math.max(0, this.hop - dt * 2.2);
-      this.host.style.transform = `translateX(${this.x - PAD_X * this.scale}px)`;
+      this.mover.style.transform = `translateX(${this.x - PAD_X * this.scale}px)`;
       if (this.img) this._draw();
       requestAnimationFrame(this._tick);
     }
@@ -102,7 +103,7 @@ window.DOG = (() => {
       ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
       ctx.clearRect(0, 0, this.cw, this.ch);
       // ombre au sol
-      const gy = (PAD_TOP + RIG.h - 4) * s;
+      const gy = (PAD_TOP + RIG.h - 6) * s;
       ctx.save();
       ctx.fillStyle = `rgba(0,0,0,${0.28 - hopY / 400})`;
       ctx.beginPath(); ctx.ellipse(this.cw / 2, gy, RIG.w * 0.38 * s * (1 - hopY / 200), 9 * s + 3, 0, 0, Math.PI * 2); ctx.fill();
