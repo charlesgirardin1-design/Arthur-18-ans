@@ -193,7 +193,7 @@
   $("#cardPos").textContent = c.poste;
   $("#cardStats").innerHTML = c.stats.map(s => `<div><b>${s.valeur}</b><span>${s.label}</span></div>`).join("");
   $("#backSports").textContent = c.sports.join(" · ");
-  if (D.photoProfil) $("#cardPhoto").innerHTML = `<img src="${D.photoProfil}" alt="Arthur" />`;
+  if (D.photoProfil) $("#cardPhoto").innerHTML = `<img src="${D.photoProfil}" alt="Arthur" style="object-position:${D.photoProfilPos || "50% 35%"}" />`;
   const now0 = new Date();
   let age = now0.getFullYear() - birth.getFullYear();
   if (now0 < new Date(now0.getFullYear(), birth.getMonth(), birth.getDate())) age--;
@@ -254,19 +254,24 @@
      ================================================================= */
   const strip = $("#filmStrip");
   const by = birth.getFullYear();
-  strip.innerHTML = D.saisons.map((s, i) => `
-    <button class="frame" data-i="${i}" ${s.src ? "" : 'tabindex="-1"'} aria-label="${s.age} an${s.age > 1 ? "s" : ""}">
+  const ans = a => a === 0 ? "Naissance" : `${a} an${a > 1 ? "s" : ""}`;
+  const saison = a => `Saison ${by + a}-${String((by + a + 1) % 100).padStart(2, "0")}`;
+  const photos = D.saisons.map((s, i) => ({ ...s, _i: i })).sort((x, y) => x.age - y.age || x._i - y._i);
+  const withSrc = photos.filter(p => p.src);
+  strip.innerHTML = photos.map((s, i) => `
+    <button class="frame${s.src ? "" : " frame--empty"}" data-i="${i}" ${s.src ? "" : 'tabindex="-1"'} aria-label="${ans(s.age)}${s.legende ? " — " + s.legende : ""}">
       <div class="frame__img">${s.src
-        ? `<img src="${s.src}" alt="Arthur à ${s.age} an${s.age > 1 ? "s" : ""}" loading="lazy" draggable="false" />`
+        ? `<img src="${s.src}" alt="Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}" loading="lazy" decoding="async" draggable="false" style="object-position:${s.pos || "50% 35%"}" />`
         : `<div class="frame__ph"><b>${s.age}</b>photo à venir</div>`}</div>
-      <div class="frame__meta"><b>${s.age === 0 ? "Naissance" : s.age + " an" + (s.age > 1 ? "s" : "")}</b><span>Saison ${by + s.age}</span></div>
+      <div class="frame__meta"><b>${ans(s.age)}</b><span>${saison(s.age)}</span></div>
       <div class="frame__cap">${s.legende || ""}</div>
     </button>`).join("");
   const frames = $$(".frame", strip);
-  $("#filmAges").innerHTML = D.saisons.map((s, i) => `<button data-i="${i}" aria-label="Aller à ${s.age} ans">${s.age}</button>`).join("");
+  const ages = [...new Set(photos.map(p => p.age))];
+  $("#filmAges").innerHTML = ages.map(a => `<button data-age="${a}" aria-label="Aller à ${ans(a)}">${a}</button>`).join("");
   const ageBtns = $$("#filmAges button");
   const goFrame = i => { const f = frames[i]; if (f) strip.scrollTo({ left: f.offsetLeft - (strip.clientWidth - f.offsetWidth) / 2, behavior: "smooth" }); };
-  $("#filmAges").addEventListener("click", e => { const b = e.target.closest("button"); if (b) goFrame(+b.dataset.i); });
+  $("#filmAges").addEventListener("click", e => { const b = e.target.closest("button"); if (b) goFrame(photos.findIndex(p => p.age === +b.dataset.age)); });
   const step = () => (frames[0]?.offsetWidth || 240) * 2;
   $("#filmPrev").addEventListener("click", () => strip.scrollBy({ left: -step(), behavior: "smooth" }));
   $("#filmNext").addEventListener("click", () => strip.scrollBy({ left: step(), behavior: "smooth" }));
@@ -274,12 +279,13 @@
     const mid = strip.scrollLeft + strip.clientWidth / 2;
     let best = 0, bd = Infinity;
     frames.forEach((f, i) => { const d = Math.abs(f.offsetLeft + f.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } });
-    ageBtns.forEach((b, i) => b.classList.toggle("active", i === best));
+    frames.forEach((f, i) => f.classList.toggle("current", i === best));
+    ageBtns.forEach(b => b.classList.toggle("active", +b.dataset.age === photos[best].age));
   }
   strip.addEventListener("scroll", () => requestAnimationFrame(markActive), { passive: true });
   markActive();
   // glisser à la souris
-  let drag = null;
+  let drag = null, lastDrag = false;
   strip.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; drag = { x: e.clientX, left: strip.scrollLeft, moved: false }; });
   addEventListener("pointermove", e => {
     if (!drag) return;
@@ -287,20 +293,44 @@
     if (Math.abs(dx) > 4) { drag.moved = true; strip.classList.add("dragging"); }
     strip.scrollLeft = drag.left - dx;
   });
-  addEventListener("pointerup", () => { if (drag) { setTimeout(() => strip.classList.remove("dragging"), 0); drag.wasDrag = drag.moved; lastDrag = drag.moved; drag = null; } });
-  let lastDrag = false;
-  // lightbox
-  const lb = $("#lightbox");
+  addEventListener("pointerup", () => { if (drag) { setTimeout(() => strip.classList.remove("dragging"), 0); lastDrag = drag.moved; drag = null; } });
+  // visionneuse plein écran (flèches, clavier, balayage)
+  const lb = $("#lightbox"), lbImg = $("#lightboxImg");
+  let lbIdx = 0;
+  function showPhoto(k) {
+    lbIdx = (k + withSrc.length) % withSrc.length;
+    const s = withSrc[lbIdx];
+    lbImg.classList.remove("in"); void lbImg.offsetWidth;
+    lbImg.src = s.src; lbImg.alt = s.legende || "";
+    lbImg.classList.add("in");
+    $("#lightboxCap").textContent = `${ans(s.age)}${s.legende ? " — " + s.legende : ""}`;
+    $("#lightboxCount").textContent = `${lbIdx + 1} / ${withSrc.length}`;
+  }
   strip.addEventListener("click", e => {
     if (lastDrag) { lastDrag = false; return; }
     const f = e.target.closest(".frame"); if (!f) return;
-    const s = D.saisons[+f.dataset.i]; if (!s.src) return;
-    $("#lightboxImg").src = s.src; $("#lightboxImg").alt = s.legende || "";
-    $("#lightboxCap").textContent = `${s.age} an${s.age > 1 ? "s" : ""}${s.legende ? " — " + s.legende : ""}`;
-    lb.hidden = false;
+    const s = photos[+f.dataset.i]; if (!s.src) return;
+    showPhoto(withSrc.indexOf(s)); lb.hidden = false; document.body.style.overflow = "hidden";
   });
-  lb.addEventListener("click", e => { if (e.target === lb || e.target.closest(".lightbox__close")) lb.hidden = true; });
-  addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
+  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ""; };
+  lb.addEventListener("click", e => {
+    if (e.target.closest(".lightbox__prev")) return showPhoto(lbIdx - 1);
+    if (e.target.closest(".lightbox__next")) return showPhoto(lbIdx + 1);
+    if (e.target === lb || e.target.closest(".lightbox__close")) closeLb();
+  });
+  addEventListener("keydown", e => {
+    if (lb.hidden) return;
+    if (e.key === "Escape") closeLb();
+    if (e.key === "ArrowLeft") showPhoto(lbIdx - 1);
+    if (e.key === "ArrowRight") showPhoto(lbIdx + 1);
+  });
+  let touchX = null;
+  lb.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener("touchend", e => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+    if (Math.abs(dx) > 50) showPhoto(lbIdx + (dx < 0 ? 1 : -1));
+  });
 
   /* =================================================================
      TIRS AU BUT — tireur (Arthur) + gardien articulés

@@ -10,7 +10,8 @@ window.ARTHUR = {
   naissance: "2008-12-20T00:00:00+01:00",
 
   // Photo principale (carte joueur). Ex : "images/arthur.jpg" — laisse vide en attendant.
-  photoProfil: "",
+  photoProfil: "images/galerie/arthur-13-parc-des-princes.jpg",
+  photoProfilPos: "50% 62%",
 
   // ---------- LA LETTRE (juste après l'accueil) ----------
   // ⚠️ Texte d'exemple : remplace-le par tes vrais mots.
@@ -46,32 +47,36 @@ window.ARTHUR = {
     { annee: "2010", titre: "Premiers dribbles", texte: "À peine debout, tu shootais déjà dans tout ce qui roule. Les meubles du salon s'en souviennent.", photo: "" },
     { annee: "2014", titre: "Signature en club", texte: "Ton premier maillot, tes premiers crampons, tes premiers buts (et tes premières glissades dans la boue).", photo: "" },
     { annee: "2016", titre: "La raquette entre en jeu", texte: "Tu découvres le tennis. Coup droit, revers, et une passion qui ne te lâchera plus.", photo: "" },
-    { annee: "2020", titre: "L'athlète complet", texte: "Foot, tennis, et tous les sports qui passent : tu ne tiens pas en place.", photo: "" },
-    { annee: "2026", titre: "18 ans — Statut de légende", texte: "20 décembre 2026 : ta majorité. Le meilleur reste à jouer.", photo: "" },
+    { annee: "2020", titre: "L'athlète complet", texte: "Foot, tennis, ski nautique, plongée et tous les sports qui passent : tu ne tiens pas en place.", photo: "images/galerie/arthur-11-ski-nautique.jpg" },
+    { annee: "2026", titre: "18 ans — Statut de légende", texte: "20 décembre 2026 : ta majorité. Le meilleur reste à jouer.", photo: "images/galerie/arthur-17-bateau.jpg" },
   ],
 
-  // ---------- TA VIE EN 18 SAISONS (une photo par âge, de 0 à 18 ans) ----------
-  // Mets le chemin de la photo dans "src", ex. "images/galerie/age-05.jpg"
+  // ---------- TA VIE EN 18 SAISONS (photos classées par âge) ----------
+  // Plusieurs photos par âge possibles. Pour en ajouter : déposer le fichier dans images/galerie/
+  // puis ajouter une ligne { age, src, legende, pos } (pos = cadrage, ex. "50% 30%").
+  // Une ligne sans src affiche une case « photo à venir ».
   saisons: [
-    { age: 0, src: "", legende: "Le tout premier match" },
-    { age: 1, src: "", legende: "" },
-    { age: 2, src: "", legende: "" },
-    { age: 3, src: "", legende: "" },
-    { age: 4, src: "", legende: "" },
-    { age: 5, src: "", legende: "" },
-    { age: 6, src: "", legende: "" },
-    { age: 7, src: "", legende: "" },
-    { age: 8, src: "", legende: "" },
-    { age: 9, src: "", legende: "" },
-    { age: 10, src: "", legende: "" },
-    { age: 11, src: "", legende: "" },
-    { age: 12, src: "", legende: "" },
-    { age: 13, src: "", legende: "" },
-    { age: 14, src: "", legende: "" },
-    { age: 15, src: "", legende: "" },
-    { age: 16, src: "", legende: "" },
-    { age: 17, src: "", legende: "" },
-    { age: 18, src: "", legende: "La majorité !" },
+    { age: 9, src: "images/galerie/arthur-09-guitare.jpg", legende: "Premiers accords", pos: "50% 30%" },
+    { age: 10, src: "images/galerie/arthur-10-diner.jpg", legende: "Le dîner aux chandelles, menu fait main", pos: "60% 45%" },
+    { age: 10, src: "images/galerie/arthur-10-peignoir.jpg", legende: "Version palace", pos: "50% 30%" },
+    { age: 11, src: "images/galerie/arthur-11-ski-nautique.jpg", legende: "Prêt pour le ski nautique", pos: "50% 40%" },
+    { age: 11, src: "images/galerie/arthur-11-musee.jpg", legende: "Même pose que la statue", pos: "50% 55%" },
+    { age: 11, src: "images/galerie/arthur-11-jardin-japonais.jpg", legende: "Équilibre parfait", pos: "45% 45%" },
+    { age: 12, src: "images/galerie/arthur-12-venise.jpg", legende: "Venise, maillot de Paris sur le dos", pos: "50% 40%" },
+    { age: 12, src: "images/galerie/arthur-12-piscine.jpg", legende: "Le roi de la piscine", pos: "45% 40%" },
+    { age: 12, src: "images/galerie/arthur-12-plongee.jpg", legende: "Baptême de plongée", pos: "70% 35%" },
+    { age: 12, src: "images/galerie/arthur-12-velo.jpg", legende: "En selle dans Paris", pos: "60% 50%" },
+    { age: 12, src: "images/galerie/arthur-12-rencontre.jpg", legende: "Belle rencontre", pos: "40% 35%" },
+    { age: 13, src: "images/galerie/arthur-13-salle-de-sport.jpg", legende: "Les biceps du champion", pos: "50% 45%" },
+    { age: 13, src: "images/galerie/arthur-13-glace.jpg", legende: "Ray-Ban et glace à la fraise", pos: "50% 40%" },
+    { age: 13, src: "images/galerie/arthur-13-parc-des-princes.jpg", legende: "Au Parc, avec bonnet et écharpe", pos: "50% 45%" },
+    { age: 14, src: "images/galerie/arthur-14-terrasse.jpg", legende: "Pause en terrasse", pos: "50% 30%" },
+    { age: 15, src: "images/galerie/arthur-15-lego.jpg", legende: "Poudlard en kit", pos: "35% 45%" },
+    { age: 16, src: "images/galerie/arthur-16-paintball.jpg", legende: "Mode commando : paintball", pos: "45% 30%" },
+    { age: 16, src: "images/galerie/arthur-16-jardinage.jpg", legende: "Bûcheron d'un jour", pos: "40% 35%" },
+    { age: 17, src: "images/galerie/arthur-17-pizza.jpg", legende: "Pizza du soir", pos: "50% 45%" },
+    { age: 17, src: "images/galerie/arthur-17-bateau.jpg", legende: "Capitaine Arthur", pos: "70% 45%" },
+    { age: 18, src: "", legende: "La majorité : photo du 20 décembre !" },
   ],
 
   // ---------- MESSAGES POUR ARTHUR (famille, amis…) ----------

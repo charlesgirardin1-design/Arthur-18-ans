@@ -165,7 +165,7 @@
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">05</span><span class="sh__kicker">Les archives</span></div>
         <h2 class="sh__title">Ta vie en 18 saisons</h2>
-        <p class="sh__lead">Une photo par année, de ton tout premier jour jusqu'à aujourd'hui. Fais défiler la pellicule.</p>
+        <p class="sh__lead">Tes années en photos, classées par âge. Fais défiler la pellicule, clique sur une photo pour l'agrandir.</p>
       </header>
       <div class="film">
         <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes">‹</button>
@@ -333,10 +333,11 @@
     </div>
   </footer>
 
-  <div class="lightbox" id="lightbox" hidden>
-    <button class="lightbox__close" aria-label="Fermer">×</button>
-    <img alt="" id="lightboxImg" />
-    <p id="lightboxCap"></p>
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Photo" hidden>
+    <button class="lightbox__close" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="lightbox__nav lightbox__prev" aria-label="Photo précédente"><svg class="ico" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <figure class="lightbox__fig"><img alt="" id="lightboxImg" /><figcaption><span id="lightboxCap"></span><small id="lightboxCount"></small></figcaption></figure>
+    <button class="lightbox__nav lightbox__next" aria-label="Photo suivante"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
   <div class="toast" id="toast" role="status"></div>
 
