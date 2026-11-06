@@ -62,10 +62,13 @@
   const soundBtn = $("#soundToggle");
   function setSound(v) {
     SFX.setEnabled(v);
-    soundBtn.textContent = v ? "🔊" : "🔇";
+    soundBtn.innerHTML = v
+      ? '<svg class="ico" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>'
+      : '<svg class="ico" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
     soundBtn.setAttribute("aria-pressed", String(v));
     soundBtn.setAttribute("aria-label", v ? "Couper le son" : "Activer le son");
   }
+  setSound(false);
   soundBtn.addEventListener("click", () => { setSound(!SFX.enabled); if (SFX.enabled) SFX.whistle(); });
 
   /* =================================================================
@@ -109,23 +112,24 @@
       $("#countdown").classList.add("done");
       const days = Math.floor(-diff / 86400000);
       $("#heroSub").innerHTML = days === 0
-        ? "<strong>C'EST AUJOURD'HUI ! JOYEUX ANNIVERSAIRE ARTHUR ! 🎉</strong>"
-        : `Tu es majeur depuis <strong>${fmt.format(days)}</strong> jour${days > 1 ? "s" : ""} 🏆`;
+        ? "<strong>C'EST AUJOURD'HUI ! JOYEUX ANNIVERSAIRE ARTHUR !</strong>"
+        : `Tu es majeur depuis <strong>${fmt.format(days)}</strong> jour${days > 1 ? "s" : ""}`;
     }
   }
   updateCountdown(); setInterval(updateCountdown, 1000);
 
+  $("#heroBallInner").innerHTML = FIG.ballSVG();
   $("#heroBall").addEventListener("click", e => {
     const b = e.currentTarget;
     b.classList.remove("kick"); void b.offsetWidth; b.classList.add("kick");
     SFX.kick();
-    setTimeout(() => { confetti(120); SFX.cheer(); toast("GOOOOOAAAAL ! ⚽"); }, 450);
+    setTimeout(() => { confetti(120); SFX.cheer(); toast("GOOOOOAAAAL !"); }, 500);
   });
 
   $("#flashes").innerHTML = Array.from({ length: 28 }, () =>
     `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;--d:${(3 + Math.random() * 5).toFixed(1)}s;--delay:-${(Math.random() * 8).toFixed(1)}s"></i>`).join("");
-  const tickerItems = ["JOYEUX ANNIVERSAIRE ARTHUR", "⚽", "18 ANS", "🎾", "20.12.2008", "🔴🔵", "LE MEILLEUR RESTE À JOUER", "🏆"];
-  const tk = tickerItems.map(t => `<span>${t}</span>`).join("");
+  const tickerItems = ["JOYEUX ANNIVERSAIRE ARTHUR", "18 ANS", "20.12.2008", "ALLEZ PARIS", "LE MEILLEUR RESTE À JOUER", "FOOT · TENNIS · MULTISPORT"];
+  const tk = tickerItems.map(t => `<span>${t}</span><span class="ticker__dot">●</span>`).join("");
   $("#ticker").innerHTML = tk + tk;
 
   /* =================================================================
@@ -133,9 +137,9 @@
      ================================================================= */
   let keys = "";
   const EGGS = {
-    psg: () => { confetti(300, ["#0b1640", "#e30613", "#ffffff"]); SFX.cheer(); toast("ALLEZ PARIS ! 🔴🔵"); },
-    arthur: () => { confetti(200, ["#f5c542", "#ffffff"]); SFX.fanfare(); toast("Le GOAT 🐐 c'est toi."); },
-    ace: () => { confetti(150, ["#d7ff3a", "#ffffff", "#c8643b"]); SFX.kick(2); toast("ACE ! 🎾 Service gagnant."); },
+    psg: () => { confetti(300, ["#0b1640", "#e30613", "#ffffff"]); SFX.cheer(); toast("ALLEZ PARIS !"); },
+    arthur: () => { confetti(200, ["#f5c542", "#ffffff"]); SFX.fanfare(); toast("Le GOAT, c'est toi."); },
+    ace: () => { confetti(150, ["#d7ff3a", "#ffffff", "#c8643b"]); SFX.kick(2); toast("ACE ! Service gagnant."); },
   };
   addEventListener("keydown", e => {
     if (e.target.matches("input, textarea")) return;
@@ -161,7 +165,7 @@
   /* =================================================================
      APPARITION AU DÉFILEMENT
      ================================================================= */
-  const revealEls = $$(".sh, .letter, .card-wrap, .stats-grid, .film, .penalty, .juggle, .quiz, .wall, .cake-zone, .ticket, .locker-zone");
+  const revealEls = $$(".sh, .letter, .card-wrap, .stats-grid, .film, .penalty, .juggle, .wall, .cake-zone, .ticket, .locker-zone");
   revealEls.forEach(el => el.classList.add("reveal"));
   const revealIO = new IntersectionObserver(entries => entries.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add("visible"); revealIO.unobserve(en.target); }
@@ -299,83 +303,150 @@
   addEventListener("keydown", e => { if (e.key === "Escape") lb.hidden = true; });
 
   /* =================================================================
-     TIRS AU BUT
+     TIRS AU BUT — tireur (Arthur) + gardien articulés
      ================================================================= */
   const TOTAL = 5;
-  const scene = $("#pkScene"), zonesEl = $("#goalZones"), keeper = $("#keeper"), pkBall = $("#pkBall"),
-        pkShadow = $("#pkShadow"), pkMsg = $("#pkMsg"), net = $("#goalNet");
-  let shots = 0, goals = 0, busy = false;
+  const scene = $("#pkScene"), world = $("#pkWorld"), zonesEl = $("#goalZones"), keeper = $("#keeper"), kicker = $("#kicker"),
+        pkBall = $("#pkBall"), pkShadow = $("#pkShadow"), banner = $("#pkMsg"), net = $("#goalNet"), ripple = $("#netRipple");
+  const keeperFig = new FIG.Figure($("#keeperFig"), "keeper");
+  const kickerFig = new FIG.Figure(kicker, "kicker");
+  pkBall.innerHTML = FIG.ballSVG();
+  const pkPattern = pkBall.querySelector(".ball-pattern");
+  $("#pkFlashes").innerHTML = Array.from({ length: 26 }, () =>
+    `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 90).toFixed(1)}%;--delay:${(Math.random() * .8).toFixed(2)}s"></i>`).join("");
+  const KICK_START = "translate(-62%, 3%) scale(1.05)";
+  kicker.style.transform = KICK_START;
+  let shots = 0, goals = 0, busy = false, breathT = null;
   zonesEl.innerHTML = Array.from({ length: 6 }, (_, i) => `<button data-z="${i}" aria-label="Tirer ${i < 3 ? "en haut" : "en bas"} ${["à gauche", "au centre", "à droite"][i % 3]}"></button>`).join("");
   $("#pkDots").innerHTML = "<i></i>".repeat(TOTAL);
-  keeper.classList.add("idle");
+  const wait = ms => new Promise(res => setTimeout(res, ms));
   const anim = (el, frames, opts) => el.animate(frames, { fill: "forwards", ...opts }).finished;
-  function bigMsg(el, text, alt) {
-    el.textContent = text; el.classList.toggle("alt", !!alt); el.classList.add("show");
-    setTimeout(() => el.classList.remove("show"), 1200);
+
+  function keeperIdle() {
+    keeper.classList.add("idle");
+    clearInterval(breathT);
+    let b = false;
+    breathT = setInterval(() => { if (!busy) { b = !b; keeperFig.to(b ? "readyB" : "ready", 900, FIG.easeInOut); } }, 950);
+  }
+  keeperIdle();
+  function showBanner(title, sub, alt) {
+    banner.querySelector("b").textContent = title;
+    banner.querySelector("small").textContent = sub;
+    banner.classList.toggle("alt", !!alt);
+    banner.classList.add("show");
+    setTimeout(() => banner.classList.remove("show"), 1500);
   }
 
   zonesEl.addEventListener("click", async e => {
     const btn = e.target.closest("button");
     if (!btn || busy || shots >= TOTAL) return;
     busy = true;
+    $$("button", zonesEl).forEach(b => (b.disabled = true));
     const z = +btn.dataset.z, col = z % 3, row = z < 3 ? 0 : 1;
     const kCol = (Math.random() * 3) | 0, kRow = Math.random() < 0.5 ? 0 : 1;
     const saved = kCol === col && (kRow === row || Math.random() < 0.5);
-    const sR = scene.getBoundingClientRect(), bR = btn.getBoundingClientRect(), ballR = pkBall.getBoundingClientRect();
-    const tx = bR.left + bR.width * (col === 0 ? 0.4 : col === 2 ? 0.6 : 0.5) - (ballR.left + ballR.width / 2);
-    const ty = bR.top + bR.height * 0.5 - (ballR.top + ballR.height / 2);
-    const gR = $("#goal").getBoundingClientRect();
+
+    // géométrie mesurée avant le zoom caméra
+    const sR = scene.getBoundingClientRect(), bR = btn.getBoundingClientRect(), ballR = pkBall.getBoundingClientRect(), gR = $("#goal").getBoundingClientRect();
+    const tx = bR.left + bR.width * (col === 0 ? 0.42 : col === 2 ? 0.58 : 0.5) - (ballR.left + ballR.width / 2);
+    const ty = bR.top + bR.height * (row === 0 ? 0.42 : 0.55) - (ballR.top + ballR.height / 2);
+
+    // 1) course d'élan d'Arthur
+    SFX.whistle();
+    await wait(350);
+    const runAnim = kicker.animate([{ transform: KICK_START }, { transform: "translate(0,0) scale(1)" }], { duration: 640, easing: "cubic-bezier(.45,0,.75,1)", fill: "forwards" });
+    let running = true;
+    (async () => { let i = 0; while (running) await kickerFig.to(i++ % 2 ? "run2" : "run1", 160, FIG.easeInOut); })();
+    await runAnim.finished; running = false;
+    keeperFig.to("crouch", 160);                       // le gardien se ramasse
+    await kickerFig.to("windup", 120);
+    world.classList.add("zoom");
+    await kickerFig.to("kick", 85, t => t);
     SFX.kick();
+
+    // 2) le gardien plonge
     setTimeout(() => {
-      keeper.classList.remove("idle"); keeper.classList.add("dive");
-      const dx = (kCol - 1) * gR.width * 0.3;
-      const rot = kCol === 0 ? -68 : kCol === 2 ? 68 : 0;
-      const dy = kRow === 0 ? -gR.height * (kCol === 1 ? 0.1 : 0.12) : (kCol === 1 ? gR.height * 0.04 : 0);
-      keeper.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
-    }, 120);
-    const curve = (Math.random() - 0.5) * 60, flight = 520;
-    anim(pkShadow, [{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${tx}px, ${ty * 0.15}px) scale(.5)`, opacity: .3 }], { duration: flight, easing: "ease-out" });
+      keeper.classList.remove("idle");
+      const side = kCol - 1;
+      if (side === 0) {
+        if (kRow === 0) { keeperFig.to("jump", 260); keeper.style.transform = `translateY(${-gR.height * 0.17}px)`; }
+        else keeperFig.to("low", 220);
+      } else {
+        keeperFig.to("stretch", 300);
+        const rot = side * (kRow === 0 ? 70 : 84);
+        const dy = kRow === 0 ? -gR.height * 0.2 : gR.height * 0.08;
+        keeper.style.transform = `translate(${side * gR.width * 0.3}px, ${dy}px) rotate(${rot}deg)`;
+      }
+    }, 60);
+
+    // 3) le ballon part en courbe, avec effet
+    const curve = (Math.random() - 0.5) * sR.width * 0.08, flight = 560;
+    pkBall.classList.add("flying");
+    pkPattern.animate([{ transform: "rotate(0)" }, { transform: `rotate(${col === 0 ? -900 : 900}deg)` }], { duration: flight, easing: "ease-out", fill: "forwards" });
+    anim(pkShadow, [{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${tx}px, ${ty * 0.18}px) scale(.45)`, opacity: .25 }], { duration: flight, easing: "ease-out" });
     await anim(pkBall, [
-      { transform: "translate(0,0) scale(1) rotate(0)" },
-      { transform: `translate(${tx * 0.5 + curve}px, ${ty * 0.55 - 30}px) scale(.8) rotate(300deg)`, offset: 0.5 },
-      { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
-    ], { duration: flight, easing: "cubic-bezier(.25,.6,.4,1)" });
+      { transform: "translate(0,0) scale(1)" },
+      { transform: `translate(${tx * 0.45 + curve}px, ${ty * 0.6 - sR.height * 0.04}px) scale(.78)`, offset: 0.5 },
+      { transform: `translate(${tx}px, ${ty}px) scale(.56)` },
+    ], { duration: flight, easing: "cubic-bezier(.22,.6,.36,1)" });
+    pkBall.classList.remove("flying");
 
     shots++;
     const dot = $$("#pkDots i")[shots - 1];
     if (saved) {
-      dot.classList.add("ko"); bigMsg(pkMsg, "ARRÊTÉ ! 🧤", true); SFX.ooh();
+      dot.classList.add("ko"); SFX.ooh();
+      showBanner("ARRÊT !", "Le gardien sort le grand jeu", true);
       const away = col === 1 ? (Math.random() < .5 ? -1 : 1) : (col === 0 ? -1 : 1);
       anim(pkBall, [
-        { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
-        { transform: `translate(${tx + away * sR.width * 0.35}px, ${ty + sR.height * 0.35}px) scale(.8) rotate(200deg)`, opacity: 0 },
-      ], { duration: 650, easing: "ease-out" });
+        { transform: `translate(${tx}px, ${ty}px) scale(.56)` },
+        { transform: `translate(${tx + away * sR.width * 0.32}px, ${ty - sR.height * 0.12}px) scale(.62)`, offset: .45 },
+        { transform: `translate(${tx + away * sR.width * 0.5}px, ${ty + sR.height * 0.25}px) scale(.7)`, opacity: 0 },
+      ], { duration: 800, easing: "ease-out" });
     } else {
-      goals++; dot.classList.add("ok"); bigMsg(pkMsg, "BUUUT ! ⚽"); SFX.cheer();
+      goals++; dot.classList.add("ok"); SFX.cheer();
+      showBanner("BUUUT !", `Arthur · tir n°${shots} · ${goals} but${goals > 1 ? "s" : ""}`);
+      const gx = bR.left + bR.width / 2 - gR.left, gy = bR.top + bR.height / 2 - gR.top;
+      ripple.style.left = gx + "px"; ripple.style.top = gy + "px";
+      ripple.classList.remove("go"); void ripple.offsetWidth; ripple.classList.add("go");
       net.classList.remove("hit"); void net.offsetWidth; net.classList.add("hit");
-      scene.classList.add("shake", "roar"); confetti(70);
+      scene.classList.add("shake", "roar"); confetti(80);
       anim(pkBall, [
-        { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
-        { transform: `translate(${tx * 1.04}px, ${ty * 0.9}px) scale(.5) rotate(640deg)` },
-      ], { duration: 300, easing: "ease-out" });
+        { transform: `translate(${tx}px, ${ty}px) scale(.56)` },
+        { transform: `translate(${tx * 1.02}px, ${ty * 0.94}px) scale(.5)`, offset: .3 },
+        { transform: `translate(${tx * 1.02}px, ${gR.bottom - ballR.top - ballR.height * .6}px) scale(.5)` },
+      ], { duration: 700, easing: "cubic-bezier(.3,0,.7,1)" });
     }
+    // le gardien retombe
+    setTimeout(() => {
+      if (kCol !== 1 && kRow === 0) { keeper.classList.add("fall"); keeper.style.transform = keeper.style.transform.replace(/translate\(([^,]+), [^)]+\)/, `translate($1, ${gR.height * 0.1}px)`); }
+      if (kCol === 1 && kRow === 0) { keeper.classList.add("fall"); keeper.style.transform = "translateY(0)"; keeperFig.to("ready", 400); }
+    }, 260);
+
     $("#pkShots").textContent = `${shots}/${TOTAL}`;
     $("#pkGoals").textContent = goals;
-    setTimeout(() => {
-      scene.classList.remove("shake", "roar");
-      keeper.classList.remove("dive"); keeper.style.transform = ""; keeper.classList.add("idle");
-      pkBall.getAnimations().forEach(a => a.cancel()); pkShadow.getAnimations().forEach(a => a.cancel());
-      anim(pkBall, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 250 });
-      busy = false;
-      if (shots >= TOTAL) pkEnd();
-    }, 1500);
+    await wait(1700);
+
+    // 4) remise en place
+    scene.classList.remove("shake", "roar");
+    world.classList.remove("zoom");
+    keeper.classList.remove("fall"); keeper.classList.add("reset"); keeper.style.transform = "";
+    keeperFig.to("ready", 450);
+    await anim(kicker, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 });
+    kicker.getAnimations().forEach(a => a.cancel());
+    kicker.style.transform = KICK_START; kickerFig.set("stand");
+    [pkBall, pkShadow, pkPattern].forEach(el => el.getAnimations().forEach(a => a.cancel()));
+    anim(pkBall, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
+    anim(kicker, [{ opacity: 0 }, { opacity: 1 }], { duration: 350 });
+    await wait(450);
+    keeper.classList.remove("reset"); keeperIdle();
+    busy = false;
+    if (shots >= TOTAL) pkEnd(); else $$("button", zonesEl).forEach(b => (b.disabled = false));
   });
   function pkEnd() {
     $$("button", zonesEl).forEach(b => (b.disabled = true));
-    const verdict = goals === 5 ? "5/5, Ballon d'Or direct ! 🏆" : goals >= 3 ? `${goals}/5 — Qualifié, champion !` : `${goals}/5… même les légendes ratent, rejoue ! 😏`;
+    const verdict = goals === 5 ? "5/5 — Ballon d'Or direct !" : goals >= 3 ? `${goals}/5 — Qualifié, champion !` : `${goals}/5… même les légendes ratent. Rejoue !`;
     toast(verdict);
     if (goals >= 4) { confetti(220); SFX.fanfare(); }
-    if (goals >= 3) keeper.classList.add("sad");
     $("#pkReset").hidden = false;
   }
   $("#pkReset").addEventListener("click", () => {
@@ -383,7 +454,7 @@
     $("#pkShots").textContent = `0/${TOTAL}`; $("#pkGoals").textContent = "0";
     $$("#pkDots i").forEach(d => (d.className = ""));
     $$("button", zonesEl).forEach(b => (b.disabled = false));
-    keeper.classList.remove("sad"); $("#pkReset").hidden = true;
+    $("#pkReset").hidden = true;
     SFX.whistle();
   });
 
@@ -395,8 +466,11 @@
     const overlay = $("#jgOverlay"), text = $("#jgText"), startBtn = $("#jgStart");
     let W = 0, H = 0, dpr = 1, running = false, visible = false, raf = null, last = 0;
     let score = 0, best = +(store.get("arthur-jongles") || 0);
-    const ball = { x: 0, y: 0, vx: 0, vy: 0, r: 30, rot: 0, vr: 0 };
-    let parts = [], popups = [];
+    const ball = { x: 0, y: 0, vx: 0, vy: 0, r: 30, rot: 0, vr: 0, sq: 0 };
+    let parts = [], popups = [], rings = [], trail = [];
+    const svgImg = svg => { const im = new Image(); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg); return im; };
+    const imgPattern = svgImg(FIG.ballSVG({ part: "pattern", size: 200 }));
+    const imgShade = svgImg(FIG.ballSVG({ part: "shade", size: 200 }));
     $("#jgBest").textContent = best;
     const ground = () => H * 0.82;
 
@@ -420,9 +494,9 @@
       const record = score > best;
       if (record) { best = score; store.set("arthur-jongles", best); $("#jgBest").textContent = best; }
       text.textContent = score >= 18
-        ? `${score} jongles ! ${record ? "Nouveau record 🏆" : "Digne de tes 18 ans 🔥"}`
+        ? `${score} jongles ! ${record ? "Nouveau record !" : "Digne de tes 18 ans."}`
         : `${score} jongle${score > 1 ? "s" : ""}… ${record ? "nouveau record !" : "encore un effort !"}`;
-      startBtn.textContent = "↻ Rejouer";
+      startBtn.querySelector("span").textContent = "Rejouer";
       overlay.classList.remove("hidden");
       if (record && score > 0) { confetti(160); SFX.fanfare(); } else SFX.ooh();
     }
@@ -432,10 +506,11 @@
       ball.vy = -Math.sqrt(2 * g * H * (0.42 + Math.random() * 0.12));
       ball.vx = (dx / ball.r) * W * 0.32 + (Math.random() - 0.5) * W * 0.1;
       ball.vr = ball.vx / ball.r;
+      ball.sq = 0.22; rings.push({ x: px, y: py, life: 1 });
       score++; $("#jgScore").textContent = score;
       SFX.kick(1 + Math.min(score, 30) * 0.02);
       for (let i = 0; i < 10; i++) parts.push({ x: px, y: py, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 260, life: 1 });
-      const milestones = { 10: "10 ! 🔥", 18: "18 JONGLES = 18 ANS ! 🎂", 30: "30 ! Freestyle 🤯", 50: "50 !!! Ballon d'Or 🏆" };
+      const milestones = { 10: "10 JONGLES !", 18: "18 JONGLES = 18 ANS !", 30: "30 ! FREESTYLE", 50: "50 ! BALLON D'OR" };
       if (milestones[score]) { popups.push({ t: milestones[score], life: 1.6 }); if (score === 18) { confetti(200); SFX.cheer(); } }
       else popups.push({ t: "+1", life: 0.7, x: px, y: py });
     }
@@ -459,6 +534,9 @@
         ball.y = ground() - ball.r - Math.abs(Math.sin(performance.now() / 300)) * H * 0.06;
         ball.rot += dt * 1.5;
       }
+      ball.sq *= Math.pow(0.002, dt);
+      trail.push([ball.x, ball.y]); if (trail.length > 6) trail.shift();
+      rings.forEach(r => (r.life -= dt * 2.2)); rings = rings.filter(r => r.life > 0);
       parts.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 600 * dt; p.life -= dt * 1.8; });
       parts = parts.filter(p => p.life > 0);
       popups.forEach(p => (p.life -= dt)); popups = popups.filter(p => p.life > 0);
@@ -491,9 +569,18 @@
       // particules
       parts.forEach(p => { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = "#cfffb0"; ctx.fillRect(p.x, p.y, 3, 3); });
       ctx.globalAlpha = 1;
-      // ballon
-      ctx.save(); ctx.translate(ball.x, ball.y); ctx.rotate(ball.rot);
-      ctx.font = `${ball.r * 2}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("⚽", 0, ball.r * 0.08);
+      // anneaux d'impact
+      rings.forEach(r => { ctx.globalAlpha = r.life * 0.8; ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(r.x, r.y, ball.r * (1.6 - r.life * 0.6) * 1.2, 0, Math.PI * 2); ctx.stroke(); });
+      ctx.globalAlpha = 1;
+      // traînée (flou de mouvement)
+      if (running) trail.forEach((t, i) => { ctx.globalAlpha = 0.05 * i; ctx.drawImage(imgShade, t[0] - ball.r, t[1] - ball.r, ball.r * 2, ball.r * 2); });
+      ctx.globalAlpha = 1;
+      // ballon : motif qui tourne + ombrage fixe + écrasement à l'impact
+      ctx.save(); ctx.translate(ball.x, ball.y); ctx.scale(1 + ball.sq * 0.6, 1 - ball.sq);
+      ctx.save(); ctx.rotate(ball.rot);
+      if (imgPattern.complete) ctx.drawImage(imgPattern, -ball.r, -ball.r, ball.r * 2, ball.r * 2);
+      ctx.restore();
+      if (imgShade.complete) ctx.drawImage(imgShade, -ball.r, -ball.r, ball.r * 2, ball.r * 2);
       ctx.restore();
       // messages
       popups.forEach(p => {
@@ -514,44 +601,6 @@
     }
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) loop(); }).observe(cv);
   })();
-
-  /* =================================================================
-     QUIZ TENNIS
-     ================================================================= */
-  const POINTS = ["0", "15", "30", "40", "JEU", "SET", "MATCH"];
-  let qi = 0, qOk = 0, qKo = 0;
-  const quizCard = $("#quizCard");
-  const tennisScore = n => POINTS[Math.min(n, POINTS.length - 1)];
-  function renderQuestion() {
-    $("#qScore").textContent = tennisScore(qOk);
-    $("#qScoreA").textContent = tennisScore(qKo);
-    if (qi >= D.quiz.length) return renderQuizEnd();
-    const q = D.quiz[qi];
-    quizCard.innerHTML = `
-      <div class="quiz__num">Question ${qi + 1} / ${D.quiz.length}</div>
-      <p class="quiz__q">${q.q}</p>
-      <div class="quiz__choices">${q.choix.map((ch, i) => `<button data-i="${i}">${ch}</button>`).join("")}</div>`;
-  }
-  quizCard.addEventListener("click", e => {
-    const btn = e.target.closest(".quiz__choices button");
-    if (btn) {
-      const q = D.quiz[qi], i = +btn.dataset.i;
-      $$(".quiz__choices button", quizCard).forEach(b => (b.disabled = true));
-      if (i === q.bonne) { qOk++; btn.classList.add("ok"); confetti(40, ["#d7ff3a", "#ffffff"]); SFX.kick(2); }
-      else { qKo++; btn.classList.add("ko"); $$(".quiz__choices button", quizCard)[q.bonne].classList.add("ok"); SFX.pop(200); }
-      qi++; setTimeout(renderQuestion, 1100);
-    }
-    if (e.target.closest("#quizRestart")) { qi = qOk = qKo = 0; renderQuestion(); }
-  });
-  function renderQuizEnd() {
-    const n = D.quiz.length;
-    const [title, txt] = qOk === n ? ["JEU, SET ET MATCH !", "Sans faute. Tu connais Arthur par cœur. 🏆"]
-      : qOk >= n / 2 ? ["BEAU MATCH !", `${qOk}/${n} — pas mal du tout, mais Arthur a sauvé quelques balles de break.`]
-      : ["DOUBLE FAUTE…", `${qOk}/${n} — il va falloir passer plus de temps avec Arthur 😅`];
-    quizCard.innerHTML = `<div class="quiz__end"><h3>${title}</h3><p>${txt}</p><button class="btn" id="quizRestart">Revanche</button></div>`;
-    if (qOk === n) { confetti(250); SFX.fanfare(); }
-  }
-  renderQuestion();
 
   /* =================================================================
      MESSAGES
@@ -578,7 +627,7 @@
   function allOut() {
     stopMic();
     setTimeout(() => {
-      $("#cakeWish").textContent = "Fais un vœu, Arthur… ✨";
+      $("#cakeWish").textContent = "Fais un vœu, Arthur…";
       confetti(320); SFX.fanfare(); SFX.cheer(0.7);
       $("#relight").hidden = false;
     }, 300);
@@ -593,17 +642,17 @@
   function stopMic() {
     if (micStream) micStream.getTracks().forEach(t => t.stop());
     micStream = null; cancelAnimationFrame(micRaf);
-    $("#blowMic").classList.remove("listening"); $("#blowMic").textContent = "🎤 Souffler dans le micro";
+    $("#blowMic").classList.remove("listening"); $("#blowMic span").textContent = "Souffler dans le micro";
   }
   $("#blowMic").addEventListener("click", async () => {
     if (micStream) return stopMic();
     try { micStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-    catch { toast("Micro indisponible — clique sur les bougies 😉"); return; }
+    catch { toast("Micro indisponible — clique sur les bougies."); return; }
     const ac = new (window.AudioContext || window.webkitAudioContext)();
     const an = ac.createAnalyser(); an.fftSize = 512;
     ac.createMediaStreamSource(micStream).connect(an);
     const buf = new Uint8Array(an.fftSize);
-    $("#blowMic").classList.add("listening"); $("#blowMic").textContent = "🎤 Souffle fort !";
+    $("#blowMic").classList.add("listening"); $("#blowMic span").textContent = "Souffle fort !";
     let lastBlow = 0;
     (function listen(t) {
       an.getByteTimeDomainData(buf);
@@ -673,9 +722,9 @@
     const locker = $("#locker"), lock = $("#lockerLock"), count = $("#lockerCount");
     function tick() {
       if (isBirthdayPassed()) {
-        count.textContent = locker.classList.contains("open") ? "" : "🔓 Le casier est ouvert. Clique sur la porte.";
+        count.textContent = locker.classList.contains("open") ? "" : "Le casier est déverrouillé. Clique sur la porte.";
         $("#lockerLead").textContent = "C'est le grand jour : le casier n°18 est enfin déverrouillé.";
-        lock.textContent = "🔓";
+        lock.classList.add("unlocked");
         return;
       }
       const s = Math.floor((majority - Date.now()) / 1000);
@@ -687,7 +736,7 @@
         lock.classList.remove("shake"); void lock.offsetWidth; lock.classList.add("shake");
         SFX.pop(160);
         const d = Math.ceil((majority - Date.now()) / 86400000);
-        toast(`Fermé à clé 🔒 Patience… encore ${d} jour${d > 1 ? "s" : ""} 😉`);
+        toast(`Fermé à clé. Patience… encore ${d} jour${d > 1 ? "s" : ""}.`);
         return;
       }
       if (locker.classList.contains("open")) return;
