@@ -173,25 +173,24 @@
       </div>
     </section>
 
-    <!-- ===================== PRÉFÉRÉS ===================== -->
-    <section id="preferes" class="section section--prefs" data-menu="Tes préférés">
+    <!-- ===================== LE BULLDOG ===================== -->
+    <section id="preferes" class="section section--prefs" data-menu="Ta race préférée">
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">03</span><span class="sh__kicker">Hors du terrain</span></div>
-        <h2 class="sh__title">Tes préférés</h2>
-        <p class="sh__lead">Ce qui te fait vraiment plaisir… en dehors du foot.</p>
+        <h2 class="sh__title">Ta race préférée</h2>
+        <p class="sh__lead">Petite taille, gros caractère, une bouille irrésistible.</p>
       </header>
-      <div class="buvette">
-        <p class="buvette__title"><small>Tribune Arthur · Ouvert 24 h/24</small>La buvette d'Arthur</p>
-        <div class="menu-items" id="menuItems"></div>
-      </div>
       <div class="dogcard" id="dogcard">
-        <button class="dogcard__fig" id="dogcardFig" aria-label="Fais aboyer le bulldog"><span class="bulldog__bubble" id="dogcardBubble"></span><span class="dogcard__svg" id="dogcardSvg"></span></button>
+        <button class="dogcard__fig" id="dogcardFig" aria-label="Fais aboyer le bulldog">
+          <span class="bulldog__bubble" id="dogcardBubble"></span>
+          <span class="dogcard__photo"><img src="images/bulldog/bulldog-portrait.jpg" alt="Un bouledogue français fauve allongé sur une couverture rouge" loading="lazy" decoding="async" /></span>
+        </button>
         <div class="dogcard__info">
-          <p class="dogcard__kicker">Ta race préférée</p>
+          <p class="dogcard__kicker">Fiche officielle</p>
           <h3 id="dogRace"></h3>
           <p id="dogText"></p>
           <div class="dogstats" id="dogStats"></div>
-          <p class="dogcard__hint">Clique sur lui, il adore ça.</p>
+          <p class="dogcard__hint">Clique sur la photo… ou sur son copain en bas de l'écran.</p>
         </div>
       </div>
     </section>
@@ -411,6 +410,7 @@
       <p class="finale__kicker">Coup de sifflet final</p>
       <p class="finale__big">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
       <p class="finale__sub">20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer.<br />On est fiers de toi.</p>
+      <p class="finale__credits">Photos du bulldog : <a href="https://www.flickr.com/photos/57387723@N04/6808064757" target="_blank" rel="noopener">Artur Malinowski</a> et <a href="https://www.flickr.com/photos/62943723@N00/2978422466" target="_blank" rel="noopener">Barbara L. Hanson</a>, licence <a href="https://creativecommons.org/licenses/by/2.0/deed.fr" target="_blank" rel="noopener">CC BY 2.0</a> (Flickr).</p>
       <button class="btn btn--light" id="replayFireworks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg> Encore un feu d'artifice</button>
     </div>
   </footer>
@@ -421,7 +421,7 @@
     <figure class="lightbox__fig"><img alt="" id="lightboxImg" /><figcaption><span id="lightboxCap"></span><small id="lightboxCount"></small></figcaption></figure>
     <button class="lightbox__nav lightbox__next" aria-label="Photo suivante"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
-  <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><span class="bulldog__fig" id="dogFig"></span></button>
+  <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><img class="bulldog__img" src="images/bulldog/bulldog-mascotte.png" alt="" width="203" height="450" /></button>
   <div class="chase-ball" id="chaseBall" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status"></div>
 

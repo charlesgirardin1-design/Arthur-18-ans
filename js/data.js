@@ -41,13 +41,8 @@ window.ARTHUR = {
     sports: ["Foot", "Tennis", "Multisport"],
   },
 
-  // ---------- TES PRÉFÉRÉS ----------
+  // ---------- TON CHIEN PRÉFÉRÉ ----------
   preferes: {
-    plats: [
-      { illu: "pizza", nom: "Pizza", texte: "La base. Une part, deux parts… on ne compte pas.", prix: "À volonté" },
-      { illu: "pates", nom: "Pâtes", texte: "Le carburant officiel avant chaque match.", prix: "Plein d'énergie" },
-      { illu: "burger", nom: "Burger", texte: "Le trophée du week-end, frites comprises.", prix: "Double cheese" },
-    ],
     chien: {
       race: "Le bulldog",
       texte: "Petite taille, gros caractère et une bouille irrésistible : ta race de chien préférée.",
