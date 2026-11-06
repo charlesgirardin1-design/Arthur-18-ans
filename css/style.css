@@ -190,8 +190,8 @@ body.entered .hero__lights span:nth-child(3) { transition-delay: .7s; } body.ent
 
 .hero__content { position: relative; z-index: 2; }
 .hero__kicker { font-family: var(--display); letter-spacing: .32em; color: var(--muted); font-size: clamp(.95rem, 2.5vw, 1.15rem); }
-.hero__title { display: flex; flex-direction: column; align-items: center; line-height: .82; margin: .5rem 0 1.1rem; font-weight: 400; }
-.jersey { width: min(400px, 74vw, 46svh); margin: 0 auto; perspective: 900px; }
+.hero__title { display: flex; flex-direction: column; align-items: center; line-height: .82; margin: .2rem 0 .6rem; font-weight: 400; }
+.jersey { width: min(620px, 96vw, 58svh); margin: 0 auto; perspective: 900px; }
 .jersey__svg { display: block; width: 100%; height: auto; overflow: visible; transform-origin: 50% 4%;
   transform: rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg)); transition: transform .5s var(--ease-out); }
 body:not(.entered) .jersey { opacity: 0; transform: translateY(-60vh) rotate(-12deg); }
