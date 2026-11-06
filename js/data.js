@@ -97,6 +97,21 @@ window.ARTHUR = {
     { auteur: "Le club de tennis", texte: "Que ton année soit pleine d'aces et sans double faute !" },
   ],
 
+  // ---------- LE BILLET DE MATCH (au-dessus de la zone à gratter) ----------
+  billet: {
+    saison: "Saison 2026 - 2027",
+    date: "20/12/2026 21:00",
+    competition: "Ligue 1 · Journée 16",
+    domicile: "PARIS",
+    exterieur: "MARSEILLE",
+    titulaire: "ARTHUR",
+    mention: "INVITÉ D'HONNEUR",
+    tarif: "TARIF MAJEUR",
+    acces: "018",
+    rang: "20",
+    siege: "12",
+  },
+
   // ---------- LA CARTE À GRATTER ----------
   // ⚠️ À compléter : ce qu'Arthur découvre en grattant (son cadeau, une sortie, un indice…)
   cadeau: {
