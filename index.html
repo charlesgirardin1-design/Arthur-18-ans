@@ -410,7 +410,7 @@
       <p class="finale__kicker">Coup de sifflet final</p>
       <p class="finale__big">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
       <p class="finale__sub">20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer.<br />On est fiers de toi.</p>
-      <p class="finale__credits">Photos du bulldog : <a href="https://www.flickr.com/photos/57387723@N04/6808064757" target="_blank" rel="noopener">Artur Malinowski</a> et <a href="https://www.flickr.com/photos/62943723@N00/2978422466" target="_blank" rel="noopener">Barbara L. Hanson</a>, licence <a href="https://creativecommons.org/licenses/by/2.0/deed.fr" target="_blank" rel="noopener">CC BY 2.0</a> (Flickr).</p>
+      <p class="finale__credits">Photos du bulldog : <a href="https://www.flickr.com/photos/57387723@N04/6808064757" target="_blank" rel="noopener">Artur Malinowski</a> et licence <a href="https://creativecommons.org/licenses/by/2.0/deed.fr" target="_blank" rel="noopener">CC BY 2.0</a> ; <a href="https://www.flickr.com/photos/7675787@N06/16905957333" target="_blank" rel="noopener">marneejill</a> (« Daisy », mascotte animée), licence <a href="https://creativecommons.org/licenses/by-sa/2.0/deed.fr" target="_blank" rel="noopener">CC BY-SA 2.0</a> (Flickr).</p>
       <button class="btn btn--light" id="replayFireworks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg> Encore un feu d'artifice</button>
     </div>
   </footer>
@@ -421,13 +421,14 @@
     <figure class="lightbox__fig"><img alt="" id="lightboxImg" /><figcaption><span id="lightboxCap"></span><small id="lightboxCount"></small></figcaption></figure>
     <button class="lightbox__nav lightbox__next" aria-label="Photo suivante"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
-  <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><img class="bulldog__img" src="images/bulldog/bulldog-mascotte.png" alt="" width="203" height="450" /></button>
+  <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><span class="bulldog__canvas" id="dogCanvas"></span></button>
   <div class="chase-ball" id="chaseBall" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status"></div>
 
   <script src="js/data.js"></script>
   <script src="js/sound.js"></script>
   <script src="js/figures.js"></script>
+  <script src="js/dog.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
