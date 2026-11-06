@@ -32,3 +32,10 @@ Tout le contenu est dans **`js/data.js`** : lettre, frise, photos par âge, mess
 saisons: [ { age: 5, src: "images/galerie/age-05.jpg", legende: "Premier maillot", pos: "50% 30%" }, … ],  // pos = cadrage
 photoProfil: "images/arthur.jpg",   // photo de la carte joueur
 ```
+
+## 🔒 Verrou jusqu'au coup d'envoi
+Le fichier **`middleware.js`** verrouille le site côté serveur (Vercel) jusqu'à l'heure `OUVERTURE` :
+- avant l'heure, seule une page d'attente s'affiche (« Le match n'a pas encore commencé » + compte à rebours synchronisé sur l'horloge du serveur) ; photos, textes et scripts sont inaccessibles ;
+- à l'heure exacte, la page d'attente bascule toute seule sur le site ;
+- les parents gardent l'accès via le lien d'aperçu secret (`?apercu=…`) ; seule son empreinte SHA-256 figure dans le code ;
+- réglages en haut de `middleware.js` : `VERROU_ACTIF` (true/false) et `OUVERTURE` (date et heure, heure de Paris).
