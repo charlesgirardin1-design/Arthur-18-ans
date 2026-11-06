@@ -1,6 +1,6 @@
 # ⚽🎾 Arthur · 18 ans
 
-Site d'anniversaire pour les 18 ans d'Arthur (né le 20 décembre 2008).
+Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008) : il lui est adressé directement, à la 2e personne.
 100 % statique (HTML / CSS / JS), aucune installation : ouvrir `index.html` dans un navigateur.
 
 ## Sections
@@ -11,7 +11,7 @@ Site d'anniversaire pour les 18 ans d'Arthur (né le 20 décembre 2008).
 5. **Séance de tirs au but** — mini-jeu : 5 tirs contre le gardien.
 6. **Jeu, set et quiz** — quiz « Connais-tu Arthur ? » compté comme au tennis (15, 30, 40, JEU…).
 7. **Vestiaire photo** — galerie polaroïds (emplacements « photo à venir » en attendant).
-8. **Mur des supporters** — messages en post-it.
+8. **Tes supporters** — messages de ses proches pour lui, en post-it.
 
 Easter eggs : taper `psg`, `arthur` ou `ace` au clavier, ou cliquer sur le ballon.
 
