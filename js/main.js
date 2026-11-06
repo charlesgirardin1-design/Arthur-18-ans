@@ -775,10 +775,13 @@
     $("#lockerTitle").textContent = D.casier.titre;
     $("#lockerText").textContent = D.casier.texte;
     const locker = $("#locker"), lock = $("#lockerLock"), count = $("#lockerCount");
+    const isOpen = () => D.casier.verrouille === false || isBirthdayPassed();
     function tick() {
-      if (isBirthdayPassed()) {
+      if (isOpen()) {
         count.textContent = locker.classList.contains("open") ? "" : "Le casier est déverrouillé. Clique sur la porte.";
-        $("#lockerLead").textContent = "C'est le grand jour : le casier n°18 est enfin déverrouillé.";
+        $("#lockerLead").textContent = isBirthdayPassed()
+          ? "C'est le grand jour : le casier n°18 est enfin déverrouillé."
+          : "Le casier n°18 est déverrouillé : clique sur la porte pour l'ouvrir.";
         lock.classList.add("unlocked");
         return;
       }
@@ -787,7 +790,7 @@
     }
     tick(); setInterval(tick, 1000);
     $("#lockerDoor").addEventListener("click", () => {
-      if (!isBirthdayPassed()) {
+      if (!isOpen()) {
         lock.classList.remove("shake"); void lock.offsetWidth; lock.classList.add("shake");
         SFX.pop(160);
         const d = Math.ceil((majority - Date.now()) / 86400000);
