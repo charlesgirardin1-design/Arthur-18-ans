@@ -10,7 +10,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 3. **Ta carte de joueur** — carte collector holographique, se retourne au clic.
 4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.
 5. **Ta carrière** — frise 2008 → 2026.
-6. **Ta vie en 18 saisons** — pellicule photo, une photo par âge (0 à 18 ans).
+6. **Ta vie en 18 saisons** — pellicule de 20 photos classées par âge (9 à 17 ans), visionneuse plein écran avec flèches et balayage.
 7. **Tirs au but** — Arthur (vu de dos, maillot « ARTHUR 18 ») prend son élan et frappe ; le gardien articulé plonge. Bandeau façon retransmission TV.
 8. **Défi jongles** — mini-jeu, record enregistré dans le navigateur.
 9. **Tes supporters** — messages de ses proches.
@@ -29,6 +29,6 @@ Tout le contenu est dans **`js/data.js`** : lettre, frise, photos par âge, mess
 
 **Ajouter des photos** : déposer les fichiers dans `images/galerie/`, puis dans `js/data.js` :
 ```js
-saisons: [ { age: 5, src: "images/galerie/age-05.jpg", legende: "Premier maillot" }, … ],
+saisons: [ { age: 5, src: "images/galerie/age-05.jpg", legende: "Premier maillot", pos: "50% 30%" }, … ],  // pos = cadrage
 photoProfil: "images/arthur.jpg",   // photo de la carte joueur
 ```
