@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arthur · 18 ans</title>
+  <meta name="description" content="Le site officiel des 18 ans d'Arthur — foot, tennis, souvenirs et messages des supporters." />
+  <meta name="theme-color" content="#0b1640" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <!-- ===== BARRE DE SCORE / NAVIGATION ===== -->
+  <header class="scorebar">
+    <a href="#accueil" class="scorebar__brand">
+      <span class="scorebar__team">ARTHUR</span>
+      <span class="scorebar__score">18</span>
+      <span class="scorebar__live"><i></i> LIVE</span>
+    </a>
+    <nav class="scorebar__nav" aria-label="Sections">
+      <a href="#carte">Carte</a>
+      <a href="#compteur">Stats</a>
+      <a href="#carriere">Carrière</a>
+      <a href="#penalty">Penalty</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#galerie">Photos</a>
+      <a href="#supporters">Messages</a>
+    </nav>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section id="accueil" class="hero">
+    <div class="hero__lights" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="hero__pitch" aria-hidden="true"></div>
+    <div class="hero__content">
+      <p class="hero__kicker">Saison 2026 · Match exceptionnel</p>
+      <h1 class="hero__title">
+        <span class="hero__name">ARTHUR</span>
+        <span class="hero__age" id="heroAge">18</span>
+      </h1>
+      <p class="hero__sub" id="heroSub">Coup d'envoi de la majorité dans</p>
+      <div class="countdown" id="countdown" role="timer" aria-live="off">
+        <div><b id="cdD">00</b><small>jours</small></div>
+        <div><b id="cdH">00</b><small>heures</small></div>
+        <div><b id="cdM">00</b><small>min</small></div>
+        <div><b id="cdS">00</b><small>sec</small></div>
+      </div>
+      <button class="ball" id="heroBall" aria-label="Frappe le ballon !">⚽</button>
+      <p class="hero__hint">Tape le ballon… ou écris <kbd>psg</kbd> au clavier 😉</p>
+    </div>
+    <a href="#carte" class="scroll-cue" aria-label="Descendre">↓</a>
+  </section>
+
+  <!-- ===== CARTE JOUEUR ===== -->
+  <section id="carte" class="section section--dark">
+    <h2 class="section__title"><span>01</span> La carte du joueur</h2>
+    <p class="section__lead">Édition ultra-rare, un seul exemplaire au monde. Clique pour la retourner.</p>
+    <div class="card-wrap">
+      <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur">
+        <div class="pcard__inner">
+          <div class="pcard__face pcard__front">
+            <div class="pcard__top">
+              <div class="pcard__rating" id="cardRating">99</div>
+              <div class="pcard__pos" id="cardPos">ATT</div>
+              <div class="pcard__flag" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+            <div class="pcard__photo" id="cardPhoto"><span>A</span></div>
+            <div class="pcard__name">ARTHUR</div>
+            <div class="pcard__stats" id="cardStats"></div>
+            <div class="pcard__shine" aria-hidden="true"></div>
+          </div>
+          <div class="pcard__face pcard__back">
+            <h3>Fiche technique</h3>
+            <dl>
+              <dt>Né le</dt><dd>20 décembre 2008</dd>
+              <dt>Âge</dt><dd id="backAge">18 ans</dd>
+              <dt>Signe</dt><dd>Sagittaire ♐</dd>
+              <dt>Club de cœur</dt><dd>Paris 🔴🔵</dd>
+              <dt>Sports</dt><dd id="backSports"></dd>
+              <dt>Pied fort</dt><dd>Les deux (évidemment)</dd>
+              <dt>Valeur</dt><dd>Inestimable</dd>
+            </dl>
+          </div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== COMPTEUR DE VIE ===== -->
+  <section id="compteur" class="section">
+    <h2 class="section__title"><span>02</span> Les stats en direct</h2>
+    <p class="section__lead">Depuis son coup d'envoi le 20/12/2008, en temps réel.</p>
+    <div class="stats-grid">
+      <div class="stat"><b data-stat="secondes">0</b><span>secondes jouées</span></div>
+      <div class="stat"><b data-stat="jours">0</b><span>jours sur le terrain</span></div>
+      <div class="stat"><b data-stat="coeur">0</b><span>battements de cœur (environ)</span></div>
+      <div class="stat"><b data-stat="nuits">0</b><span>nuits de récup'</span></div>
+      <div class="stat"><b data-stat="weekends">0</b><span>week-ends de matchs</span></div>
+      <div class="stat"><b data-stat="pas">0</b><span>pas courus (estimation très sérieuse)</span></div>
+    </div>
+  </section>
+
+  <!-- ===== CARRIÈRE ===== -->
+  <section id="carriere" class="section section--pitch">
+    <h2 class="section__title"><span>03</span> La carrière</h2>
+    <p class="section__lead">De la maternité au statut de légende : les grands moments.</p>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+
+  <!-- ===== PENALTY ===== -->
+  <section id="penalty" class="section section--dark">
+    <h2 class="section__title"><span>04</span> La séance de tirs au but</h2>
+    <p class="section__lead">5 tirs pour battre le gardien. Clique dans le but pour viser.</p>
+    <div class="penalty">
+      <div class="penalty__board">
+        <div>TIRS <b id="pkShots">0/5</b></div>
+        <div class="penalty__dots" id="pkDots"></div>
+        <div>BUTS <b id="pkGoals">0</b></div>
+      </div>
+      <div class="goal" id="goal">
+        <div class="goal__net"></div>
+        <div class="goal__zones" id="goalZones"></div>
+        <div class="keeper" id="keeper"><div class="keeper__body">🧤</div></div>
+        <div class="pk-ball" id="pkBall">⚽</div>
+        <div class="goal__msg" id="pkMsg"></div>
+      </div>
+      <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ TENNIS ===== -->
+  <section id="quiz" class="section section--court">
+    <h2 class="section__title"><span>05</span> Jeu, set et quiz</h2>
+    <p class="section__lead">Connais-tu vraiment Arthur ? Chaque bonne réponse marque un point… façon tennis.</p>
+    <div class="quiz">
+      <div class="tscore">
+        <div class="tscore__row"><span>TOI</span><b id="qScore">0</b></div>
+        <div class="tscore__row"><span>ARTHUR</span><b id="qScoreA">0</b></div>
+      </div>
+      <div class="quiz__card" id="quizCard"></div>
+    </div>
+  </section>
+
+  <!-- ===== GALERIE ===== -->
+  <section id="galerie" class="section">
+    <h2 class="section__title"><span>06</span> Le vestiaire photo</h2>
+    <p class="section__lead">Les clichés de 18 ans de carrière.</p>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <!-- ===== SUPPORTERS ===== -->
+  <section id="supporters" class="section section--dark">
+    <h2 class="section__title"><span>07</span> Le mur des supporters</h2>
+    <p class="section__lead">Tout le stade a un message pour toi.</p>
+    <div class="wall" id="wall"></div>
+  </section>
+
+  <footer class="footer">
+    <p class="footer__big">JOYEUX ANNIVERSAIRE ARTHUR</p>
+    <p>20.12.2008 → 20.12.2026 · 18 ans de jeu, et la prolongation ne fait que commencer.</p>
+  </footer>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" aria-label="Fermer">×</button>
+    <img alt="" id="lightboxImg" />
+    <p id="lightboxCap"></p>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
