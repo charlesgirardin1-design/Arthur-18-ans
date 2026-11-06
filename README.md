@@ -8,7 +8,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 1. **Coup d'envoi** — maillot de foot floqué « ARTHUR 18 » qui tombe et se balance, projecteurs qui s'allument, compte à rebours jusqu'au 20/12/2026.
 2. **Le mot d'avant-match** — une lettre manuscrite qui s'écrit paragraphe par paragraphe.
 3. **Ta carte de joueur** — carte collector holographique, se retourne au clic.
-3 bis. **Tes préférés** — « La buvette d’Arthur » (pizza, pâtes, burger dessinés et animés) et « Ta race préférée : le bulldog » (fiche avec stats). Contenu dans `preferes` (js/data.js).
+3 bis. **Ta race préférée** — fiche « Le bulldog » avec une vraie photo et des stats animées (contenu dans `preferes.chien`, js/data.js).
 4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.
 5. **Ta carrière** — frise 2008 → 2026.
 6. **Ta vie en 18 saisons** — pellicule de 31 photos classées par âge (6 à 17 ans), visionneuse plein écran avec flèches et balayage.
@@ -22,7 +22,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 
 Personnages et ballon : dessinés en vectoriel et animés par squelette (`js/figures.js`).
 
-Mascotte : un bouledogue (collier « 18 ») vit en bas de l’écran, aboie quand on clique dessus et court après le ballon.
+Mascotte : un vrai bouledogue (photo détourée) vit en bas de l’écran, aboie quand on clique dessus et court après le ballon. Photos : Artur Malinowski et Barbara L. Hanson, CC BY 2.0 (Flickr), crédités en bas du site.
 
 Bonus : minute de match qui avance avec le défilement, menu « Programme », sons synthétisés (aucun fichier audio),
 easter eggs au clavier (`psg`, `arthur`, `ace`).

@@ -174,7 +174,7 @@
   /* =================================================================
      APPARITION AU DÉFILEMENT
      ================================================================= */
-  const revealEls = $$(".sh, .letter, .card-wrap, .buvette, .dogcard, .stats-grid, .film, .penalty, .juggle, .wall, .cake-zone, .ticket, .locker-zone");
+  const revealEls = $$(".sh, .letter, .card-wrap, .dogcard, .stats-grid, .film, .penalty, .juggle, .wall, .cake-zone, .ticket, .locker-zone");
   revealEls.forEach(el => el.classList.add("reveal"));
   const revealIO = new IntersectionObserver(entries => entries.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add("visible"); revealIO.unobserve(en.target); }
@@ -221,23 +221,16 @@
   }
 
   /* =================================================================
-     TES PRÉFÉRÉS + LE BULLDOG MASCOTTE
+     LE BULLDOG (fiche + mascotte en photo)
      ================================================================= */
   (() => {
     const P = D.preferes;
     if (!P) return;
-    $("#menuItems").innerHTML = P.plats.map(m => `
-      <article class="dish" tabindex="0">
-        <div class="dish__illu">${FIG.foodSVG(m.illu)}</div>
-        <h3>${m.nom}</h3><p>${m.texte}</p><span class="dish__price">${m.prix}</span>
-      </article>`).join("");
     $("#dogRace").textContent = P.chien.race;
     $("#dogText").textContent = P.chien.texte;
     $("#dogStats").innerHTML = P.chien.stats.map(st => `<div><span>${st.label}</span><i style="--v:${st.valeur}%"></i><b>${st.valeur}</b></div>`).join("");
-    $("#dogcardSvg").innerHTML = FIG.bulldogSVG();
 
     const dog = $("#bulldog"), bubble = $("#dogBubble"), cball = $("#chaseBall");
-    $("#dogFig").innerHTML = FIG.bulldogSVG();
     cball.innerHTML = FIG.ballSVG();
     const lines = P.chien.repliques || ["WOUF !"];
     let li = 0, busy = false;
