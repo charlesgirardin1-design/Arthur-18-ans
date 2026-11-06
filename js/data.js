@@ -37,7 +37,7 @@ window.ARTHUR = {
       { label: "PSG", valeur: 100 }, // amour du club
       { label: "FÊT", valeur: 99 }, // niveau de fête
     ],
-    sports: ["Foot ⚽", "Tennis 🎾", "Multisport 🏅"],
+    sports: ["Foot", "Tennis", "Multisport"],
   },
 
   // ---------- TA CARRIÈRE (frise chronologique) ----------
@@ -72,17 +72,6 @@ window.ARTHUR = {
     { age: 16, src: "", legende: "" },
     { age: 17, src: "", legende: "" },
     { age: 18, src: "", legende: "La majorité !" },
-  ],
-
-  // ---------- QUIZ (scoré comme au tennis : 15, 30, 40, JEU…) ----------
-  // "bonne" = index de la bonne réponse (0 = première).
-  quiz: [
-    { q: "Quel est le club de cœur d'Arthur ?", choix: ["L'OM", "Le PSG", "Le Real Madrid", "L'équipe du quartier"], bonne: 1 },
-    { q: "Quel jour est né Arthur ?", choix: ["Le 25 décembre", "Le 1er janvier", "Le 20 décembre", "Le 14 juillet"], bonne: 2 },
-    { q: "Quel est le sport de raquette préféré d'Arthur ?", choix: ["Le badminton", "Le ping-pong", "Le padel", "Le tennis"], bonne: 3 },
-    { q: "Quel est le signe astrologique d'Arthur ?", choix: ["Sagittaire", "Capricorne", "Scorpion", "Lion"], bonne: 0 },
-    { q: "En quelle année Arthur est-il né ?", choix: ["2007", "2008", "2009", "2010"], bonne: 1 },
-    { q: "Combien de bougies cette année ?", choix: ["17", "18", "19", "Trop pour les compter"], bonne: 1 },
   ],
 
   // ---------- MESSAGES POUR ARTHUR (famille, amis…) ----------

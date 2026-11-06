@@ -11,20 +11,21 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.
 5. **Ta carrière** — frise 2008 → 2026.
 6. **Ta vie en 18 saisons** — pellicule photo, une photo par âge (0 à 18 ans).
-7. **Tirs au but** — 5 tirs contre un gardien qui plonge.
+7. **Tirs au but** — Arthur (vu de dos, maillot « ARTHUR 18 ») prend son élan et frappe ; le gardien articulé plonge. Bandeau façon retransmission TV.
 8. **Défi jongles** — mini-jeu, record enregistré dans le navigateur.
-9. **Jeu, set et quiz** — quiz compté comme au tennis.
-10. **Tes supporters** — messages de ses proches.
-11. **Tes 18 bougies** — à souffler au clic ou dans le micro.
-12. **Ton trophée** — ticket à gratter qui révèle le cadeau.
-13. **Le casier n°18** — verrouillé jusqu'au 20/12/2026 à minuit (tester avant : ajouter `?jourj` à l'adresse).
-14. **Coup de sifflet final** — feu d'artifice.
+9. **Tes supporters** — messages de ses proches.
+10. **Tes 18 bougies** — à souffler au clic ou dans le micro.
+11. **Ton trophée** — ticket à gratter qui révèle le cadeau.
+12. **Le casier n°18** — verrouillé jusqu'au 20/12/2026 à minuit (tester avant : ajouter `?jourj` à l'adresse).
+13. **Coup de sifflet final** — feu d'artifice.
+
+Personnages et ballon : dessinés en vectoriel et animés par squelette (`js/figures.js`).
 
 Bonus : minute de match qui avance avec le défilement, menu « Programme », sons synthétisés (aucun fichier audio),
 easter eggs au clavier (`psg`, `arthur`, `ace`).
 
 ## Personnaliser
-Tout le contenu est dans **`js/data.js`** : lettre, frise, photos par âge, quiz, messages, cadeau à gratter, message du casier.
+Tout le contenu est dans **`js/data.js`** : lettre, frise, photos par âge, messages, cadeau à gratter, message du casier.
 
 **Ajouter des photos** : déposer les fichiers dans `images/galerie/`, puis dans `js/data.js` :
 ```js
