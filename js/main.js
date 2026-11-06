@@ -230,59 +230,79 @@
     $("#dogText").textContent = P.chien.texte;
     $("#dogStats").innerHTML = P.chien.stats.map(st => `<div><span>${st.label}</span><i style="--v:${st.valeur}%"></i><b>${st.valeur}</b></div>`).join("");
 
-    const dog = $("#bulldog"), bubble = $("#dogBubble"), cball = $("#chaseBall");
+    const dogEl = $("#bulldog"), bubble = $("#dogBubble"), cball = $("#chaseBall");
     cball.innerHTML = FIG.ballSVG();
+    const ballPat = cball.querySelector(".ball-pattern");
     const lines = P.chien.repliques || ["WOUF !"];
     let li = 0, busy = false;
-    function bark(el, bub) {
-      el.classList.remove("barking"); void el.offsetWidth; el.classList.add("barking");
-      SFX.bark();
-      if (bub) {
-        bub.textContent = lines[li++ % lines.length];
-        bub.classList.add("show");
-        clearTimeout(bub._t); bub._t = setTimeout(() => bub.classList.remove("show"), 1700);
-      }
-      setTimeout(() => el.classList.remove("barking"), 700);
+    const small = () => innerWidth < 640;
+    const dog = new DOG.Dog($("#dogCanvas"), { scale: small() ? 0.2 : 0.3, x: -300 });
+    addEventListener("resize", () => dog.setScale(small() ? 0.2 : 0.3));
+    const home = () => 8;
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    function say(bub) {
+      bub.textContent = lines[li++ % lines.length];
+      bub.classList.add("show");
+      clearTimeout(bub._t); bub._t = setTimeout(() => bub.classList.remove("show"), 1700);
     }
-    dog.addEventListener("click", () => { if (!busy) bark(dog, bubble); });
-    $("#dogcardFig").addEventListener("click", () => bark($("#dogcardFig"), $("#dogcardBubble")));
+    function bark() { dog.bark(); SFX.bark(); say(bubble); }
+    dogEl.addEventListener("click", () => bark());
+    $("#dogcardFig").addEventListener("click", () => {
+      const f = $("#dogcardFig"); f.classList.remove("barking"); void f.offsetWidth; f.classList.add("barking");
+      SFX.bark(); say($("#dogcardBubble")); setTimeout(() => f.classList.remove("barking"), 700);
+    });
+    const WALK = () => (small() ? 70 : 105), TROT = () => (small() ? 150 : 220), RUN = () => (small() ? 300 : 460);
 
-    const run = (el, frames, ms, easing) => el.animate(frames, { duration: ms, easing, fill: "forwards" }).finished;
-    async function trotIn() {
-      dog.classList.add("running");
-      await run(dog, [{ transform: `translateX(${-dog.offsetWidth - 40}px)` }, { transform: "translateX(0)" }], 1400, "cubic-bezier(.2,.8,.3,1)");
-      dog.getAnimations().forEach(a => a.cancel());
-      dog.classList.remove("running");
+    // le ballon roule devant le chien et le chien le pousse
+    let ballX = null, ballRaf = null;
+    function ballFollow() {
+      if (ballX == null) return;
+      const r = cball.offsetWidth / 2;
+      const nose = dog.x + dog.width * (dog.face > 0 ? 0.86 : 0.14);
+      const targetX = nose + dog.face * (r + 6);
+      if ((targetX - ballX) * dog.face > 0) ballX = targetX;        // poussé par le museau
+      ballX += dog.face * Math.max(0, dog.speed) * 0.016 * 0.35;     // roule un peu en avance
+      cball.style.transform = `translateX(${ballX - r}px)`;
+      ballPat.style.transform = `rotate(${(ballX / (Math.PI * r * 2)) * 360}deg)`;
+      ballRaf = requestAnimationFrame(ballFollow);
     }
     async function chase() {
       if (busy || reduceMotion || !document.body.classList.contains("entered")) return;
       busy = true;
-      const W = innerWidth, start = dog.getBoundingClientRect();
-      cball.style.opacity = "1";
-      const ballRun = cball.animate([
-        { transform: `translateX(${start.right - 10}px) rotate(0deg)` },
-        { transform: `translateX(${W + 80}px) rotate(1260deg)` },
-      ], { duration: 2100, easing: "cubic-bezier(.25,.6,.45,1)", fill: "forwards" });
-      await new Promise(r => setTimeout(r, 260));
-      dog.classList.add("running", "panting");
-      await run(dog, [{ transform: "translateX(0)" }, { transform: `translateX(${W + 40}px)` }], 2300, "cubic-bezier(.45,0,.65,1)");
-      ballRun.cancel(); cball.style.opacity = "0";
-      dog.getAnimations().forEach(a => a.cancel());
-      await trotIn();
-      bark(dog, bubble);
-      setTimeout(() => dog.classList.remove("panting"), 2500);
+      const W = innerWidth;
+      ballX = dog.x + dog.width + 30; cball.style.opacity = "1"; ballFollow();
+      bark(); await wait(350);
+      await dog.moveTo(W + 40, RUN());
+      cball.style.opacity = "0"; cancelAnimationFrame(ballRaf); ballX = null;
+      dog.x = -dog.width - 60;                 // revient par la gauche
+      await wait(600);
+      await dog.moveTo(home(), TROT());
+      await wait(250); bark();
       busy = false;
     }
-    addEventListener("ball-kick", () => setTimeout(chase, 300));
-    // arrivée du bulldog après l'entrée sur le terrain
-    const arrive = () => setTimeout(async () => { if (reduceMotion) return; busy = true; await trotIn(); bark(dog, bubble); busy = false; }, 2600);
+    async function stroll() {                  // petite promenade spontanée
+      if (busy || reduceMotion || document.hidden || !document.body.classList.contains("entered")) return;
+      busy = true;
+      const far = Math.min(innerWidth * 0.35, small() ? 140 : 320) * (0.5 + Math.random() * 0.5);
+      await dog.moveTo(home() + far, WALK());
+      await wait(900 + Math.random() * 1200);
+      await dog.moveTo(home(), WALK());
+      dog.face = 1;
+      busy = false;
+    }
+    addEventListener("ball-kick", () => setTimeout(chase, 250));
+    const arrive = () => setTimeout(async () => {
+      if (reduceMotion) { dog.x = home(); return; }
+      busy = true; await dog.ready; dog.x = -dog.width - 40;
+      await dog.moveTo(home(), WALK()); await wait(300); bark(); busy = false;
+    }, 2400);
     if (document.body.classList.contains("entered")) arrive();
     else {
       const mo = new MutationObserver(() => { if (document.body.classList.contains("entered")) { mo.disconnect(); arrive(); } });
       mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
     }
-    // de temps en temps, il part chercher un ballon
-    setInterval(() => { if (!document.hidden && Math.random() < 0.7) chase(); }, 75000);
+    setInterval(stroll, 17000);
+    setInterval(() => { if (!document.hidden && Math.random() < 0.5) chase(); }, 70000);
   })();
 
   /* =================================================================

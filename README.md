@@ -22,7 +22,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 
 Personnages et ballon : dessinés en vectoriel et animés par squelette (`js/figures.js`).
 
-Mascotte : un vrai bouledogue (photo détourée) vit en bas de l’écran, aboie quand on clique dessus et court après le ballon. Photos : Artur Malinowski et Barbara L. Hanson, CC BY 2.0 (Flickr), crédités en bas du site.
+Mascotte : un vrai bouledogue (photo découpée en corps + 4 pattes articulées, `js/dog.js`) qui marche, trotte, se promène, aboie au clic et sprinte en poussant le ballon. Photos : Artur Malinowski (CC BY 2.0) et marneejill (CC BY-SA 2.0), Flickr, créditées en bas du site.
 
 Bonus : minute de match qui avance avec le défilement, menu « Programme », sons synthétisés (aucun fichier audio),
 easter eggs au clavier (`psg`, `arthur`, `ace`).
