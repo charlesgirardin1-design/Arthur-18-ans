@@ -120,8 +120,16 @@
 
   /* ================= STATS EN DIRECT ================= */
   const statEls = Object.fromEntries($$("[data-stat]").map(el => [el.dataset.stat, el]));
+  let statsStart = null;
+  const statsIO = new IntersectionObserver(([en]) => {
+    if (en.isIntersecting && !statsStart) { statsStart = performance.now(); statsIO.disconnect(); }
+  }, { threshold: 0.3 });
+  statsIO.observe($("#compteur"));
   function updateStats() {
-    const ms = Date.now() - birth;
+    if (!statsStart) return;
+    const p = reduceMotion ? 1 : Math.min(1, (performance.now() - statsStart) / 1800);
+    const ease = 1 - Math.pow(1 - p, 4);
+    const ms = (Date.now() - birth) * ease;
     const sec = ms / 1000, min = sec / 60, days = ms / 86400000;
     statEls.secondes.textContent = fmt.format(Math.floor(sec));
     statEls.jours.textContent = fmt.format(Math.floor(days));
@@ -130,7 +138,7 @@
     statEls.weekends.textContent = fmt.format(Math.floor(days / 7));
     statEls.pas.textContent = fmt.format(Math.floor(days * 11000));
   }
-  updateStats(); setInterval(updateStats, 1000);
+  (function statsLoop() { updateStats(); const p = statsStart ? (performance.now() - statsStart) / 1800 : 0; p < 1 ? requestAnimationFrame(statsLoop) : setInterval(updateStats, 1000); })();
 
   /* ================= CARRIÈRE ================= */
   $("#timeline").innerHTML = D.carriere.map(e => `
@@ -152,56 +160,90 @@
 
   /* ================= TIRS AU BUT ================= */
   const TOTAL = 5;
-  const zonesEl = $("#goalZones"), keeper = $("#keeper"), pkBall = $("#pkBall"), pkMsg = $("#pkMsg"), goal = $("#goal");
+  const scene = $("#pkScene"), zonesEl = $("#goalZones"), keeper = $("#keeper"), pkBall = $("#pkBall"),
+        pkShadow = $("#pkShadow"), pkMsg = $("#pkMsg"), net = $("#goalNet");
   let shots = 0, goals = 0, busy = false;
-  const ZONE_X = [16.7, 50, 83.3];
-  zonesEl.innerHTML = Array.from({ length: 6 }, (_, i) => `<button data-z="${i}" aria-label="Tirer zone ${i + 1}"></button>`).join("");
+  zonesEl.innerHTML = Array.from({ length: 6 }, (_, i) => `<button data-z="${i}" aria-label="Tirer ${["en haut", "en bas"][i < 3 ? 0 : 1]} ${["à gauche", "au centre", "à droite"][i % 3]}"></button>`).join("");
   $("#pkDots").innerHTML = "<i></i>".repeat(TOTAL);
+  keeper.classList.add("idle");
 
-  function pkShowMsg(text) {
-    pkMsg.textContent = text; pkMsg.classList.add("show");
-    setTimeout(() => pkMsg.classList.remove("show"), 1100);
+  function pkShowMsg(text, saved) {
+    pkMsg.textContent = text; pkMsg.classList.toggle("saved", saved); pkMsg.classList.add("show");
+    setTimeout(() => pkMsg.classList.remove("show"), 1200);
   }
-  function pkResetPositions() {
-    pkBall.style.left = "50%"; pkBall.style.bottom = "-14%"; pkBall.style.transform = "";
-    keeper.style.transform = "";
-  }
-  zonesEl.addEventListener("click", e => {
+  const anim = (el, frames, opts) => el.animate(frames, { fill: "forwards", ...opts }).finished;
+
+  zonesEl.addEventListener("click", async e => {
     const btn = e.target.closest("button");
     if (!btn || busy || shots >= TOTAL) return;
     busy = true;
-    const z = +btn.dataset.z, col = z % 3, top = z < 3;
-    const kCol = (Math.random() * 3) | 0;
-    const kTop = Math.random() < 0.5;
-    // le gardien plonge
-    const dx = (kCol - 1) * 150;
-    const rot = kCol === 0 ? -55 : kCol === 2 ? 55 : 0;
-    keeper.style.transform = `translateX(${dx}%) translateY(${kTop && kCol !== 1 ? -12 : 0}%) rotate(${rot}deg)`;
-    // le ballon part
-    pkBall.style.left = ZONE_X[col] + "%";
-    pkBall.style.bottom = top ? "62%" : "14%";
-    pkBall.style.transform = "scale(.7) rotate(540deg)";
+    const z = +btn.dataset.z, col = z % 3, row = z < 3 ? 0 : 1;
+    const kCol = (Math.random() * 3) | 0, kRow = Math.random() < 0.5 ? 0 : 1;
+    const saved = kCol === col && (kRow === row || Math.random() < 0.5);
 
-    const saved = kCol === col;
-    shots++;
+    // géométrie : du point de penalty vers le centre de la zone visée
+    const sR = scene.getBoundingClientRect(), bR = btn.getBoundingClientRect(), ballR = pkBall.getBoundingClientRect();
+    const tx = bR.left + bR.width * (col === 0 ? 0.4 : col === 2 ? 0.6 : 0.5) - (ballR.left + ballR.width / 2);
+    const ty = bR.top + bR.height * 0.5 - (ballR.top + ballR.height / 2);
+    const gR = $("#goal").getBoundingClientRect();
+
+    // le gardien plonge (petit temps de réaction)
     setTimeout(() => {
-      const dot = $$("#pkDots i")[shots - 1];
-      if (saved) { dot.classList.add("goal-ko"); pkShowMsg("ARRÊTÉ ! 🧤"); }
-      else { goals++; dot.classList.add("goal-ok"); pkShowMsg("BUUUT ! ⚽"); goal.classList.add("shake"); confetti(60); }
-      $("#pkShots").textContent = `${shots}/${TOTAL}`;
-      $("#pkGoals").textContent = goals;
-      setTimeout(() => {
-        goal.classList.remove("shake");
-        pkResetPositions(); busy = false;
-        if (shots >= TOTAL) pkEnd();
-      }, 1200);
-    }, 500);
+      keeper.classList.remove("idle"); keeper.classList.add("dive");
+      const dx = (kCol - 1) * gR.width * 0.3;
+      const rot = kCol === 0 ? -68 : kCol === 2 ? 68 : 0;
+      const dy = kRow === 0 ? -gR.height * (kCol === 1 ? 0.1 : 0.12) : (kCol === 1 ? gR.height * 0.04 : 0);
+      keeper.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+    }, 120);
+
+    // le ballon part en courbe
+    const curve = (Math.random() - 0.5) * 60;
+    const flight = 520;
+    const ballFrames = [
+      { transform: "translate(0,0) scale(1) rotate(0)" },
+      { transform: `translate(${tx * 0.5 + curve}px, ${ty * 0.55 - 30}px) scale(.8) rotate(300deg)`, offset: 0.5 },
+      { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
+    ];
+    anim(pkShadow, [{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${tx}px, ${ty * 0.15}px) scale(.5)`, opacity: .3 }], { duration: flight, easing: "ease-out" });
+    await anim(pkBall, ballFrames, { duration: flight, easing: "cubic-bezier(.25,.6,.4,1)" });
+
+    shots++;
+    const dot = $$("#pkDots i")[shots - 1];
+    if (saved) {
+      dot.classList.add("goal-ko"); pkShowMsg("ARRÊTÉ ! 🧤", true);
+      // le ballon est repoussé
+      const away = col === 1 ? (Math.random() < .5 ? -1 : 1) : (col === 0 ? -1 : 1);
+      anim(pkBall, [
+        { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
+        { transform: `translate(${tx + away * sR.width * 0.35}px, ${ty + sR.height * 0.35}px) scale(.8) rotate(200deg)`, opacity: 0 },
+      ], { duration: 650, easing: "ease-out" });
+    } else {
+      goals++; dot.classList.add("goal-ok"); pkShowMsg("BUUUT ! ⚽", false);
+      net.classList.remove("hit"); void net.offsetWidth; net.classList.add("hit");
+      scene.classList.add("shake", "roar"); confetti(70);
+      anim(pkBall, [
+        { transform: `translate(${tx}px, ${ty}px) scale(.58) rotate(600deg)` },
+        { transform: `translate(${tx * 1.04}px, ${ty * 0.9}px) scale(.5) rotate(640deg)` },
+      ], { duration: 300, easing: "ease-out" });
+    }
+    $("#pkShots").textContent = `${shots}/${TOTAL}`;
+    $("#pkGoals").textContent = goals;
+
+    setTimeout(() => {
+      scene.classList.remove("shake", "roar");
+      keeper.classList.remove("dive"); keeper.style.transform = ""; keeper.classList.add("idle");
+      pkBall.getAnimations().forEach(a => a.cancel()); pkShadow.getAnimations().forEach(a => a.cancel());
+      anim(pkBall, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 250 });
+      busy = false;
+      if (shots >= TOTAL) pkEnd();
+    }, 1500);
   });
   function pkEnd() {
     $$("button", zonesEl).forEach(b => (b.disabled = true));
     const verdict = goals === 5 ? "5/5, Ballon d'Or direct ! 🏆" : goals >= 3 ? `${goals}/5 — Qualifié, champion !` : `${goals}/5… même les légendes ratent, rejoue ! 😏`;
     toast(verdict);
     if (goals >= 4) confetti(220);
+    if (goals >= 3) keeper.classList.add("sad"); // le gardien fait la tête
     $("#pkReset").hidden = false;
   }
   $("#pkReset").addEventListener("click", () => {
@@ -209,6 +251,7 @@
     $("#pkShots").textContent = `0/${TOTAL}`; $("#pkGoals").textContent = "0";
     $$("#pkDots i").forEach(d => (d.className = ""));
     $$("button", zonesEl).forEach(b => (b.disabled = false));
+    keeper.classList.remove("sad");
     $("#pkReset").hidden = true;
   });
 
@@ -275,6 +318,86 @@
     <blockquote class="note" style="--r:${rot()};--c:${NOTE_COLORS[i % NOTE_COLORS.length]}">
       <p>${m.texte}</p><cite>— ${m.auteur}</cite>
     </blockquote>`).join("");
+
+  /* ================= MINUTE DE MATCH + BARRE DE PROGRESSION ================= */
+  const minuteEl = $("#matchMinute"), progressEl = $("#progress");
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
+    progressEl.style.width = p * 100 + "%";
+    const m = Math.round(p * 93);
+    minuteEl.textContent = m <= 90 ? `${m}'` : `90+${m - 90}'`;
+  }
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  /* ================= FLASHS PHOTO DANS LES TRIBUNES ================= */
+  $("#flashes").innerHTML = Array.from({ length: 26 }, () =>
+    `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;--d:${(3 + Math.random() * 5).toFixed(1)}s;--delay:-${(Math.random() * 8).toFixed(1)}s"></i>`).join("");
+
+  /* ================= BANDEAU LED ================= */
+  const tickerItems = ["JOYEUX ANNIVERSAIRE ARTHUR", "⚽", "18 ANS", "🎾", "20.12.2008", "🔴🔵", "LE MEILLEUR RESTE À JOUER", "🏆"];
+  const tickerHTML = tickerItems.map(t => `<span>${t}</span>`).join("");
+  $("#ticker").innerHTML = tickerHTML + tickerHTML;
+
+  /* ================= APPARITION AU DÉFILEMENT ================= */
+  const revealEls = $$(".section__title, .section__lead, .card-wrap, .stats-grid, .penalty, .quiz, .gallery, .wall, .cake-zone");
+  revealEls.forEach(el => el.classList.add("reveal"));
+  const revealIO = new IntersectionObserver(entries => entries.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add("visible"); revealIO.unobserve(en.target); }
+  }), { threshold: 0.12 });
+  revealEls.forEach(el => revealIO.observe(el));
+
+  /* ================= BOUGIES ================= */
+  const candlesEl = $("#candles");
+  candlesEl.innerHTML = Array.from({ length: 18 }, (_, i) => `<button class="candle" aria-label="Bougie ${i + 1}"><span class="flame"></span></button>`).join("");
+  const candles = $$(".candle", candlesEl);
+  const lit = () => candles.filter(c => !c.classList.contains("out"));
+  function blow(c) {
+    if (c.classList.contains("out")) return;
+    c.classList.add("out");
+    if (!lit().length) allOut();
+  }
+  function allOut() {
+    stopMic();
+    $("#cakeWish").textContent = "Fais un vœu, Arthur… ✨";
+    confetti(320);
+    $("#relight").hidden = false;
+  }
+  candlesEl.addEventListener("click", e => { const c = e.target.closest(".candle"); if (c) blow(c); });
+  $("#blowAll").addEventListener("click", () => {
+    lit().forEach((c, i) => setTimeout(() => blow(c), i * 70 + Math.random() * 60));
+  });
+  $("#relight").addEventListener("click", () => {
+    candles.forEach((c, i) => setTimeout(() => c.classList.remove("out"), i * 50));
+    $("#cakeWish").textContent = ""; $("#relight").hidden = true;
+  });
+
+  // souffler dans le micro (le son n'est jamais enregistré, juste mesuré en direct)
+  let micStream = null, micRaf = null;
+  function stopMic() {
+    if (micStream) micStream.getTracks().forEach(t => t.stop());
+    micStream = null; cancelAnimationFrame(micRaf);
+    $("#blowMic").classList.remove("listening"); $("#blowMic").textContent = "🎤 Souffler dans le micro";
+  }
+  $("#blowMic").addEventListener("click", async () => {
+    if (micStream) return stopMic();
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch { toast("Micro indisponible — clique sur les bougies 😉"); return; }
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const an = ac.createAnalyser(); an.fftSize = 512;
+    ac.createMediaStreamSource(micStream).connect(an);
+    const buf = new Uint8Array(an.fftSize);
+    $("#blowMic").classList.add("listening"); $("#blowMic").textContent = "🎤 Souffle fort !";
+    let last = 0;
+    (function listen(t) {
+      an.getByteTimeDomainData(buf);
+      let sum = 0; for (const v of buf) sum += (v - 128) ** 2;
+      const rms = Math.sqrt(sum / buf.length);
+      if (rms > 18 && t - last > 90) { last = t; const l = lit(); if (l.length) blow(l[(Math.random() * l.length) | 0]); }
+      if (micStream) micRaf = requestAnimationFrame(listen); else ac.close();
+    })(0);
+  });
 
   /* ================= NAV ACTIVE ================= */
   const navLinks = $$(".scorebar__nav a");
