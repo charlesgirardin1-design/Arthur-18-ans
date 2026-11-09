@@ -42,6 +42,8 @@ export default async function middleware(request) {
     });
   }
   if (ouvert) return continuer();
+  // le logo reste visible (page d'attente, aperçu du lien)
+  if (url.pathname.startsWith("/images/logo/")) return continuer();
 
   // accès aperçu pour les parents
   const essai = url.searchParams.get("apercu");
@@ -79,7 +81,14 @@ const PAGE_ATTENTE = `<!doctype html>
 <title>Arthur · 18 ans</title>
 <meta name="robots" content="noindex" />
 <meta name="theme-color" content="#050a22" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://arthur18ans.vercel.app/" />
+<meta property="og:image" content="https://arthur18ans.vercel.app/images/logo/apercu.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" href="/images/logo/favicon.png" />
+<link rel="apple-touch-icon" href="/images/logo/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
@@ -99,6 +108,10 @@ const PAGE_ATTENTE = `<!doctype html>
   .tunnel i:nth-child(5) { animation-delay: -3.2s; } .tunnel i:nth-child(6) { animation-delay: -4s; }
   @keyframes tunnel { 0% { transform: scale(.15); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(3.2); opacity: 0; } }
   @keyframes glow { to { opacity: .6; transform: scale(1.15); } }
+  .logo { width: min(230px, 48vw, 30svh); height: auto; aspect-ratio: 1; border-radius: 50%; object-fit: cover; margin-bottom: .4rem;
+    box-shadow: 0 0 0 4px rgba(255,255,255,.85), 0 0 0 9px rgba(227,6,19,.8), 0 0 60px rgba(120,160,255,.55), 0 20px 50px rgba(0,0,0,.6);
+    opacity: 0; transform: scale(.6) rotate(-8deg); animation: logoIn 1s cubic-bezier(.3,1.5,.5,1) .1s forwards; }
+  @keyframes logoIn { to { opacity: 1; transform: none; } }
   .content { position: relative; z-index: 2; display: grid; gap: .8rem; justify-items: center; }
   .line { font-family: var(--display); letter-spacing: .32em; color: var(--muted); font-size: clamp(1rem, 3vw, 1.3rem); opacity: 0; transform: translateY(16px); animation: up .9s cubic-bezier(.16,1,.3,1) var(--d, 0s) forwards; }
   .big { font-size: clamp(3rem, 12vw, 7.5rem); letter-spacing: .03em; color: #fff; line-height: .95; text-shadow: 0 0 40px rgba(120,160,255,.5); }
@@ -129,6 +142,7 @@ const PAGE_ATTENTE = `<!doctype html>
   <main class="scene">
     <div class="tunnel" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="content">
+      <img class="logo" src="/images/logo/logo.jpg" alt="Logo des 18 ans d'Arthur" width="900" height="900" />
       <p class="line" style="--d:.3s">20 décembre 2026</p>
       <h1 class="line big" style="--d:1.1s">Le match de ta vie</h1>
       <p class="line" style="--d:1.9s">Les joueurs entrent sur le terrain…</p>
