@@ -75,6 +75,10 @@ window.FIG = (() => {
     stretch: { head: [100, 46], neck: [100, 64], shL: [86, 80], shR: [114, 80], elL: [82, 40], elR: [118, 40], wrL: [80, 4], wrR: [120, 4], hipL: [92, 162], hipR: [108, 162], knL: [90, 214], knR: [119, 206], anL: [90, 266], anR: [112, 252], toeL: [88, 281], toeR: [103, 265] },
     jump:    { head: [100, 46], neck: [100, 64], shL: [86, 80], shR: [114, 80], elL: [80, 42], elR: [120, 42], wrL: [77, 6], wrR: [123, 6], hipL: [91, 162], hipR: [109, 162], knL: [82, 206], knR: [118, 206], anL: [88, 252], anR: [112, 252], toeL: [84, 266], toeR: [116, 266] },
     low:     { head: [100, 70], neck: [100, 88], shL: [80, 104], shR: [120, 104], elL: [62, 140], elR: [138, 140], wrL: [74, 176], wrR: [126, 176], hipL: [88, 186], hipR: [112, 186], knL: [62, 230], knR: [138, 230], anL: [68, 270], anR: [132, 270], toeL: [56, 282], toeR: [144, 282] },
+    // appel « split step » juste avant la frappe : plus bas, appuis larges
+    set:     { head: [100, 64], neck: [100, 82], shL: [77, 99], shR: [123, 99], elL: [54, 128], elR: [146, 128], wrL: [50, 158], wrR: [150, 158], hipL: [87, 182], hipR: [113, 182], knL: [58, 222], knR: [142, 222], anL: [54, 268], anR: [146, 268], toeL: [42, 281], toeR: [158, 281] },
+    // poings serrés vers le ciel après un arrêt
+    celebrate: { head: [100, 38], neck: [100, 56], shL: [78, 74], shR: [122, 74], elL: [62, 42], elR: [138, 42], wrL: [58, 10], wrR: [142, 10], hipL: [89, 158], hipR: [111, 158], knL: [76, 210], knR: [124, 210], anL: [70, 264], anR: [130, 264], toeL: [58, 278], toeR: [142, 278] },
   };
   const KICKER = {
     stand: { head: [100, 40], neck: [100, 58], shL: [76, 78], shR: [124, 78], elL: [64, 118], elR: [136, 118], wrL: [63, 152], wrR: [137, 152], hipL: [89, 162], hipR: [111, 162], knL: [85, 214], knR: [115, 214], anL: [85, 266], anR: [115, 266], toeL: [85, 279], toeR: [115, 279] },
@@ -82,6 +86,15 @@ window.FIG = (() => {
     run2:  { head: [100, 38], neck: [100, 56], shL: [76, 77], shR: [124, 77], elL: [66, 104], elR: [138, 118], wrL: [78, 84], wrR: [142, 150], hipL: [89, 160], hipR: [111, 160], knL: [84, 222], knR: [112, 198], anL: [79, 266], anR: [107, 236], toeL: [78, 280], toeR: [107, 242] },
     windup:{ head: [96, 42], neck: [97, 60], shL: [73, 80], shR: [121, 79], elL: [52, 104], elR: [142, 112], wrL: [38, 104], wrR: [152, 134], hipL: [88, 163], hipR: [110, 163], knL: [84, 215], knR: [121, 222], anL: [83, 267], anR: [128, 276], toeL: [83, 280], toeR: [130, 290] },
     kick:  { head: [95, 44], neck: [96, 62], shL: [72, 82], shR: [120, 80], elL: [48, 96], elR: [150, 104], wrL: [28, 92], wrR: [168, 120], hipL: [88, 164], hipR: [110, 163], knL: [85, 215], knR: [121, 194], anL: [83, 267], anR: [127, 220], toeL: [83, 280], toeR: [130, 222] },
+    // pied d'appui planté, jambe de frappe armée loin derrière
+    plant: { head: [94, 46], neck: [95, 64], shL: [71, 84], shR: [119, 82], elL: [46, 100], elR: [146, 116], wrL: [26, 98], wrR: [156, 140], hipL: [87, 166], hipR: [110, 166], knL: [82, 216], knR: [126, 232], anL: [81, 268], anR: [136, 284], toeL: [81, 281], toeR: [140, 297] },
+    // accompagnement : la jambe finit haute, le buste se redresse
+    follow:{ head: [97, 42], neck: [98, 60], shL: [74, 80], shR: [122, 79], elL: [50, 92], elR: [146, 106], wrL: [30, 84], wrR: [158, 126], hipL: [89, 162], hipR: [111, 161], knL: [86, 214], knR: [122, 176], anL: [85, 267], anR: [128, 190], toeL: [85, 280], toeR: [131, 186] },
+    // célébration : bras en V
+    celebrate: { head: [100, 36], neck: [100, 54], shL: [76, 74], shR: [124, 74], elL: [58, 44], elR: [142, 44], wrL: [46, 12], wrR: [154, 12], hipL: [89, 158], hipR: [111, 158], knL: [83, 210], knR: [117, 210], anL: [80, 262], anR: [120, 262], toeL: [80, 276], toeR: [120, 276] },
+    celebrate2:{ head: [100, 30], neck: [100, 48], shL: [76, 68], shR: [124, 68], elL: [62, 36], elR: [140, 46], wrL: [56, 2], wrR: [160, 20], hipL: [89, 152], hipR: [111, 152], knL: [82, 198], knR: [120, 206], anL: [84, 246], anR: [122, 254], toeL: [84, 258], toeR: [122, 268] },
+    // les mains sur la tête après un raté
+    despair: { head: [100, 46], neck: [100, 63], shL: [77, 82], shR: [123, 82], elL: [58, 52], elR: [142, 52], wrL: [84, 30], wrR: [116, 30], hipL: [89, 164], hipR: [111, 164], knL: [86, 216], knR: [114, 216], anL: [86, 268], anR: [114, 268], toeL: [86, 281], toeR: [114, 281] },
   };
 
   const KITS = {
@@ -123,7 +136,7 @@ window.FIG = (() => {
     // bassin
     const wL = add(p.hipL, -13, -16), wR = add(p.hipR, 13, -16);
     const cr = add(pt(p.hipL, p.hipR, 0.5), 0, 12);
-    s += `<path d="M${f(wL)} L${f(wR)} L${f(add(p.hipR, 13, 6))} Q${f(cr)} ${f(add(cr, 0, 0))} ${f(add(p.hipL, -13, 6))} Z" fill="${H}" ${line}/>`;
+    s += `<path d="M${f(wL)} L${f(wR)} L${f(add(p.hipR, 13, 6))} Q${f(cr)} ${f(add(p.hipL, -13, 6))} Z" fill="${H}" ${line}/>`;
     if (K.stripe) s += `<path d="M${f(add(p.hipR, 12, -12))} L${f(add(p.hipR, 13, 4))}" stroke="${K.stripe}" stroke-width="3"/><path d="M${f(add(p.hipL, -12, -12))} L${f(add(p.hipL, -13, 4))}" stroke="${K.stripe}" stroke-width="3"/>`;
     else s += `<path d="M${f(add(p.hipR, 12, -12))} L${f(add(p.hipR, 13, 4))}" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M${f(add(p.hipL, -12, -12))} L${f(add(p.hipL, -13, 4))}" stroke="#fff" stroke-opacity=".7" stroke-width="2"/>`;
 
@@ -223,10 +236,12 @@ window.FIG = (() => {
       this.cancel();
       const from = JSON.parse(JSON.stringify(this.pose)), target = this.poses[name];
       return new Promise(resolve => {
-        const t0 = performance.now();
+        // horloge « ralentissable » : FIG.speed < 1 = ralenti
+        let el = 0, prev = performance.now();
         const a = { resolve, raf: 0 };
         const step = now => {
-          const t = Math.min(1, (now - t0) / ms), e = ease(t);
+          el += (now - prev) * api.speed; prev = now;
+          const t = Math.min(1, el / ms), e = ease(t);
           for (const k in target) this.pose[k] = pt(from[k], target[k], e);
           this.render();
           if (t < 1) a.raf = requestAnimationFrame(step); else { this.anim = null; resolve(); }
@@ -238,5 +253,6 @@ window.FIG = (() => {
   }
 
 
-  return { ballSVG, Figure, easeOut, easeInOut };
+  const api = { ballSVG, Figure, easeOut, easeInOut, speed: 1 };
+  return api;
 })();

@@ -251,33 +251,48 @@
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">07</span><span class="sh__kicker">Séance de tirs au but</span></div>
         <h2 class="sh__title">À toi de tirer</h2>
-        <p class="sh__lead">5 tirs pour battre le gardien. Clique dans le but pour viser.</p>
+        <p class="sh__lead">5 tirs pour battre le gardien. Clique (ou tape) dans un coin du but pour viser : le dernier tir se joue au ralenti.</p>
       </header>
       <div class="penalty">
-        <div class="board">
-          <div>TIRS <b id="pkShots">0/5</b></div>
-          <div class="board__dots" id="pkDots"></div>
-          <div>BUTS <b id="pkGoals">0</b></div>
-        </div>
         <div class="pk-scene" id="pkScene">
           <div class="pk-world" id="pkWorld">
-            <div class="pk-crowd" aria-hidden="true"><div class="pk-flashes" id="pkFlashes"></div></div>
-            <div class="pk-boards" aria-hidden="true"><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>JOYEUX ANNIVERSAIRE ARTHUR</span></div>
+            <canvas class="pk-pitch" id="pkPitch" aria-hidden="true"></canvas>
+            <canvas class="pk-crowd" id="pkCrowd" aria-hidden="true"></canvas>
+            <div class="pk-lights" aria-hidden="true"><i></i><i></i></div>
+            <div class="pk-boards" id="pkBoards" aria-hidden="true"><div class="pk-boards__track"><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>ICI C'EST ARTHUR</span><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>ICI C'EST ARTHUR</span></div></div>
+            <canvas class="pk-net" id="pkNet" aria-hidden="true"></canvas>
             <div class="goal" id="goal">
-              <div class="goal__net" id="goalNet"></div>
-              <div class="net-ripple" id="netRipple"></div>
               <div class="keeper" id="keeper"><div class="keeper__fig" id="keeperFig"></div></div>
               <div class="goal__zones" id="goalZones"></div>
+              <p class="goal__hint" id="pkHint" aria-hidden="true">Choisis ton coin</p>
             </div>
-            <div class="pk-box" aria-hidden="true"></div>
-            <div class="pk-spot" aria-hidden="true"></div>
             <div class="pk-ball-shadow" id="pkShadow" aria-hidden="true"></div>
             <div class="pk-ball" id="pkBall" aria-hidden="true"></div>
-            <div class="kicker" id="kicker" aria-hidden="true"></div>
+            <div class="kicker" id="kicker" aria-hidden="true"><div class="kicker__fig" id="kickerFig"></div></div>
+            <canvas class="pk-fx" id="pkFx" aria-hidden="true"></canvas>
           </div>
+          <div class="pk-flash" id="pkFlash" aria-hidden="true"></div>
+          <div class="pk-letterbox" aria-hidden="true"><i></i><i></i></div>
+          <div class="pk-bug">
+            <span class="pk-bug__live"><i></i>DIRECT</span>
+            <span class="pk-bug__team">ARTHUR</span>
+            <span class="pk-bug__dots" id="pkDots"></span>
+            <b class="pk-bug__score" id="pkGoals">0</b>
+            <span class="pk-bug__shots">TIR <b id="pkShots">0/5</b></span>
+          </div>
+          <div class="pk-tag" id="pkTag" aria-hidden="true"><b>REPLAY</b><span>RALENTI</span></div>
           <div class="banner" id="pkMsg" aria-live="polite"><b></b><small></small></div>
+          <div class="pk-result" id="pkResult" hidden>
+            <div class="pk-result__card">
+              <p class="pk-result__kicker">Fin de la séance</p>
+              <p class="pk-result__score"><b id="pkResScore">0</b><span>/5</span></p>
+              <p class="pk-result__title" id="pkResTitle"></p>
+              <div class="pk-result__shots" id="pkResShots"></div>
+              <p class="pk-result__sub" id="pkResSub"></p>
+              <button class="btn" id="pkReset">Rejouer la séance</button>
+            </div>
+          </div>
         </div>
-        <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
       </div>
     </section>
 
@@ -289,15 +304,23 @@
         <p class="sh__lead">Clique (ou tape) sur le ballon pour le garder en l'air. Objectif : au moins 18 jongles, un par année.</p>
       </header>
       <div class="juggle">
-        <div class="board">
+        <div class="board jg-board">
           <div>JONGLES <b id="jgScore">0</b></div>
+          <div>NIVEAU <b id="jgLvl">1</b></div>
           <div>RECORD <b id="jgBest">0</b></div>
         </div>
-        <div class="juggle__stage">
-          <canvas id="jgCanvas" aria-label="Jeu de jongles"></canvas>
+        <div class="juggle__stage" id="jgStage">
+          <canvas id="jgCanvas" aria-label="Jeu de jongles : tape sur le ballon pour le garder en l'air"></canvas>
           <div class="juggle__overlay" id="jgOverlay">
-            <p id="jgText">Prêt pour l'échauffement ?</p>
-            <button class="btn" id="jgStart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg> <span>Commencer</span></button>
+            <div class="jg-card">
+              <p class="jg-card__kicker" id="jgKicker">Échauffement</p>
+              <p class="jg-card__big" id="jgBig" hidden>0</p>
+              <p class="jg-card__text" id="jgText">Prêt pour l'échauffement ?</p>
+              <ul class="jg-card__stats" id="jgStats" hidden></ul>
+              <div class="jg-card__bar" id="jgBar" hidden><i></i><span>Objectif 18</span></div>
+              <button class="btn" id="jgStart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg> <span>Commencer</span></button>
+              <p class="jg-card__tip">Astuce : touche le ballon en plein centre pour une <b>touche parfaite</b>. Sur les côtés, il part de travers.</p>
+            </div>
           </div>
         </div>
       </div>
