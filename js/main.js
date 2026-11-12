@@ -182,43 +182,145 @@
   revealEls.forEach(el => revealIO.observe(el));
 
   /* =================================================================
-     LETTRE
+     LETTRE (l'écriture se trace mot à mot, la plume suit, cachet de cire)
      ================================================================= */
-  $("#letterTitle").textContent = D.lettre.titre;
-  $("#letterBody").innerHTML = D.lettre.paragraphes.map(p => `<p>${p}</p>`).join("");
-  $("#letterSign").textContent = "— " + D.lettre.signature;
-  const letterIO = new IntersectionObserver(([en]) => {
-    if (!en.isIntersecting) return;
-    $$("#letterBody p").forEach((p, i) => setTimeout(() => p.classList.add("visible"), 400 + i * 700));
-    letterIO.disconnect();
-  }, { threshold: 0.25 });
-  letterIO.observe($("#letter"));
+  (() => {
+    const letter = $("#letter"), body = $("#letterBody"), titleEl = $("#letterTitle"), signEl = $("#letterSign");
+    const pen = $("#letterPen"), seal = $("#letterSeal"), skipBtn = $("#letterSkip");
+    titleEl.textContent = D.lettre.titre;
+    body.innerHTML = D.lettre.paragraphes.map(p => `<p>${p}</p>`).join("");
+    signEl.textContent = "— " + D.lettre.signature;
+    // découpe chaque nœud texte en mots (les espaces restent du texte : lecture d'écran intacte)
+    const words = [];
+    function splitWords(root) {
+      [...root.childNodes].forEach(n => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            const w = document.createElement("span"); w.className = "lw"; w.textContent = part;
+            frag.appendChild(w); words.push(w);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1) splitWords(n);
+      });
+    }
+    splitWords(titleEl);
+    const titleCount = words.length;
+    const paraStarts = new Set();
+    $$("p", body).forEach(p => { paraStarts.add(words.length); splitWords(p); });
+    const bodyEnd = words.length;
+    splitWords(signEl);
+
+    let i = 0, started = false, done = false, inView = false, nextAt = 0, raf = null;
+    function finish() {
+      if (done) return; done = true;
+      words.forEach(w => w.classList.add("in", "instant"));
+      letter.classList.add("written");
+      pen.classList.remove("on");
+      skipBtn.hidden = true;
+      setTimeout(() => { letter.classList.add("sealed"); SFX.pop(300); }, reduceMotion ? 0 : 700);
+    }
+    function placePen(w) {
+      const lr = letter.getBoundingClientRect(), r = w.getBoundingClientRect();
+      pen.style.transform = `translate(${(r.right - lr.left - 6).toFixed(1)}px, ${(r.bottom - lr.top - 58).toFixed(1)}px)`;
+    }
+    function tick(now) {
+      raf = null;
+      if (done) return;
+      if (inView && now >= nextAt) {
+        const w = words[i];
+        const len = w.textContent.length;
+        const dur = Math.min(320, 50 + len * 17);
+        w.style.setProperty("--wd", dur + "ms");
+        w.classList.add("in");
+        placePen(w);
+        let pause = dur * 0.42 + 12;
+        if (/[.!?:;,…]$/.test(w.textContent)) pause += /[,]$/.test(w.textContent) ? 120 : 280;
+        if (i + 1 === titleCount || paraStarts.has(i + 1) || i + 1 === bodyEnd) pause += 450;
+        nextAt = now + pause;
+        i++;
+        if (i >= words.length) { setTimeout(finish, 500); return; }
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function start() {
+      if (started) return; started = true;
+      letter.classList.add("writing");
+      if (reduceMotion) return finish();
+      pen.classList.add("on");
+      nextAt = performance.now() + 900;
+      raf = requestAnimationFrame(tick);
+    }
+    new IntersectionObserver(([en]) => {
+      inView = en.isIntersecting;
+      if (inView) { start(); if (!raf && !done) raf = requestAnimationFrame(tick); }
+    }, { threshold: 0.18 }).observe(letter);
+    skipBtn.addEventListener("click", e => { e.stopPropagation(); finish(); });
+    letter.addEventListener("dblclick", finish);
+  })();
 
   /* =================================================================
-     CARTE JOUEUR
+     CARTE JOUEUR (entrée en scène, holographie, retournement 3D)
      ================================================================= */
-  const c = D.carte;
-  $("#cardRating").textContent = c.note;
-  $("#cardPos").textContent = c.poste;
-  $("#cardStats").innerHTML = c.stats.map(s => `<div><b>${s.valeur}</b><span>${s.label}</span></div>`).join("");
-  $("#backSports").textContent = c.sports.join(" · ");
-  if (D.photoProfil) $("#cardPhoto").innerHTML = `<img src="${D.photoProfil}" alt="Arthur" style="object-position:${D.photoProfilPos || "50% 35%"}" />`;
-  const now0 = new Date();
-  let age = now0.getFullYear() - birth.getFullYear();
-  if (now0 < new Date(now0.getFullYear(), birth.getMonth(), birth.getDate())) age--;
-  $("#backAge").textContent = now0 < majority ? `${age} ans (18 le 20/12 !)` : `${age} ans`;
+  (() => {
+    const c = D.carte;
+    $("#cardRating").textContent = c.note;
+    $("#cardPos").textContent = c.poste;
+    $("#cardStats").innerHTML = c.stats.map((s, k) => `<div style="--k:${k}"><b>${s.valeur}</b><span>${s.label}</span></div>`).join("");
+    $("#backSports").textContent = c.sports.join(" · ");
+    if (D.photoProfil) $("#cardPhoto").innerHTML = `<img src="${D.photoProfil}" alt="Arthur" style="object-position:${D.photoProfilPos || "50% 35%"}" />`;
+    const now0 = new Date();
+    let age = now0.getFullYear() - birth.getFullYear();
+    if (now0 < new Date(now0.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+    $("#backAge").textContent = now0 < majority ? `${age} ans (18 le 20/12 !)` : `${age} ans`;
 
-  const card = $("#playerCard");
-  card.addEventListener("click", () => { card.classList.toggle("flipped"); SFX.pop(380); });
-  if (!reduceMotion) {
-    card.addEventListener("pointermove", e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      card.style.transform = `rotateY(${(x - 0.5) * 22}deg) rotateX(${(0.5 - y) * 22}deg)`;
-      card.style.setProperty("--mx", x * 100 + "%"); card.style.setProperty("--my", y * 100 + "%"); card.style.setProperty("--hx", x * 100 + "%");
+    const card = $("#playerCard"), wrap = card.closest(".card-wrap");
+    card.addEventListener("click", () => {
+      const f = card.classList.toggle("flipped");
+      card.setAttribute("aria-pressed", String(f));
+      card.classList.remove("lift"); void card.offsetWidth; card.classList.add("lift");
+      SFX.pop(f ? 380 : 460);
     });
-    card.addEventListener("pointerleave", () => (card.style.transform = ""));
-  }
+    // entrée en scène quand la carte arrive à l'écran
+    new IntersectionObserver(([en], io) => {
+      if (!en.isIntersecting) return;
+      io.disconnect();
+      wrap.classList.add("is-in");
+      setTimeout(() => wrap.classList.add("is-ready"), reduceMotion ? 0 : 1700);
+    }, { threshold: 0.35 }).observe(wrap);
+
+    // inclinaison fluide (interpolée) qui suit le pointeur
+    if (reduceMotion) return;
+    let tx = 0, ty = 0, rx = 0, ry = 0, px = 50, py = 50, tpx = 50, tpy = 50, raf = null, hover = false;
+    function frame() {
+      rx += (tx - rx) * 0.12; ry += (ty - ry) * 0.12;
+      px += (tpx - px) * 0.14; py += (tpy - py) * 0.14;
+      card.style.setProperty("--rx", rx.toFixed(2) + "deg");
+      card.style.setProperty("--ry", ry.toFixed(2) + "deg");
+      card.style.setProperty("--mx", px.toFixed(1) + "%");
+      card.style.setProperty("--my", py.toFixed(1) + "%");
+      card.style.setProperty("--hx", px.toFixed(1) + "%");
+      card.style.setProperty("--hy", py.toFixed(1) + "%");
+      card.style.setProperty("--d", (Math.hypot(px - 50, py - 50) / 70).toFixed(3));
+      const still = Math.abs(tx - rx) < 0.05 && Math.abs(ty - ry) < 0.05 && Math.abs(tpx - px) < 0.1 && Math.abs(tpy - py) < 0.1;
+      raf = still && !hover ? null : requestAnimationFrame(frame);
+    }
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    card.addEventListener("pointermove", e => {
+      if (e.pointerType === "touch") return;
+      const r = card.getBoundingClientRect();
+      const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+      hover = true; card.classList.add("hovered");
+      ty = (x - 0.5) * 26; tx = (0.5 - y) * 22; tpx = x * 100; tpy = y * 100;
+      kick();
+    });
+    card.addEventListener("pointerleave", () => {
+      hover = false; card.classList.remove("hovered");
+      tx = ty = 0; tpx = tpy = 50; kick();
+    });
+  })();
 
   /* =================================================================
      LE BULLDOG (fiche + mascotte en photo)
@@ -305,125 +407,302 @@
   })();
 
   /* =================================================================
-     STATS EN DIRECT (comptage animé puis mise à jour chaque seconde)
+     STATS EN DIRECT (compteurs à rouleaux, puis mise à jour chaque seconde)
      ================================================================= */
-  const statEls = Object.fromEntries($$("[data-stat]").map(el => [el.dataset.stat, el]));
-  let statsStart = null;
-  function updateStats() {
-    if (!statsStart) return;
-    const p = reduceMotion ? 1 : Math.min(1, (performance.now() - statsStart) / 2000);
-    const ms = (Date.now() - birth) * (1 - Math.pow(1 - p, 4));
-    const sec = ms / 1000, min = sec / 60, days = ms / 86400000;
-    statEls.secondes.textContent = fmt.format(Math.floor(sec));
-    statEls.jours.textContent = fmt.format(Math.floor(days));
-    statEls.coeur.textContent = fmt.format(Math.floor(min * 80));
-    statEls.nuits.textContent = fmt.format(Math.floor(days));
-    statEls.weekends.textContent = fmt.format(Math.floor(days / 7));
-    statEls.pas.textContent = fmt.format(Math.floor(days * 11000));
-    return p;
-  }
-  const statsIO = new IntersectionObserver(([en]) => {
-    if (!en.isIntersecting || statsStart) return;
-    statsStart = performance.now(); statsIO.disconnect();
-    (function loop() { updateStats() < 1 ? requestAnimationFrame(loop) : setInterval(updateStats, 1000); })();
-  }, { threshold: 0.3 });
-  statsIO.observe($("#compteur"));
+  (() => {
+    const statEls = Object.fromEntries($$("[data-stat]").map(el => [el.dataset.stat, el]));
+    const strip = '<span class="od__s">' + "01234567890".split("").map(d => `<i>${d}</i>`).join("") + "</span>";
+    // compteur mécanique : un rouleau par chiffre, séparateurs fixes
+    function odo(el, str) {
+      const sig = str.replace(/\d/g, "0");
+      if (el._sig !== sig) {
+        el._sig = sig;
+        el.innerHTML = `<span class="vh"></span><span class="od-row" aria-hidden="true">${[...str].map(ch => /\d/.test(ch)
+          ? `<span class="od">${strip}</span>` : `<span class="od-sep">${ch === " " || ch === " " || ch === " " ? " " : ch}</span>`).join("")}</span>`;
+        el._rolls = $$(".od__s", el);
+        el._prev = el._rolls.map(() => 0);
+        el._vh = $(".vh", el);
+        void el.offsetWidth;
+      }
+      el._vh.textContent = str;
+      const digits = str.replace(/\D/g, "");
+      el._rolls.forEach((r, k) => {
+        const v = +digits[k], prev = el._prev[k];
+        if (v === prev) return;
+        if (prev === 9 && v === 0 && !el.classList.contains("rolling")) {
+          r.style.setProperty("--v", 10);
+          r.addEventListener("transitionend", () => {
+            r.style.transition = "none"; r.style.setProperty("--v", 0);
+            void r.offsetWidth; r.style.transition = "";
+          }, { once: true });
+        } else r.style.setProperty("--v", v);
+        el._prev[k] = v;
+      });
+    }
+    function values() {
+      const ms = Date.now() - birth;
+      const sec = ms / 1000, min = sec / 60, days = ms / 86400000;
+      return {
+        secondes: Math.floor(sec), jours: Math.floor(days), coeur: Math.floor(min * 80),
+        nuits: Math.floor(days), weekends: Math.floor(days / 7), pas: Math.floor(days * 11000),
+      };
+    }
+    function render() { const v = values(); for (const k in statEls) odo(statEls[k], fmt.format(v[k])); }
+    // état initial : rouleaux à zéro, à la bonne longueur
+    const v0 = values();
+    for (const k in statEls) odo(statEls[k], fmt.format(v0[k]).replace(/\d/g, "0"));
+    let started = false;
+    const grid = $(".stats-grid");
+    new IntersectionObserver(([en], io) => {
+      if (!en.isIntersecting || started) return;
+      started = true; io.disconnect();
+      grid.classList.add("is-live");
+      if (reduceMotion) { render(); setInterval(render, 1000); return; }
+      for (const k in statEls) {
+        statEls[k].classList.add("rolling");
+        // chaque rouleau a son propre délai : de droite à gauche, façon machine à sous
+        const rolls = statEls[k]._rolls, n = rolls.length;
+        rolls.forEach((r, j) => r.style.setProperty("--delay", ((n - 1 - j) * 70 + (+statEls[k].closest(".stat").style.getPropertyValue("--i") || 0) * 120) + "ms"));
+      }
+      setTimeout(render, 450);
+      setTimeout(() => {
+        for (const k in statEls) { statEls[k].classList.remove("rolling"); statEls[k]._rolls.forEach(r => r.style.removeProperty("--delay")); }
+        render(); setInterval(render, 1000);
+      }, 3600);
+    }, { threshold: 0.3 }).observe(grid);
+  })();
 
   /* =================================================================
-     CARRIÈRE
+     CARRIÈRE (la ligne se dessine au défilement, les étapes s'allument)
      ================================================================= */
-  $("#timeline").innerHTML = D.carriere.map(e => `
-    <li class="tl-item"><article class="tl-card">
-      <div><div class="tl-year">${e.annee}</div><h3>${e.titre}</h3><p>${e.texte}</p></div>
-      ${e.photo ? `<img class="tl-photo" src="${e.photo}" alt="${e.titre}" loading="lazy" />` : ""}
-    </article></li>`).join("");
-  const tlIO = new IntersectionObserver(entries => entries.forEach(en => {
-    if (en.isIntersecting) { en.target.classList.add("visible"); tlIO.unobserve(en.target); }
-  }), { threshold: 0.2 });
-  $$(".tl-item").forEach(el => tlIO.observe(el));
+  (() => {
+    const tl = $("#timeline");
+    tl.innerHTML = D.carriere.map((e, k) => `
+      <li class="tl-item${e.photo ? " tl-item--photo" : ""}" style="--k:${k}">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <span class="tl-ghost" aria-hidden="true">${e.annee}</span>
+        <article class="tl-card">
+          <div class="tl-text"><div class="tl-year">${e.annee}</div><h3>${e.titre}</h3><p>${e.texte}</p></div>
+          ${e.photo ? `<figure class="tl-photo"><img src="${e.photo}" alt="${e.titre}" loading="lazy" decoding="async" /></figure>` : ""}
+        </article>
+      </li>`).join("");
+    const items = $$(".tl-item", tl);
+    const tlIO = new IntersectionObserver(entries => entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add("visible"); tlIO.unobserve(en.target); }
+    }), { threshold: 0.25, rootMargin: "0px 0px -8% 0px" });
+    items.forEach(el => tlIO.observe(el));
+
+    const wrap = $(".tl-wrap"), fill = $("#tlFill"), ball = $("#tlBall");
+    ball.innerHTML = FIG.ballSVG();
+    let active = false, raf = null, dots = [];
+    const measure = () => { dots = items.map(it => it.offsetTop + $(".tl-dot", it).offsetTop + 10); };
+    function update() {
+      raf = null;
+      const r = wrap.getBoundingClientRect();
+      const h = wrap.offsetHeight;
+      const y = reduceMotion ? h : Math.max(0, Math.min(h, innerHeight * 0.62 - r.top));
+      fill.style.transform = `scaleY(${(y / h).toFixed(4)})`;
+      ball.style.transform = `translate(-50%, ${(y - 14).toFixed(1)}px) rotate(${(y * 1.4).toFixed(0)}deg)`;
+      wrap.classList.toggle("tl-done", y >= h - 2);
+      items.forEach((it, k) => it.classList.toggle("lit", y >= dots[k] - 4));
+    }
+    const req = () => { if (active && !raf) raf = requestAnimationFrame(update); };
+    new IntersectionObserver(([en]) => { active = en.isIntersecting; if (active) { measure(); req(); } }, { rootMargin: "20% 0px" }).observe(wrap);
+    addEventListener("scroll", req, { passive: true });
+    addEventListener("resize", () => { measure(); req(); });
+    addEventListener("load", () => { measure(); req(); });
+  })();
 
   /* =================================================================
-     TA VIE EN 18 SAISONS (pellicule)
+     TA VIE EN 18 SAISONS (pellicule + visionneuse plein écran)
      ================================================================= */
-  const strip = $("#filmStrip");
-  const by = birth.getFullYear();
-  const ans = a => a === 0 ? "Naissance" : `${a} an${a > 1 ? "s" : ""}`;
-  const saison = a => `Saison ${by + a}-${String((by + a + 1) % 100).padStart(2, "0")}`;
-  const photos = D.saisons.map((s, i) => ({ ...s, _i: i })).sort((x, y) => x.age - y.age || x._i - y._i);
-  const withSrc = photos.filter(p => p.src);
-  strip.innerHTML = photos.map((s, i) => `
-    <button class="frame${s.src ? "" : " frame--empty"}" data-i="${i}" ${s.src ? "" : 'tabindex="-1"'} aria-label="${ans(s.age)}${s.legende ? " — " + s.legende : ""}">
-      <div class="frame__img">${s.src
-        ? `<img src="${s.src}" alt="Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}" loading="lazy" decoding="async" draggable="false" style="object-position:${s.pos || "50% 35%"}" />`
-        : `<div class="frame__ph"><b>${s.age}</b>photo à venir</div>`}</div>
-      <div class="frame__meta"><b>${ans(s.age)}</b><span>${saison(s.age)}</span></div>
-      <div class="frame__cap">${s.legende || ""}</div>
-    </button>`).join("");
-  const frames = $$(".frame", strip);
-  const ages = [...new Set(photos.map(p => p.age))];
-  $("#filmAges").innerHTML = ages.map(a => `<button data-age="${a}" aria-label="Aller à ${ans(a)}">${a}</button>`).join("");
-  const ageBtns = $$("#filmAges button");
-  const goFrame = i => { const f = frames[i]; if (f) strip.scrollTo({ left: f.offsetLeft - (strip.clientWidth - f.offsetWidth) / 2, behavior: "smooth" }); };
-  $("#filmAges").addEventListener("click", e => { const b = e.target.closest("button"); if (b) goFrame(photos.findIndex(p => p.age === +b.dataset.age)); });
-  const step = () => (frames[0]?.offsetWidth || 240) * 2;
-  $("#filmPrev").addEventListener("click", () => strip.scrollBy({ left: -step(), behavior: "smooth" }));
-  $("#filmNext").addEventListener("click", () => strip.scrollBy({ left: step(), behavior: "smooth" }));
-  function markActive() {
-    const mid = strip.scrollLeft + strip.clientWidth / 2;
-    let best = 0, bd = Infinity;
-    frames.forEach((f, i) => { const d = Math.abs(f.offsetLeft + f.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } });
-    frames.forEach((f, i) => f.classList.toggle("current", i === best));
-    ageBtns.forEach(b => b.classList.toggle("active", +b.dataset.age === photos[best].age));
-  }
-  strip.addEventListener("scroll", () => requestAnimationFrame(markActive), { passive: true });
-  markActive();
-  // glisser à la souris
-  let drag = null, lastDrag = false;
-  strip.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; drag = { x: e.clientX, left: strip.scrollLeft, moved: false }; });
-  addEventListener("pointermove", e => {
-    if (!drag) return;
-    const dx = e.clientX - drag.x;
-    if (Math.abs(dx) > 4) { drag.moved = true; strip.classList.add("dragging"); }
-    strip.scrollLeft = drag.left - dx;
-  });
-  addEventListener("pointerup", () => { if (drag) { setTimeout(() => strip.classList.remove("dragging"), 0); lastDrag = drag.moved; drag = null; } });
-  // visionneuse plein écran (flèches, clavier, balayage)
-  const lb = $("#lightbox"), lbImg = $("#lightboxImg");
-  let lbIdx = 0;
-  function showPhoto(k) {
-    lbIdx = (k + withSrc.length) % withSrc.length;
-    const s = withSrc[lbIdx];
-    lbImg.classList.remove("in"); void lbImg.offsetWidth;
-    lbImg.src = s.src; lbImg.alt = s.legende || "";
-    lbImg.classList.add("in");
-    $("#lightboxCap").textContent = `${ans(s.age)}${s.legende ? " — " + s.legende : ""}`;
-    $("#lightboxCount").textContent = `${lbIdx + 1} / ${withSrc.length}`;
-  }
-  strip.addEventListener("click", e => {
-    if (lastDrag) { lastDrag = false; return; }
-    const f = e.target.closest(".frame"); if (!f) return;
-    const s = photos[+f.dataset.i]; if (!s.src) return;
-    showPhoto(withSrc.indexOf(s)); lb.hidden = false; document.body.style.overflow = "hidden";
-  });
-  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ""; };
-  lb.addEventListener("click", e => {
-    if (e.target.closest(".lightbox__prev")) return showPhoto(lbIdx - 1);
-    if (e.target.closest(".lightbox__next")) return showPhoto(lbIdx + 1);
-    if (e.target === lb || e.target.closest(".lightbox__close")) closeLb();
-  });
-  addEventListener("keydown", e => {
-    if (lb.hidden) return;
-    if (e.key === "Escape") closeLb();
-    if (e.key === "ArrowLeft") showPhoto(lbIdx - 1);
-    if (e.key === "ArrowRight") showPhoto(lbIdx + 1);
-  });
-  let touchX = null;
-  lb.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
-  lb.addEventListener("touchend", e => {
-    if (touchX == null) return;
-    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
-    if (Math.abs(dx) > 50) showPhoto(lbIdx + (dx < 0 ? 1 : -1));
-  });
+  (() => {
+    const strip = $("#filmStrip");
+    const by = birth.getFullYear();
+    const ans = a => a === 0 ? "Naissance" : `${a} an${a > 1 ? "s" : ""}`;
+    const saison = a => `Saison ${by + a}-${String((by + a + 1) % 100).padStart(2, "0")}`;
+    const photos = D.saisons.map((s, i) => ({ ...s, _i: i })).sort((x, y) => x.age - y.age || x._i - y._i);
+    const withSrc = photos.filter(p => p.src);
+    strip.innerHTML = photos.map((s, i) => `
+      <button class="frame${s.src ? "" : " frame--empty"}" data-i="${i}" style="--n:${i}" ${s.src ? "" : 'tabindex="-1"'} aria-label="${ans(s.age)}${s.legende ? " — " + s.legende : ""}">
+        <span class="frame__edge" aria-hidden="true"><b>${pad(i + 1)}</b><span>ARTHUR · 18</span><b>${pad(i + 1)}A</b></span>
+        <div class="frame__img">${s.src
+          ? `<img src="${s.src}" alt="Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}" loading="lazy" decoding="async" draggable="false" style="object-position:${s.pos || "50% 35%"}" />`
+          : `<div class="frame__ph"><b>${s.age}</b>photo à venir</div>`}</div>
+        <div class="frame__meta"><b>${ans(s.age)}</b><span>${saison(s.age)}</span></div>
+        <div class="frame__cap">${s.legende || ""}</div>
+      </button>`).join("");
+    const frames = $$(".frame", strip);
+    const ages = [...new Set(photos.map(p => p.age))];
+    $("#filmAges").innerHTML = ages.map(a => `<button data-age="${a}" tabindex="-1" aria-label="Aller à ${ans(a)}"><span>${a}</span></button>`).join("");
+    const ageBtns = $$("#filmAges button");
+    const centerOf = f => f.offsetLeft - (strip.clientWidth - f.offsetWidth) / 2;
+    const goFrame = (i, smooth = true) => { const f = frames[i]; if (f) strip.scrollTo({ left: centerOf(f), behavior: smooth && !reduceMotion ? "smooth" : "auto" }); };
+    $("#filmAges").addEventListener("click", e => { const b = e.target.closest("button"); if (b) goFrame(photos.findIndex(p => p.age === +b.dataset.age)); });
+    let cur = 0;
+    $("#filmPrev").addEventListener("click", () => goFrame(Math.max(0, cur - 2)));
+    $("#filmNext").addEventListener("click", () => goFrame(Math.min(frames.length - 1, cur + 2)));
+    // clavier : flèches = image par image, Début/Fin
+    strip.addEventListener("keydown", e => {
+      const map = { ArrowLeft: cur - 1, ArrowRight: cur + 1, Home: 0, End: frames.length - 1 };
+      if (!(e.key in map)) return;
+      e.preventDefault();
+      const k = Math.max(0, Math.min(frames.length - 1, map[e.key]));
+      goFrame(k);
+      frames[k].focus({ preventScroll: true });
+    });
+    // effet « projecteur » : l'image au centre est nette et lumineuse, les autres s'éloignent
+    const progress = $("#filmProgress");
+    let mRaf = null, centers = [];
+    const measure = () => { centers = frames.map(f => f.offsetLeft + f.offsetWidth / 2); };
+    function markActive() {
+      mRaf = null;
+      const mid = strip.scrollLeft + strip.clientWidth / 2;
+      const half = strip.clientWidth / 2 || 1;
+      let best = 0, bd = Infinity;
+      centers.forEach((c, i) => {
+        const d = c - mid;
+        if (Math.abs(d) < bd) { bd = Math.abs(d); best = i; }
+        if (Math.abs(d) < half * 1.6) {
+          const t = Math.max(-1, Math.min(1, d / (half * 1.15)));
+          frames[i].style.setProperty("--t", t.toFixed(3));
+          frames[i].style.setProperty("--a", Math.abs(t).toFixed(3));
+        }
+      });
+      if (best !== cur || !frames[cur].classList.contains("current")) {
+        frames.forEach((f, i) => f.classList.toggle("current", i === best));
+        ageBtns.forEach(b => b.classList.toggle("active", +b.dataset.age === photos[best].age));
+        cur = best;
+      }
+      const max = strip.scrollWidth - strip.clientWidth;
+      progress.style.transform = `scaleX(${max > 0 ? (strip.scrollLeft / max).toFixed(4) : 0})`;
+    }
+    const reqMark = () => { if (!mRaf) mRaf = requestAnimationFrame(markActive); };
+    strip.addEventListener("scroll", reqMark, { passive: true });
+    addEventListener("resize", () => { measure(); reqMark(); });
+    measure(); markActive();
+    // glisser à la souris, avec inertie
+    let drag = null, lastDrag = false, glide = null;
+    strip.addEventListener("pointerdown", e => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      cancelAnimationFrame(glide);
+      drag = { x: e.clientX, left: strip.scrollLeft, moved: false, vx: 0, lx: e.clientX, lt: performance.now() };
+    });
+    addEventListener("pointermove", e => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (Math.abs(dx) > 4 && !drag.moved) { drag.moved = true; strip.classList.add("dragging"); }
+      if (!drag.moved) return;
+      const t = performance.now();
+      drag.vx = 0.8 * ((e.clientX - drag.lx) / Math.max(1, t - drag.lt)) + 0.2 * drag.vx;
+      drag.lx = e.clientX; drag.lt = t;
+      strip.scrollLeft = drag.left - dx;
+    });
+    addEventListener("pointerup", () => {
+      if (!drag) return;
+      lastDrag = drag.moved;
+      let v = -drag.vx * 16; drag = null;
+      if (!lastDrag) return;
+      const end = () => { strip.classList.remove("dragging"); goFrame(cur); };
+      if (reduceMotion || Math.abs(v) < 2) return end();
+      (function step() {
+        strip.scrollLeft += v; v *= 0.93;
+        glide = Math.abs(v) > 0.6 ? requestAnimationFrame(step) : (end(), null);
+      })();
+    });
+
+    // ---------- visionneuse ----------
+    const lb = $("#lightbox"), lbImg = $("#lightboxImg"), lbBg = $("#lightboxBg"), lbFrame = $(".lightbox__frame", lb), lbBar = $("#lightboxBar");
+    let lbIdx = 0, lastFocus = null, busy = false;
+    const preload = k => { const s = withSrc[(k + withSrc.length) % withSrc.length]; if (s) { const im = new Image(); im.src = s.src; } };
+    function setPhoto(k) {
+      lbIdx = (k + withSrc.length) % withSrc.length;
+      const s = withSrc[lbIdx];
+      lbImg.src = s.src; lbImg.alt = `Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}`;
+      lbBg.style.backgroundImage = `url("${s.src}")`;
+      $("#lightboxAge").textContent = ans(s.age);
+      $("#lightboxCap").textContent = s.legende || "";
+      $("#lightboxCount").textContent = `${pad(lbIdx + 1)} / ${withSrc.length}`;
+      lbBar.style.transform = `scaleX(${((lbIdx + 1) / withSrc.length).toFixed(4)})`;
+      preload(lbIdx + 1); preload(lbIdx - 1);
+      return lbImg.decode ? lbImg.decode().catch(() => {}) : Promise.resolve();
+    }
+    async function showPhoto(k, dir) {
+      if (busy) return;
+      if (reduceMotion || !lbFrame.animate) { setPhoto(k); return; }
+      busy = true;
+      const out = lbFrame.animate([{ opacity: 1, transform: "none", filter: "blur(0)" }, { opacity: 0, transform: `translateX(${-dir * 60}px) scale(.96)`, filter: "blur(6px)" }], { duration: 220, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" });
+      $(".lightbox__fig figcaption", lb).animate([{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }], { duration: 640 });
+      await out.finished.catch(() => {});
+      await setPhoto(k);
+      out.cancel();
+      await lbFrame.animate([{ opacity: 0, transform: `translateX(${dir * 60}px) scale(.96)`, filter: "blur(6px)" }, { opacity: 1, transform: "none", filter: "blur(0)" }], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" }).finished.catch(() => {});
+      busy = false;
+    }
+    // ouverture : la photo « s'envole » depuis sa vignette (FLIP)
+    function flipFrom(el, reverse) {
+      if (!el || reduceMotion || !lbFrame.animate) return Promise.resolve();
+      const a = el.getBoundingClientRect(), b = lbFrame.getBoundingClientRect();
+      if (!a.width || !b.width) return Promise.resolve();
+      const sx = a.width / b.width, sy = a.height / b.height;
+      const from = { transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${sx}, ${sy})`, opacity: 0.6 };
+      const to = { transform: "none", opacity: 1 };
+      return lbFrame.animate(reverse ? [to, from] : [from, to], { duration: reverse ? 380 : 560, easing: "cubic-bezier(.16,1,.3,1)", fill: reverse ? "forwards" : "none" }).finished.catch(() => {});
+    }
+    async function openLb(s, fromEl) {
+      lastFocus = document.activeElement;
+      await setPhoto(withSrc.indexOf(s));
+      lb.hidden = false; document.body.style.overflow = "hidden";
+      lb.classList.remove("closing"); void lb.offsetWidth; lb.classList.add("open");
+      $(".lightbox__close", lb).focus({ preventScroll: true });
+      flipFrom(fromEl && $("img", fromEl));
+    }
+    async function closeLb() {
+      if (lb.hidden || lb.classList.contains("closing")) return;
+      lb.classList.add("closing"); lb.classList.remove("open");
+      const s = withSrc[lbIdx], f = frames[photos.indexOf(s)];
+      const r = f && f.getBoundingClientRect();
+      const visible = r && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
+      await (visible ? flipFrom($("img", f), true) : new Promise(res => setTimeout(res, reduceMotion ? 0 : 300)));
+      lb.hidden = true; lb.classList.remove("closing");
+      lbFrame.getAnimations().forEach(a => a.cancel());
+      document.body.style.overflow = "";
+      if (f && photos.indexOf(s) !== cur) goFrame(photos.indexOf(s), false);
+      (f || lastFocus)?.focus({ preventScroll: true });
+    }
+    strip.addEventListener("click", e => {
+      if (lastDrag) { lastDrag = false; return; }
+      const f = e.target.closest(".frame"); if (!f) return;
+      const s = photos[+f.dataset.i]; if (!s.src) return;
+      SFX.pop(620);
+      openLb(s, f);
+    });
+    lb.addEventListener("click", e => {
+      if (e.target.closest(".lightbox__prev")) return showPhoto(lbIdx - 1, -1);
+      if (e.target.closest(".lightbox__next")) return showPhoto(lbIdx + 1, 1);
+      if (e.target.closest(".lightbox__close") || !e.target.closest(".lightbox__frame, .lightbox__nav, figcaption")) closeLb();
+    });
+    addEventListener("keydown", e => {
+      if (lb.hidden) return;
+      if (e.key === "Escape") closeLb();
+      if (e.key === "ArrowLeft") showPhoto(lbIdx - 1, -1);
+      if (e.key === "ArrowRight") showPhoto(lbIdx + 1, 1);
+      if (e.key === "Tab") {             // focus piégé dans la visionneuse
+        const f = $$("button", lb).filter(b => b.offsetParent !== null);
+        const i = f.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    let touchX = null, touchY = null;
+    lb.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+    lb.addEventListener("touchend", e => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY; touchX = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) showPhoto(lbIdx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+      else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) closeLb();
+    });
+  })();
 
   /* =================================================================
      TIRS AU BUT — tireur (Arthur) + gardien articulés
