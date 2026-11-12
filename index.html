@@ -248,6 +248,8 @@
         <p class="sh__lead">Petite taille, gros caractère, une bouille irrésistible.</p>
       </header>
       <div class="dogcard" id="dogcard">
+        <span class="dogcard__shine" aria-hidden="true"></span>
+        <span class="dogcard__seal" aria-hidden="true"><b>18</b><small>bouille<br />certifiée</small></span>
         <button class="dogcard__fig" id="dogcardFig" aria-label="Fais aboyer le bulldog">
           <span class="bulldog__bubble" id="dogcardBubble"></span>
           <span class="dogcard__photo"><img src="images/bulldog/bulldog-portrait.jpg" alt="Un bouledogue français fauve allongé sur une couverture rouge" loading="lazy" decoding="async" /></span>
@@ -395,13 +397,16 @@
     </section>
 
     <!-- ===================== SUPPORTERS ===================== -->
-    <section id="supporters" class="section section--navy" data-menu="Tes supporters">
+    <section id="supporters" class="section section--navy section--stands" data-menu="Tes supporters">
+      <div class="stands" aria-hidden="true"><div class="stands__seats"></div><div class="stands__flashes" id="standFlashes"></div><div class="stands__beam stands__beam--l"></div><div class="stands__beam stands__beam--r"></div></div>
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">09</span><span class="sh__kicker">Les tribunes</span></div>
         <h2 class="sh__title">Tes supporters</h2>
         <p class="sh__lead">Ceux qui t'aiment ont un message pour toi.</p>
       </header>
+      <div class="scarf" aria-hidden="true"><div class="scarf__track"><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b></div></div>
       <div class="wall" id="wall"></div>
+      <p class="wall__hint">Clique sur un message pour lui envoyer de l'amour.</p>
     </section>
 
     <!-- ===================== BOUGIES ===================== -->
@@ -411,13 +416,14 @@
         <h2 class="sh__title">Souffle tes 18 bougies</h2>
         <p class="sh__lead">Clique sur les bougies une par une… ou souffle pour de vrai dans le micro. Et n'oublie pas de faire un vœu.</p>
       </header>
-      <div class="cake-zone">
-        <div class="cake" id="cake">
-          <div class="cake__candles" id="candles"></div>
-          <div class="cake__top"></div>
-          <div class="cake__layer cake__layer--1"><span>ARTHUR</span></div>
-          <div class="cake__layer cake__layer--2"><span>18</span></div>
-          <div class="cake__plate"></div>
+      <div class="cake-zone" id="cakeZone">
+        <div class="cake-stage">
+          <div class="cake-glow" aria-hidden="true"><i></i></div>
+          <div class="cake" id="cake">
+            <div class="cake__body" id="cakeBody" aria-hidden="true"></div>
+            <div class="cake__candles" id="candles" role="group" aria-label="Les 18 bougies"></div>
+            <div class="cake__smoke" id="cakeSmoke" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="cake-actions">
           <button class="btn" id="blowAll"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg> Souffler</button>
@@ -425,6 +431,12 @@
           <button class="btn btn--ghost" id="relight" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3.5.5 1.5 1.5 2.5 2.5 3z"/></svg> Rallumer</button>
         </div>
         <p class="cake-wish" id="cakeWish" aria-live="polite"></p>
+      </div>
+      <div class="cake-night" aria-hidden="true"></div>
+      <div class="wish" id="wishMoment" aria-hidden="true">
+        <div class="wish__stars" id="wishStars"></div>
+        <p class="wish__small">Ferme les yeux…</p>
+        <p class="wish__big">Fais un vœu, Arthur</p>
       </div>
     </section>
 
@@ -435,7 +447,8 @@
         <h2 class="sh__title">Ton billet pour le Parc</h2>
         <p class="sh__lead">Une place rien que pour toi. Gratte la zone dorée du billet pour découvrir ton cadeau.</p>
       </header>
-      <div class="mticket-wrap">
+      <div class="mticket-wrap" id="mticketWrap">
+        <div class="mticket-rays" aria-hidden="true"></div>
         <article class="mticket" id="mticket" aria-label="Billet de match">
           <div class="mticket__head">
             <div class="mticket__lights" aria-hidden="true"></div>
@@ -453,19 +466,22 @@
               <div><small>RANG<i>ROW</i></small><b id="tkRang"></b></div>
               <div><small>SIÈGE<i>SEAT</i></small><b id="tkSiege"></b></div>
             </div>
-            <p class="mticket__scratch-label">Surprise · zone à gratter</p>
+            <p class="mticket__scratch-label"><span>Surprise · zone à gratter</span><span class="mticket__pct" id="scratchPct" aria-hidden="true"></span></p>
             <div class="scratch" id="scratch">
               <div class="scratch__prize">
                 <p class="scratch__title" id="giftTitle"></p>
                 <p class="scratch__text" id="giftText"></p>
               </div>
-              <canvas class="scratch__cover" id="scratchCanvas" aria-label="Zone à gratter"></canvas>
+              <canvas class="scratch__cover" id="scratchCanvas" tabindex="0" role="button" aria-label="Zone à gratter : gratte avec la souris ou le doigt, ou appuie sur Entrée pour tout gratter"></canvas>
+              <div class="scratch__glints" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             </div>
             <div class="mticket__barcode"><svg id="tkBarcode" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"></svg><span id="tkBarNum"></span></div>
           </div>
           <div class="mticket__holo" aria-hidden="true"></div>
+          <div class="mticket__shine" aria-hidden="true"></div>
           <div class="mticket__stamp" aria-hidden="true">VALIDÉ<small>20·12·2026</small></div>
         </article>
+        <canvas class="mticket-fx" id="scratchFx" aria-hidden="true"></canvas>
       </div>
     </section>
 
@@ -477,38 +493,69 @@
         <p class="sh__lead" id="lockerLead">Il est fermé à clé. Il ne s'ouvrira que le 20 décembre 2026, à minuit pile.</p>
       </header>
       <div class="locker-zone">
-        <div class="locker" id="locker">
-          <div class="locker__inside">
-            <p class="locker__title" id="lockerTitle"></p>
-            <p class="locker__text" id="lockerText"></p>
-            <svg class="locker__jersey" viewBox="0 0 120 130" aria-hidden="true">
-              <defs><clipPath id="shirtClip"><path d="M38 14 L18 22 L3 46 L18 56 L28 46 L28 120 L92 120 L92 46 L102 56 L117 46 L102 22 L82 14 Q60 26 38 14 Z"/></clipPath>
-              <linearGradient id="shirtG" x1="0" x2="1"><stop offset="0" stop-color="#1d3584"/><stop offset=".5" stop-color="#13245f"/><stop offset="1" stop-color="#0a1640"/></linearGradient></defs>
-              <path d="M52 8 Q60 0 68 8" fill="none" stroke="#9aa1b1" stroke-width="2.5"/>
-              <path d="M38 14 L18 22 L3 46 L18 56 L28 46 L28 120 L92 120 L92 46 L102 56 L117 46 L102 22 L82 14 Q60 26 38 14 Z" fill="url(#shirtG)"/>
-              <g clip-path="url(#shirtClip)"><rect x="48" y="0" width="24" height="130" fill="#fff"/><rect x="51" y="0" width="18" height="130" fill="#e30613"/></g>
-              <g font-family="Bebas Neue, Impact, sans-serif" text-anchor="middle" fill="#fff" stroke="#0a1640" stroke-width="2.4" paint-order="stroke"><text x="60" y="44" font-size="13" letter-spacing="1">ARTHUR</text><text x="60" y="94" font-size="48">18</text></g>
-            </svg>
-          </div>
-          <button class="locker__door" id="lockerDoor" aria-label="Ouvrir le casier">
-            <span class="locker__vents" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-            <span class="locker__plate">18</span>
-            <span class="locker__name">ARTHUR</span>
+        <div class="locker-room">
+          <div class="locker-rays" aria-hidden="true"></div>
+          <div class="locker-n" aria-hidden="true"><span class="locker-n__vents"><i></i><i></i><i></i><i></i><i></i></span><span class="locker-n__plate">17</span></div>
+          <div class="locker" id="locker">
+            <div class="locker__inside">
+              <span class="locker__lamp" aria-hidden="true"></span>
+              <span class="locker__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <p class="locker__title" id="lockerTitle"></p>
+              <p class="locker__text" id="lockerText"></p>
+              <span class="locker__hang">
+                <svg class="locker__jersey" viewBox="0 0 120 140" aria-hidden="true">
+                  <defs>
+                    <clipPath id="shirtClip"><path d="M38 22 L18 30 L3 54 L18 64 L28 54 L28 132 L92 132 L92 54 L102 64 L117 54 L102 30 L82 22 Q60 34 38 22 Z"/></clipPath>
+                    <linearGradient id="shirtG" x1="0" x2="1"><stop offset="0" stop-color="#0a1640"/><stop offset=".3" stop-color="#22409a"/><stop offset=".55" stop-color="#16296c"/><stop offset="1" stop-color="#070f30"/></linearGradient>
+                    <linearGradient id="shirtFold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+                    <linearGradient id="hangerG" x1="0" x2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset=".5" stop-color="#c88f52"/><stop offset="1" stop-color="#7a4c22"/></linearGradient>
+                  </defs>
+                  <path d="M60 14 V8 a5 5 0 1 1 5 -5" fill="none" stroke="#cfd4de" stroke-width="2.4" stroke-linecap="round"/>
+                  <path d="M60 14 L22 30 Q18 33 22 34 L98 34 Q102 33 98 30 Z" fill="url(#hangerG)"/>
+                  <path d="M38 22 L18 30 L3 54 L18 64 L28 54 L28 132 L92 132 L92 54 L102 64 L117 54 L102 30 L82 22 Q60 34 38 22 Z" fill="url(#shirtG)"/>
+                  <g clip-path="url(#shirtClip)">
+                    <rect x="48" y="0" width="24" height="140" fill="#fff"/><rect x="51" y="0" width="18" height="140" fill="#e30613"/>
+                    <path d="M3 54 L18 64 L28 54 L26 50 L18 58 L6 50 Z M117 54 L102 64 L92 54 L94 50 L102 58 L114 50 Z" fill="#e30613"/>
+                    <rect x="0" y="0" width="120" height="140" fill="url(#shirtFold)"/>
+                    <path d="M34 70 Q40 100 36 132 M86 70 Q80 100 84 132" stroke="#000" stroke-opacity=".18" stroke-width="3" fill="none"/>
+                  </g>
+                  <path d="M38 22 Q60 34 82 22 Q60 40 38 22 Z" fill="#e30613" stroke="#fff" stroke-width="1"/>
+                  <g font-family="Bebas Neue, Impact, sans-serif" text-anchor="middle" fill="#fff" stroke="#0a1640" stroke-width="2.4" paint-order="stroke"><text x="60" y="54" font-size="13" letter-spacing="1">ARTHUR</text><text x="60" y="104" font-size="48">18</text></g>
+                </svg>
+              </span>
+              <span class="locker__shelf" aria-hidden="true"></span>
+            </div>
+            <span class="locker__leak" aria-hidden="true"></span>
+            <button class="locker__door" id="lockerDoor" aria-label="Ouvrir le casier">
+              <span class="door__front" aria-hidden="true">
+                <span class="locker__vents"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="locker__plate">18</span>
+                <span class="locker__name">ARTHUR</span>
+                <span class="locker__handle"></span>
+                <span class="door__rivets"></span>
+              </span>
+              <span class="door__edge" aria-hidden="true"></span>
+              <span class="door__back" aria-hidden="true"><span class="door__sticker">ICI C'EST<b>PARIS</b></span><span class="door__hook"></span></span>
+            </button>
             <span class="locker__lock" id="lockerLock" aria-hidden="true"><svg viewBox="0 0 40 52"><defs><linearGradient id="lockG" x1="0" x2="1"><stop offset="0" stop-color="#f7d86a"/><stop offset=".5" stop-color="#d6a92c"/><stop offset="1" stop-color="#9c7414"/></linearGradient></defs><path class="lock__shackle" d="M10 24 V15 a10 10 0 0 1 20 0 V24" fill="none" stroke="#cfd4de" stroke-width="5" stroke-linecap="round"/><rect x="4" y="22" width="32" height="26" rx="5" fill="url(#lockG)" stroke="rgba(0,0,0,.25)"/><circle cx="20" cy="33" r="3.2" fill="#3b2c08"/><rect x="18.7" y="34" width="2.6" height="7" rx="1" fill="#3b2c08"/></svg></span>
-            <span class="locker__handle" aria-hidden="true"></span>
-          </button>
+          </div>
+          <div class="locker-n" aria-hidden="true"><span class="locker-n__vents"><i></i><i></i><i></i><i></i><i></i></span><span class="locker-n__plate">19</span></div>
         </div>
-        <p class="locker__count" id="lockerCount"></p>
+        <div class="locker-bench" aria-hidden="true"></div>
+        <p class="locker__count" id="lockerCount" aria-live="polite"></p>
       </div>
     </section>
   </main>
 
   <!-- ===================== FINAL ===================== -->
   <footer class="finale" id="finale" data-menu="Coup de sifflet final">
+    <div class="finale__sky" aria-hidden="true"></div>
     <canvas id="fireworks" aria-hidden="true"></canvas>
+    <div class="finale__flash" aria-hidden="true"></div>
+    <div class="finale__stadium" aria-hidden="true"><i class="finale__mast finale__mast--l"></i><i class="finale__mast finale__mast--r"></i></div>
     <div class="finale__content">
       <p class="finale__kicker">Coup de sifflet final</p>
-      <p class="finale__big">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
+      <p class="finale__big" id="finaleBig">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
       <p class="finale__sub">20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer.<br />On est fiers de toi.</p>
       <p class="finale__credits">Photos du bulldog : <a href="https://www.flickr.com/photos/57387723@N04/6808064757" target="_blank" rel="noopener">Artur Malinowski</a> et licence <a href="https://creativecommons.org/licenses/by/2.0/deed.fr" target="_blank" rel="noopener">CC BY 2.0</a> ; <a href="https://www.flickr.com/photos/7675787@N06/16905957333" target="_blank" rel="noopener">marneejill</a> (« Daisy », mascotte animée), licence <a href="https://creativecommons.org/licenses/by-sa/2.0/deed.fr" target="_blank" rel="noopener">CC BY-SA 2.0</a> (Flickr).</p>
       <button class="btn btn--light" id="replayFireworks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg> Encore un feu d'artifice</button>
