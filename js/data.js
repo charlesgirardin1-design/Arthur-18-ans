@@ -171,6 +171,7 @@ window.ARTHUR = {
     { age: 7, src: "images/galerie/arthur-07-les-homards.jpg", legende: "La pêche aux homards", pos: "15% 55%" },
     { age: 7, src: "images/galerie/arthur-07-poneys.jpg", legende: "Avec les poneys", pos: "75% 60%" },
     { age: 7, src: "images/galerie/arthur-07-calin-papa.jpg", legende: "Câlin avec papa", pos: "35% 60%" },
+    { age: 17, src: "images/galerie/arthur-17-sieste-canape.jpg", legende: "Sieste réglementaire", pos: "60% 35%" },
     { age: 18, src: "", legende: "La majorité : photo du 20 décembre !" },
   ],
 
