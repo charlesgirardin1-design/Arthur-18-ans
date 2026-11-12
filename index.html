@@ -159,12 +159,34 @@
         <div class="sh__meta"><span class="sh__num">01</span><span class="sh__kicker">Le mot d'avant-match</span></div>
         <h2 class="sh__title">Avant d'entrer sur le terrain</h2>
       </header>
-      <article class="letter" id="letter">
-        <div class="letter__stamp" aria-hidden="true"><span>18</span><small>20·12·2026</small></div>
-        <h3 class="letter__title" id="letterTitle"></h3>
-        <div class="letter__body" id="letterBody"></div>
-        <p class="letter__sign" id="letterSign"></p>
-      </article>
+      <div class="letter-stage">
+        <article class="letter" id="letter">
+          <div class="letter__paper" aria-hidden="true"></div>
+          <div class="letter__stamp" aria-hidden="true">
+            <div class="letter__stamp-in"><span>18</span><small>20·12·2026</small><i>Paris</i></div>
+          </div>
+          <svg class="letter__postmark" viewBox="0 0 200 110" aria-hidden="true">
+            <defs><path id="pmArc" d="M28 55 a27 27 0 1 1 54 0 a27 27 0 1 1 -54 0"/></defs>
+            <circle cx="55" cy="55" r="36" /><circle cx="55" cy="55" r="27" />
+            <text font-size="10.5" letter-spacing="2.4"><textPath href="#pmArc" startOffset="2%">PARIS · 20 DÉC 2026 ·</textPath></text>
+            <text x="55" y="60" text-anchor="middle" font-size="15" class="pm-big">18</text>
+            <path d="M98 30 q12 -8 24 0 t24 0 t24 0 t24 0 M98 46 q12 -8 24 0 t24 0 t24 0 t24 0 M98 62 q12 -8 24 0 t24 0 t24 0 t24 0 M98 78 q12 -8 24 0 t24 0 t24 0 t24 0" />
+          </svg>
+          <h3 class="letter__title" id="letterTitle"></h3>
+          <div class="letter__body" id="letterBody"></div>
+          <div class="letter__foot">
+            <div class="letter__seal" id="letterSeal" aria-hidden="true"><span>A</span><small>18</small></div>
+            <p class="letter__sign" id="letterSign"></p>
+            <svg class="letter__flourish" viewBox="0 0 260 40" aria-hidden="true"><path pathLength="1" d="M6 26 C 60 34, 120 10, 170 20 S 240 30, 254 8" /></svg>
+          </div>
+          <svg class="letter__pen" id="letterPen" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="pen-body" d="M12 52 L40 8 Q46 2 52 6 Q58 11 54 18 L24 60 Z" />
+            <path class="pen-band" d="M37 13 L51 22 L48 26 L34 17 Z" />
+            <path class="pen-nib" d="M12 52 L24 60 L10 64 Z" />
+          </svg>
+          <button class="letter__skip" id="letterSkip" type="button">Tout afficher</button>
+        </article>
+      </div>
     </section>
 
     <!-- ===================== CARTE JOUEUR ===================== -->
@@ -175,10 +197,14 @@
         <p class="sh__lead">Édition unique, un seul exemplaire au monde : la tienne. Clique pour la retourner.</p>
       </header>
       <div class="card-wrap">
+        <div class="card-rays" aria-hidden="true"></div>
         <div class="card-glow" aria-hidden="true"></div>
-        <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur">
+        <div class="card-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur" aria-pressed="false">
           <div class="pcard__inner">
             <div class="pcard__face pcard__front">
+              <div class="pcard__pattern" aria-hidden="true"></div>
+              <div class="pcard__frame" aria-hidden="true"></div>
               <div class="pcard__top">
                 <div class="pcard__rating" id="cardRating">99</div>
                 <div class="pcard__pos" id="cardPos">ATT</div>
@@ -188,9 +214,13 @@
               <div class="pcard__photo" id="cardPhoto"><span>A</span></div>
               <div class="pcard__name">ARTHUR</div>
               <div class="pcard__stats" id="cardStats"></div>
+              <div class="pcard__serial" aria-hidden="true">1/1</div>
               <div class="pcard__holo" aria-hidden="true"></div>
+              <div class="pcard__glitter" aria-hidden="true"></div>
+              <div class="pcard__glare" aria-hidden="true"></div>
             </div>
             <div class="pcard__face pcard__back">
+              <div class="pcard__back-mark" aria-hidden="true">18</div>
               <h3>Fiche technique</h3>
               <dl>
                 <dt>Né le</dt><dd>20 décembre 2008</dd>
@@ -202,9 +232,11 @@
                 <dt>Chien préféré</dt><dd>Le bulldog</dd>
                 <dt>Valeur</dt><dd>Inestimable</dd>
               </dl>
+              <div class="pcard__glare" aria-hidden="true"></div>
             </div>
           </div>
         </button>
+        <div class="card-shadow" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -238,12 +270,16 @@
         <p class="sh__lead">Depuis ton coup d'envoi le 20/12/2008, mises à jour chaque seconde.</p>
       </header>
       <div class="stats-grid">
-        <div class="stat stat--big"><b data-stat="secondes">0</b><span>secondes que tu as jouées</span></div>
-        <div class="stat"><b data-stat="jours">0</b><span>jours sur le terrain</span></div>
-        <div class="stat"><b data-stat="coeur">0</b><span>battements de ton cœur (environ)</span></div>
-        <div class="stat"><b data-stat="nuits">0</b><span>nuits de récup'</span></div>
-        <div class="stat"><b data-stat="weekends">0</b><span>week-ends de matchs</span></div>
-        <div class="stat"><b data-stat="pas">0</b><span>pas courus (estimation très sérieuse)</span></div>
+        <div class="stat stat--big" style="--i:0">
+          <div class="stat__live" aria-hidden="true"><i></i>EN DIRECT</div>
+          <b data-stat="secondes">0</b><span class="stat__label">secondes que tu as jouées</span>
+          <div class="stat__tick" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="stat stat--jours" style="--i:1"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b data-stat="jours">0</b><span class="stat__label">jours sur le terrain</span></div>
+        <div class="stat stat--coeur" style="--i:2"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><b data-stat="coeur">0</b><span class="stat__label">battements de ton cœur (environ)</span><svg class="stat__ecg" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M0 22 H90 l8 -10 l6 20 l10 -30 l9 34 l7 -14 H190 l6 -6 l5 10 l6 -4 H300"/></svg></div>
+        <div class="stat stat--nuits" style="--i:3"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><b data-stat="nuits">0</b><span class="stat__label">nuits de récup'</span></div>
+        <div class="stat stat--weekends" style="--i:4"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.3 3.1-1.6 5h-5.4l-1.6-5z"/></svg><b data-stat="weekends">0</b><span class="stat__label">week-ends de matchs</span></div>
+        <div class="stat stat--pas" style="--i:5"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3c2 0 3 2.5 3 5.5S10 13 8 13s-3-1.5-3-4.5S6 3 8 3zM5.5 15.5h5L10 19a2 2 0 0 1-4 0zM16 7c2 0 3 2.5 3 5.5S18 17 16 17s-3-1.5-3-4.5S14 7 16 7z"/></svg><b data-stat="pas">0</b><span class="stat__label">pas courus (estimation très sérieuse)</span></div>
       </div>
     </section>
 
@@ -254,7 +290,10 @@
         <h2 class="sh__title">Ta carrière</h2>
         <p class="sh__lead">De la maternité au statut de légende : tes grands moments.</p>
       </header>
-      <ol class="timeline" id="timeline"></ol>
+      <div class="tl-wrap">
+        <ol class="timeline" id="timeline"></ol>
+        <div class="tl-rail" aria-hidden="true"><div class="tl-rail__fill" id="tlFill"></div><div class="tl-rail__ball" id="tlBall"></div></div>
+      </div>
     </section>
 
     <!-- ===================== 18 SAISONS ===================== -->
@@ -265,9 +304,12 @@
         <p class="sh__lead">Tes années en photos, classées par âge. Fais défiler la pellicule, clique sur une photo pour l'agrandir.</p>
       </header>
       <div class="film">
-        <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes">‹</button>
-        <div class="film__strip" id="filmStrip" tabindex="0" aria-label="Pellicule photo"></div>
-        <button class="film__nav film__nav--next" id="filmNext" aria-label="Photos suivantes">›</button>
+        <div class="film__beam" aria-hidden="true"></div>
+        <div class="film__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="film__strip" id="filmStrip" tabindex="0" aria-label="Pellicule photo : flèches gauche et droite pour défiler"></div>
+        <button class="film__nav film__nav--next" id="filmNext" aria-label="Photos suivantes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <div class="film__progress" aria-hidden="true"><i id="filmProgress"></i></div>
       </div>
       <div class="film__ages" id="filmAges" aria-hidden="true"></div>
     </section>
@@ -450,11 +492,16 @@
     </div>
   </footer>
 
-  <div class="lightbox" id="lightbox" role="dialog" aria-label="Photo" hidden>
-    <button class="lightbox__close" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visionneuse photo" hidden>
+    <div class="lightbox__bg" id="lightboxBg" aria-hidden="true"></div>
+    <div class="lightbox__top">
+      <small id="lightboxCount"></small>
+      <button class="lightbox__close" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <button class="lightbox__nav lightbox__prev" aria-label="Photo précédente"><svg class="ico" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <figure class="lightbox__fig"><img alt="" id="lightboxImg" /><figcaption><span id="lightboxCap"></span><small id="lightboxCount"></small></figcaption></figure>
+    <figure class="lightbox__fig"><div class="lightbox__frame"><img alt="" id="lightboxImg" /></div><figcaption><b id="lightboxAge"></b><span id="lightboxCap"></span></figcaption></figure>
     <button class="lightbox__nav lightbox__next" aria-label="Photo suivante"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="lightbox__bar" aria-hidden="true"><i id="lightboxBar"></i></div>
   </div>
   <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><span class="bulldog__canvas" id="dogCanvas"></span></button>
   <div class="chase-ball" id="chaseBall" aria-hidden="true"></div>
