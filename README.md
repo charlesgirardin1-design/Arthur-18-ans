@@ -11,7 +11,7 @@ Site cadeau pour les 18 ans d'Arthur (né le 20 décembre 2008), qui lui est adr
 3 bis. **Ta race préférée** — fiche « Le bulldog » avec une vraie photo et des stats animées (contenu dans `preferes.chien`, js/data.js).
 4. **Tes stats en direct** — compteurs qui s'emballent puis avancent chaque seconde.
 5. **Ta carrière** — frise 2008 → 2026.
-6. **Ta vie en 18 saisons** — pellicule de 31 photos classées par âge (6 à 17 ans), visionneuse plein écran avec flèches et balayage.
+6. **Ta vie en 18 saisons** — pellicule de 98 photos classées par âge (3 à 17 ans), visionneuse plein écran avec flèches et balayage.
 7. **Tirs au but** — Arthur (vu de dos, maillot « ARTHUR 18 ») prend son élan et frappe ; le gardien articulé plonge. Bandeau façon retransmission TV.
 8. **Défi jongles** — mini-jeu, record enregistré dans le navigateur.
 9. **Tes supporters** — messages de ses proches.
