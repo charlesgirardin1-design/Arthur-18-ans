@@ -75,15 +75,19 @@
      INTRO : LE TUNNEL
      ================================================================= */
   const intro = $("#intro");
-  // maillot du hero : inclinaison 3D qui suit la souris
+  const hero = $("#accueil");
   const jersey = $("#jersey");
-  if (!reduceMotion && matchMedia("(hover: hover)").matches) {
-    addEventListener("pointermove", e => {
-      const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
-      jersey.style.setProperty("--ry", (x * 16).toFixed(2) + "deg");
-      jersey.style.setProperty("--rx", (-y * 10).toFixed(2) + "deg");
-    }, { passive: true });
+  // titre révélé lettre par lettre (le texte complet reste lisible par les lecteurs d'écran)
+  const introTitle = $("#introTitle");
+  if (introTitle) {
+    const txt = introTitle.textContent.trim();
+    let n = 0;
+    introTitle.innerHTML = `<span class="intro__sr">${txt}</span>` + txt.split(" ").map(w =>
+      `<span class="w" aria-hidden="true">${[...w].map(ch => `<span class="c" style="--i:${n++}">${ch}</span>`).join("")}</span>`).join(" ");
   }
+  // tant que l'intro est affichée, le reste de la page n'est pas atteignable au clavier
+  const behindIntro = $$("body > header, body > main, body > footer, body > nav, body > button");
+  const setBehind = v => behindIntro.forEach(el => (el.inert = v));
   let entered = false;
   function enter(withSound) {
     if (entered) return; entered = true;
@@ -91,11 +95,17 @@
     SFX.whistle();
     intro.classList.add("leaving");
     setTimeout(() => {
+      setBehind(false);
       document.body.classList.remove("locked");
       document.body.classList.add("entered");
-      setTimeout(() => { confetti(140); SFX.cheer(0.8); }, 1300);
-    }, 250);
-    setTimeout(() => intro.remove(), 1400);
+      if (!reduceMotion) {
+        // « clac » des projecteurs qui s'allument l'un après l'autre
+        setTimeout(() => SFX.kick(0.55), 1250);
+        setTimeout(() => SFX.kick(0.5), 1600);
+      }
+      setTimeout(() => { confetti(140); SFX.cheer(0.8); }, reduceMotion ? 300 : 2900);
+    }, reduceMotion ? 150 : 650);
+    setTimeout(() => intro.remove(), reduceMotion ? 900 : 1500);
   }
   $("#enterSound").addEventListener("click", () => enter(true));
   $("#enterMute").addEventListener("click", () => enter(false));
@@ -103,42 +113,133 @@
   if (location.hash && location.hash.length > 1) {
     intro.remove(); entered = true;
     document.body.classList.remove("locked"); document.body.classList.add("entered");
+  } else setBehind(true);
+
+  /* =================================================================
+     HERO : PROFONDEUR, PARALLAXE ET ÉCLAIRAGE DU MAILLOT
+     ================================================================= */
+  if (!reduceMotion) {
+    const spot = $("#jsSpot");
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, heroOn = true, lastSy = -1, sRaf = 0;
+    const setVar = (el, k, v) => el.style.setProperty(k, v);
+    function frame() {
+      raf = 0;
+      cx += (tx - cx) * 0.075; cy += (ty - cy) * 0.075;
+      setVar(hero, "--mx", cx.toFixed(3)); setVar(hero, "--my", cy.toFixed(3));
+      setVar(jersey, "--ry", (cx * 14).toFixed(2) + "deg"); setVar(jersey, "--rx", (-cy * 9).toFixed(2) + "deg");
+      // la lumière glisse sur le maillot du côté de la souris
+      spot.setAttribute("cx", (200 + cx * 200).toFixed(1));
+      spot.setAttribute("cy", (190 + cy * 170).toFixed(1));
+      if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) raf = requestAnimationFrame(frame);
+    }
+    if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      addEventListener("pointermove", e => {
+        if (!heroOn) return;
+        tx = (e.clientX / innerWidth) * 2 - 1; ty = (e.clientY / innerHeight) * 2 - 1;
+        if (!raf) raf = requestAnimationFrame(frame);
+      }, { passive: true });
+      document.documentElement.addEventListener("pointerleave", () => { tx = ty = 0; if (!raf) raf = requestAnimationFrame(frame); });
+    }
+    addEventListener("scroll", () => {
+      if (sRaf) return;
+      sRaf = requestAnimationFrame(() => {
+        sRaf = 0;
+        const y = Math.round(Math.min(Math.max(scrollY, 0), hero.offsetHeight));
+        if (y !== lastSy) { lastSy = y; setVar(hero, "--sy", y); }
+      });
+    }, { passive: true });
+    // hors écran : on met en pause les animations du hero
+    new IntersectionObserver(([en]) => {
+      heroOn = en.isIntersecting; hero.classList.toggle("is-off", !heroOn);
+    }).observe(hero);
   }
 
   /* =================================================================
-     HERO : COMPTE À REBOURS
+     HERO : COMPTE À REBOURS (TABLEAU D'AFFICHAGE À VOLETS)
      ================================================================= */
+  const board = $("#countdown");
+  const units = {};
+  $$(".cdboard__digits", board).forEach(el => (units[el.dataset.unit] = { el, cards: [] }));
+  function makeCard() {
+    const el = document.createElement("span");
+    el.className = "cdflip";
+    el.innerHTML = '<span class="cdflip__t"><b></b></span><span class="cdflip__b"><b></b></span><span class="cdflip__ft"><b></b></span><span class="cdflip__fb"><b></b></span>';
+    const [t, b, ft, fb] = $$("b", el);
+    const card = { el, t, b, ft, fb, v: null };
+    el.lastElementChild.addEventListener("animationend", () => { b.textContent = card.v; el.classList.remove("go"); });
+    return card;
+  }
+  function setCard(card, v, animate) {
+    if (card.v === v) return;
+    const old = card.v;
+    card.v = v;
+    if (!animate || old == null) { card.t.textContent = card.b.textContent = card.ft.textContent = card.fb.textContent = v; return; }
+    // volet du haut : ancienne valeur qui tombe ; volet du bas : nouvelle valeur qui se pose
+    card.t.textContent = v; card.fb.textContent = v; card.ft.textContent = old; card.b.textContent = old;
+    card.el.classList.remove("go"); void card.el.offsetWidth; card.el.classList.add("go");
+  }
+  function setUnit(u, str, animate) {
+    const U = units[u];
+    while (U.cards.length < str.length) { const c = makeCard(); U.cards.unshift(c); U.el.prepend(c.el); }
+    while (U.cards.length > str.length) U.cards.shift().el.remove();
+    [...str].forEach((ch, i) => setCard(U.cards[i], ch, animate));
+  }
+  const plural = (n, w) => `${n} ${w}${n > 1 ? "s" : ""}`;
+  let cdLabel = "", cdDone = false;
   function updateCountdown() {
     const diff = forceDay ? 0 : majority - Date.now();
     if (diff > 0) {
       const s = Math.floor(diff / 1000);
-      $("#cdD").textContent = pad(Math.floor(s / 86400));
-      $("#cdH").textContent = pad(Math.floor(s / 3600) % 24);
-      $("#cdM").textContent = pad(Math.floor(s / 60) % 60);
-      $("#cdS").textContent = pad(s % 60);
+      const d = Math.floor(s / 86400), h = Math.floor(s / 3600) % 24, m = Math.floor(s / 60) % 60;
+      const anim = entered && !reduceMotion && !document.hidden;
+      setUnit("d", pad(d), anim); setUnit("h", pad(h), anim); setUnit("m", pad(m), anim); setUnit("s", pad(s % 60), anim);
+      const label = `Coup d'envoi dans ${plural(d, "jour")}, ${plural(h, "heure")} et ${plural(m, "minute")}`;
+      if (label !== cdLabel) board.setAttribute("aria-label", (cdLabel = label));
     } else {
-      $("#countdown").classList.add("done");
+      board.classList.add("done");
       const days = Math.floor(-diff / 86400000);
       $("#heroSub").innerHTML = days === 0
         ? "<strong>C'EST AUJOURD'HUI ! JOYEUX ANNIVERSAIRE ARTHUR !</strong>"
         : `Tu es majeur depuis <strong>${fmt.format(days)}</strong> jour${days > 1 ? "s" : ""}`;
+      cdDone = true;
     }
   }
-  updateCountdown(); setInterval(updateCountdown, 1000);
+  (function cdLoop() {
+    updateCountdown();
+    if (!cdDone) setTimeout(cdLoop, 1000 - (Date.now() % 1000) + 15);
+  })();
 
+  /* =================================================================
+     HERO : LE BALLON
+     ================================================================= */
   $("#heroBallInner").innerHTML = FIG.ballSVG();
+  const flashes = $("#flashes");
+  function burstFlashes() {
+    if (reduceMotion) return;
+    const frag = document.createDocumentFragment(), made = [];
+    for (let i = 0; i < 18; i++) {
+      const f = document.createElement("i");
+      f.className = "burst";
+      f.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;--delay:${(0.35 + Math.random() * 0.9).toFixed(2)}s`;
+      frag.appendChild(f); made.push(f);
+    }
+    flashes.appendChild(frag);
+    setTimeout(() => made.forEach(f => f.remove()), 2600);
+  }
   $("#heroBall").addEventListener("click", e => {
     const b = e.currentTarget;
     b.classList.remove("kick"); void b.offsetWidth; b.classList.add("kick");
+    hero.classList.remove("hero--goal"); void hero.offsetWidth; hero.classList.add("hero--goal");
     SFX.kick();
+    burstFlashes();
     setTimeout(() => { confetti(120); SFX.cheer(); toast("GOOOOOAAAAL !"); }, 500);
     dispatchEvent(new Event("ball-kick"));
   });
 
-  $("#flashes").innerHTML = Array.from({ length: 28 }, () =>
+  flashes.innerHTML = Array.from({ length: 28 }, () =>
     `<i style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;--d:${(3 + Math.random() * 5).toFixed(1)}s;--delay:-${(Math.random() * 8).toFixed(1)}s"></i>`).join("");
   const tickerItems = ["JOYEUX ANNIVERSAIRE ARTHUR", "18 ANS", "20.12.2008", "ALLEZ PARIS", "LE MEILLEUR RESTE À JOUER", "FOOT · TENNIS · MULTISPORT"];
-  const tk = tickerItems.map(t => `<span>${t}</span><span class="ticker__dot">●</span>`).join("");
+  const tk = tickerItems.map(t => `<span>${t}</span><i class="ticker__sep"></i>`).join("");
   $("#ticker").innerHTML = tk + tk;
 
   /* =================================================================
@@ -160,16 +261,49 @@
      MENU « PROGRAMME DU MATCH »
      ================================================================= */
   const menu = $("#menu"), menuBtn = $("#menuBtn");
-  $("#menuList").innerHTML = $$("[data-menu]").map((s, i) =>
-    `<li style="--i:${i}"><a href="#${s.id}"><small>${pad(i)}</small>${s.dataset.menu}</a></li>`).join("");
-  function setMenu(open) {
-    menu.hidden = !open; menuBtn.setAttribute("aria-expanded", String(open));
-    document.body.style.overflow = open ? "hidden" : "";
-    if (open) SFX.pop(700);
+  const menuSections = $$("[data-menu]");
+  const arrowIco = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  $("#menuList").innerHTML = menuSections.map((s, i) =>
+    `<li style="--i:${i}"><a href="#${s.id}"><small>${pad(i)}</small><span>${s.dataset.menu}</span>${arrowIco}</a></li>`).join("");
+  const menuLinks = $$("#menuList a");
+  $("#menuList").style.setProperty("--rows", Math.ceil(menuLinks.length / 2));
+  let menuTimer;
+  function currentSection() {
+    let cur = menuSections[0];
+    for (const s of menuSections) if (s.getBoundingClientRect().top < innerHeight * 0.35) cur = s;
+    return cur;
   }
-  menuBtn.addEventListener("click", () => setMenu(menu.hidden));
+  function setMenu(open) {
+    clearTimeout(menuTimer);
+    menuBtn.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+    document.body.classList.toggle("menu-open", open);
+    if (open) {
+      const cur = currentSection();
+      menuLinks.forEach(a => (a.hash === "#" + cur.id ? a.setAttribute("aria-current", "location") : a.removeAttribute("aria-current")));
+      menu.classList.remove("closing");
+      menu.hidden = false;
+      SFX.pop(700);
+      (menuLinks.find(a => a.hasAttribute("aria-current")) || menuLinks[0]).focus({ preventScroll: true });
+    } else if (!menu.hidden) {
+      if (reduceMotion) { menu.hidden = true; return; }
+      menu.classList.add("closing");
+      menuTimer = setTimeout(() => { menu.hidden = true; menu.classList.remove("closing"); }, 300);
+    }
+  }
+  const menuOpen = () => !menu.hidden && !menu.classList.contains("closing");
+  menuBtn.addEventListener("click", () => setMenu(!menuOpen()));
   menu.addEventListener("click", e => { if (e.target.closest("a")) setMenu(false); });
-  addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) setMenu(false); });
+  addEventListener("keydown", e => {
+    if (!menuOpen()) return;
+    if (e.key === "Escape") { setMenu(false); menuBtn.focus(); }
+    else if (e.key === "Tab") {
+      // le focus reste dans le menu (bouton Programme ↔ liens)
+      const last = menuLinks[menuLinks.length - 1];
+      if (e.shiftKey && document.activeElement === menuBtn) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); menuBtn.focus(); }
+    }
+  });
 
   /* =================================================================
      APPARITION AU DÉFILEMENT
@@ -939,13 +1073,23 @@
   /* =================================================================
      MINUTE DE MATCH + BARRE DE PROGRESSION
      ================================================================= */
-  const minuteEl = $("#matchMinute"), progressEl = $("#progress");
+  const minuteEl = $("#matchMinute"), progressEl = $("#progress"), halfEl = $("#matchHalf"), scorebarEl = $("#scorebar");
+  let lastMinute = "", scrollRaf = 0;
   function onScroll() {
+    scrollRaf = 0;
     const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
-    progressEl.style.width = p * 100 + "%";
+    const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    progressEl.style.transform = `scaleX(${p.toFixed(4)})`;
     const m = Math.round(p * 93);
-    minuteEl.textContent = m <= 90 ? `${m}'` : `90+${m - 90}'`;
+    const txt = m <= 90 ? `${m}'` : `90+${m - 90}'`;
+    if (txt !== lastMinute) {
+      minuteEl.textContent = txt;
+      if (lastMinute && !reduceMotion && minuteEl.animate)
+        minuteEl.animate([{ transform: "scale(1.3)", color: "#fff" }, { transform: "none" }], { duration: 320, easing: "cubic-bezier(.3,1.5,.5,1)" });
+      lastMinute = txt;
+    }
+    halfEl.textContent = m < 45 ? "1re MT" : "2e MT";
+    scorebarEl.classList.toggle("is-scrolled", scrollY > 24);
   }
-  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  addEventListener("scroll", () => { if (!scrollRaf) scrollRaf = requestAnimationFrame(onScroll); }, { passive: true }); onScroll();
 })();
