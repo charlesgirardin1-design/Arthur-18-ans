@@ -20,21 +20,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;800&family=Caveat:wght@500;700&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/motion.css" />
 </head>
 <body class="locked">
   <canvas id="confetti" aria-hidden="true"></canvas>
   <div class="grain" aria-hidden="true"></div>
 
   <!-- ===================== INTRO : LE TUNNEL ===================== -->
-  <div class="intro" id="intro" role="dialog" aria-label="Entrée sur le terrain">
-    <div class="intro__tunnel" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="intro__tunnel" aria-hidden="true">
+      <div class="intro__end"></div>
+      <div class="intro__floor"></div>
+      <div class="intro__arches"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="intro__vignette" aria-hidden="true"></div>
     <div class="intro__content">
-      <img class="intro__logo" src="images/logo/logo.jpg" alt="Logo des 18 ans d'Arthur" width="900" height="900" />
-      <p class="intro__line" style="--d:.3s">20 décembre 2026</p>
-      <p class="intro__line intro__line--big" style="--d:1.1s">Le match de ta vie</p>
-      <p class="intro__line" style="--d:1.9s">Les joueurs entrent sur le terrain…</p>
-      <div class="intro__actions intro__line" style="--d:2.6s">
-        <button class="btn btn--xl" id="enterSound"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Entrer sur le terrain</button>
+      <div class="intro__crest">
+        <svg class="intro__ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" pathLength="100" /></svg>
+        <img class="intro__crest-img" src="images/logo/logo.jpg" alt="Logo des 18 ans d'Arthur" width="900" height="900" />
+        <span class="intro__crest-shine" aria-hidden="true"></span>
+      </div>
+      <p class="intro__date"><span>20 décembre 2026</span></p>
+      <p class="intro__title" id="introTitle">Le match de ta vie</p>
+      <p class="intro__sub">Les joueurs entrent sur le terrain…</p>
+      <div class="intro__actions">
+        <button class="btn btn--xl intro__go" id="enterSound"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Entrer sur le terrain</button>
         <button class="intro__mute" id="enterMute">Entrer sans le son</button>
       </div>
     </div>
@@ -42,13 +52,13 @@
   </div>
 
   <!-- ===================== BARRE DE SCORE ===================== -->
-  <header class="scorebar">
+  <header class="scorebar" id="scorebar">
     <a href="#accueil" class="scorebar__brand" aria-label="Retour en haut">
       <img class="scorebar__logo" src="images/logo/favicon.png" alt="" width="64" height="64" />
       <span class="scorebar__team">ARTHUR</span>
       <span class="scorebar__score">18</span>
     </a>
-    <div class="scorebar__clock" aria-hidden="true"><i></i><span id="matchMinute">0'</span></div>
+    <div class="scorebar__clock" aria-hidden="true"><i></i><span class="scorebar__half" id="matchHalf">1re MT</span><span id="matchMinute">0'</span></div>
     <div class="scorebar__tools">
       <button class="icon-btn" id="soundToggle" aria-label="Activer le son" aria-pressed="false"></button>
       <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu"><span></span><span></span><b>Programme</b></button>
@@ -58,19 +68,29 @@
 
   <!-- ===================== MENU « PROGRAMME DU MATCH » ===================== -->
   <nav class="menu" id="menu" aria-label="Programme du match" hidden>
-    <p class="menu__kicker">Programme du match</p>
-    <ol class="menu__list" id="menuList"></ol>
+    <div class="menu__inner">
+      <div class="menu__head">
+        <p class="menu__kicker">Programme du match</p>
+        <p class="menu__meta">Arthur · 18 ans · 20.12.2026</p>
+      </div>
+      <ol class="menu__list" id="menuList"></ol>
+    </div>
   </nav>
 
   <main>
     <!-- ===================== HERO ===================== -->
     <section id="accueil" class="hero" data-menu="Coup d'envoi">
-      <div class="hero__sky" aria-hidden="true"></div>
-      <div class="hero__lights" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-      <div class="hero__flashes" id="flashes" aria-hidden="true"></div>
-      <div class="hero__pitch" aria-hidden="true"></div>
+      <div class="hero__sky hero__layer" aria-hidden="true"></div>
+      <div class="hero__stands hero__layer" aria-hidden="true"><div class="hero__flashes" id="flashes"></div></div>
+      <div class="hero__floods hero__layer" aria-hidden="true">
+        <div class="flood flood--l"><b class="flood__bank"></b><span class="flood__beam"></span><span class="flood__beam"></span></div>
+        <div class="flood flood--r"><b class="flood__bank"></b><span class="flood__beam"></span><span class="flood__beam"></span></div>
+      </div>
+      <div class="hero__pitch hero__layer" aria-hidden="true"></div>
+      <div class="hero__haze" aria-hidden="true"></div>
+      <div class="hero__dim" aria-hidden="true"></div>
       <div class="hero__content">
-        <p class="hero__kicker">Pour toi, Arthur · Saison 2026</p>
+        <p class="hero__kicker"><span>Pour toi, Arthur · Saison 2026</span></p>
         <h1 class="hero__title" aria-label="Arthur 18">
           <div class="jersey" id="jersey">
             <svg class="jersey__svg" viewBox="0 0 400 450" aria-hidden="true">
@@ -81,6 +101,7 @@
                 <linearGradient id="jsRed" x1="0" x2="1"><stop offset="0" stop-color="#b3040f"/><stop offset=".5" stop-color="#ef1422"/><stop offset="1" stop-color="#a9030e"/></linearGradient>
                 <linearGradient id="jsShade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
                 <linearGradient id="jsShine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+                <radialGradient id="jsSpot" gradientUnits="userSpaceOnUse" cx="150" cy="120" r="250"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".4" stop-color="#fff" stop-opacity=".2"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
                 <pattern id="jsMesh" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".9" fill="#000" opacity=".22"/></pattern>
                 <filter id="jsSoft"><feGaussianBlur stdDeviation="6"/></filter>
                 <filter id="jsDrop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000" flood-opacity=".55"/></filter>
@@ -110,21 +131,26 @@
                   <text class="jersey__name" x="200" y="128" font-size="54" letter-spacing="7" stroke-width="5">ARTHUR</text>
                   <text class="jersey__num" x="200" y="372" font-size="236" stroke-width="9">18</text>
                 </g>
+                <!-- éclairage dynamique (suit la souris) -->
+                <rect class="jersey__light" width="400" height="450" fill="url(#jsSpot)" clip-path="url(#jsClip)"/>
               </g>
             </svg>
           </div>
         </h1>
         <p class="hero__sub" id="heroSub">Coup d'envoi de ta majorité dans</p>
-        <div class="countdown" id="countdown" role="timer">
-          <div><b id="cdD">00</b><small>jours</small></div>
-          <div><b id="cdH">00</b><small>heures</small></div>
-          <div><b id="cdM">00</b><small>min</small></div>
-          <div><b id="cdS">00</b><small>sec</small></div>
+        <div class="cdboard" id="countdown" role="timer" aria-label="Compte à rebours">
+          <div class="cdboard__unit"><div class="cdboard__digits" data-unit="d" aria-hidden="true"></div><small>jours</small></div>
+          <span class="cdboard__sep" aria-hidden="true"></span>
+          <div class="cdboard__unit"><div class="cdboard__digits" data-unit="h" aria-hidden="true"></div><small>heures</small></div>
+          <span class="cdboard__sep" aria-hidden="true"></span>
+          <div class="cdboard__unit"><div class="cdboard__digits" data-unit="m" aria-hidden="true"></div><small>min</small></div>
+          <span class="cdboard__sep" aria-hidden="true"></span>
+          <div class="cdboard__unit"><div class="cdboard__digits" data-unit="s" aria-hidden="true"></div><small>sec</small></div>
         </div>
-        <button class="ball" id="heroBall" aria-label="Frappe le ballon"><span class="ball__inner" id="heroBallInner"></span></button>
+        <button class="ball" id="heroBall" aria-label="Frappe le ballon"><span class="ball__inner" id="heroBallInner"></span><span class="ball__hint" aria-hidden="true">Frappe !</span></button>
       </div>
-      <a href="#lettre" class="scroll-cue" aria-label="Descendre"><span></span></a>
-      <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
+      <a href="#lettre" class="scroll-cue" aria-label="Descendre vers la suite"><span></span></a>
+      <div class="ticker" aria-hidden="true"><span class="ticker__live">En direct</span><div class="ticker__track" id="ticker"></div></div>
     </section>
 
     <!-- ===================== LETTRE ===================== -->
@@ -133,12 +159,34 @@
         <div class="sh__meta"><span class="sh__num">01</span><span class="sh__kicker">Le mot d'avant-match</span></div>
         <h2 class="sh__title">Avant d'entrer sur le terrain</h2>
       </header>
-      <article class="letter" id="letter">
-        <div class="letter__stamp" aria-hidden="true"><span>18</span><small>20·12·2026</small></div>
-        <h3 class="letter__title" id="letterTitle"></h3>
-        <div class="letter__body" id="letterBody"></div>
-        <p class="letter__sign" id="letterSign"></p>
-      </article>
+      <div class="letter-stage">
+        <article class="letter" id="letter">
+          <div class="letter__paper" aria-hidden="true"></div>
+          <div class="letter__stamp" aria-hidden="true">
+            <div class="letter__stamp-in"><span>18</span><small>20·12·2026</small><i>Paris</i></div>
+          </div>
+          <svg class="letter__postmark" viewBox="0 0 200 110" aria-hidden="true">
+            <defs><path id="pmArc" d="M28 55 a27 27 0 1 1 54 0 a27 27 0 1 1 -54 0"/></defs>
+            <circle cx="55" cy="55" r="36" /><circle cx="55" cy="55" r="27" />
+            <text font-size="10.5" letter-spacing="2.4"><textPath href="#pmArc" startOffset="2%">PARIS · 20 DÉC 2026 ·</textPath></text>
+            <text x="55" y="60" text-anchor="middle" font-size="15" class="pm-big">18</text>
+            <path d="M98 30 q12 -8 24 0 t24 0 t24 0 t24 0 M98 46 q12 -8 24 0 t24 0 t24 0 t24 0 M98 62 q12 -8 24 0 t24 0 t24 0 t24 0 M98 78 q12 -8 24 0 t24 0 t24 0 t24 0" />
+          </svg>
+          <h3 class="letter__title" id="letterTitle"></h3>
+          <div class="letter__body" id="letterBody"></div>
+          <div class="letter__foot">
+            <div class="letter__seal" id="letterSeal" aria-hidden="true"><span>A</span><small>18</small></div>
+            <p class="letter__sign" id="letterSign"></p>
+            <svg class="letter__flourish" viewBox="0 0 260 40" aria-hidden="true"><path pathLength="1" d="M6 26 C 60 34, 120 10, 170 20 S 240 30, 254 8" /></svg>
+          </div>
+          <svg class="letter__pen" id="letterPen" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="pen-body" d="M12 52 L40 8 Q46 2 52 6 Q58 11 54 18 L24 60 Z" />
+            <path class="pen-band" d="M37 13 L51 22 L48 26 L34 17 Z" />
+            <path class="pen-nib" d="M12 52 L24 60 L10 64 Z" />
+          </svg>
+          <button class="letter__skip" id="letterSkip" type="button">Tout afficher</button>
+        </article>
+      </div>
     </section>
 
     <!-- ===================== CARTE JOUEUR ===================== -->
@@ -149,10 +197,14 @@
         <p class="sh__lead">Édition unique, un seul exemplaire au monde : la tienne. Clique pour la retourner.</p>
       </header>
       <div class="card-wrap">
+        <div class="card-rays" aria-hidden="true"></div>
         <div class="card-glow" aria-hidden="true"></div>
-        <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur">
+        <div class="card-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <button class="pcard" id="playerCard" aria-label="Retourner la carte joueur" aria-pressed="false">
           <div class="pcard__inner">
             <div class="pcard__face pcard__front">
+              <div class="pcard__pattern" aria-hidden="true"></div>
+              <div class="pcard__frame" aria-hidden="true"></div>
               <div class="pcard__top">
                 <div class="pcard__rating" id="cardRating">99</div>
                 <div class="pcard__pos" id="cardPos">ATT</div>
@@ -162,9 +214,13 @@
               <div class="pcard__photo" id="cardPhoto"><span>A</span></div>
               <div class="pcard__name">ARTHUR</div>
               <div class="pcard__stats" id="cardStats"></div>
+              <div class="pcard__serial" aria-hidden="true">1/1</div>
               <div class="pcard__holo" aria-hidden="true"></div>
+              <div class="pcard__glitter" aria-hidden="true"></div>
+              <div class="pcard__glare" aria-hidden="true"></div>
             </div>
             <div class="pcard__face pcard__back">
+              <div class="pcard__back-mark" aria-hidden="true">18</div>
               <h3>Fiche technique</h3>
               <dl>
                 <dt>Né le</dt><dd>20 décembre 2008</dd>
@@ -176,9 +232,11 @@
                 <dt>Chien préféré</dt><dd>Le bulldog</dd>
                 <dt>Valeur</dt><dd>Inestimable</dd>
               </dl>
+              <div class="pcard__glare" aria-hidden="true"></div>
             </div>
           </div>
         </button>
+        <div class="card-shadow" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -190,6 +248,8 @@
         <p class="sh__lead">Petite taille, gros caractère, une bouille irrésistible.</p>
       </header>
       <div class="dogcard" id="dogcard">
+        <span class="dogcard__shine" aria-hidden="true"></span>
+        <span class="dogcard__seal" aria-hidden="true"><b>18</b><small>bouille<br />certifiée</small></span>
         <button class="dogcard__fig" id="dogcardFig" aria-label="Fais aboyer le bulldog">
           <span class="bulldog__bubble" id="dogcardBubble"></span>
           <span class="dogcard__photo"><img src="images/bulldog/bulldog-portrait.jpg" alt="Un bouledogue français fauve allongé sur une couverture rouge" loading="lazy" decoding="async" /></span>
@@ -212,12 +272,16 @@
         <p class="sh__lead">Depuis ton coup d'envoi le 20/12/2008, mises à jour chaque seconde.</p>
       </header>
       <div class="stats-grid">
-        <div class="stat stat--big"><b data-stat="secondes">0</b><span>secondes que tu as jouées</span></div>
-        <div class="stat"><b data-stat="jours">0</b><span>jours sur le terrain</span></div>
-        <div class="stat"><b data-stat="coeur">0</b><span>battements de ton cœur (environ)</span></div>
-        <div class="stat"><b data-stat="nuits">0</b><span>nuits de récup'</span></div>
-        <div class="stat"><b data-stat="weekends">0</b><span>week-ends de matchs</span></div>
-        <div class="stat"><b data-stat="pas">0</b><span>pas courus (estimation très sérieuse)</span></div>
+        <div class="stat stat--big" style="--i:0">
+          <div class="stat__live" aria-hidden="true"><i></i>EN DIRECT</div>
+          <b data-stat="secondes">0</b><span class="stat__label">secondes que tu as jouées</span>
+          <div class="stat__tick" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="stat stat--jours" style="--i:1"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b data-stat="jours">0</b><span class="stat__label">jours sur le terrain</span></div>
+        <div class="stat stat--coeur" style="--i:2"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><b data-stat="coeur">0</b><span class="stat__label">battements de ton cœur (environ)</span><svg class="stat__ecg" viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M0 22 H90 l8 -10 l6 20 l10 -30 l9 34 l7 -14 H190 l6 -6 l5 10 l6 -4 H300"/></svg></div>
+        <div class="stat stat--nuits" style="--i:3"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><b data-stat="nuits">0</b><span class="stat__label">nuits de récup'</span></div>
+        <div class="stat stat--weekends" style="--i:4"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.3 3.1-1.6 5h-5.4l-1.6-5z"/></svg><b data-stat="weekends">0</b><span class="stat__label">week-ends de matchs</span></div>
+        <div class="stat stat--pas" style="--i:5"><svg class="stat__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3c2 0 3 2.5 3 5.5S10 13 8 13s-3-1.5-3-4.5S6 3 8 3zM5.5 15.5h5L10 19a2 2 0 0 1-4 0zM16 7c2 0 3 2.5 3 5.5S18 17 16 17s-3-1.5-3-4.5S14 7 16 7z"/></svg><b data-stat="pas">0</b><span class="stat__label">pas courus (estimation très sérieuse)</span></div>
       </div>
     </section>
 
@@ -228,7 +292,10 @@
         <h2 class="sh__title">Ta carrière</h2>
         <p class="sh__lead">De la maternité au statut de légende : tes grands moments.</p>
       </header>
-      <ol class="timeline" id="timeline"></ol>
+      <div class="tl-wrap">
+        <ol class="timeline" id="timeline"></ol>
+        <div class="tl-rail" aria-hidden="true"><div class="tl-rail__fill" id="tlFill"></div><div class="tl-rail__ball" id="tlBall"></div></div>
+      </div>
     </section>
 
     <!-- ===================== 18 SAISONS ===================== -->
@@ -239,9 +306,12 @@
         <p class="sh__lead">Tes années en photos, classées par âge. Fais défiler la pellicule, clique sur une photo pour l'agrandir.</p>
       </header>
       <div class="film">
-        <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes">‹</button>
-        <div class="film__strip" id="filmStrip" tabindex="0" aria-label="Pellicule photo"></div>
-        <button class="film__nav film__nav--next" id="filmNext" aria-label="Photos suivantes">›</button>
+        <div class="film__beam" aria-hidden="true"></div>
+        <div class="film__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <button class="film__nav film__nav--prev" id="filmPrev" aria-label="Photos précédentes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="film__strip" id="filmStrip" tabindex="0" aria-label="Pellicule photo : flèches gauche et droite pour défiler"></div>
+        <button class="film__nav film__nav--next" id="filmNext" aria-label="Photos suivantes"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <div class="film__progress" aria-hidden="true"><i id="filmProgress"></i></div>
       </div>
       <div class="film__ages" id="filmAges" aria-hidden="true"></div>
     </section>
@@ -251,33 +321,48 @@
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">07</span><span class="sh__kicker">Séance de tirs au but</span></div>
         <h2 class="sh__title">À toi de tirer</h2>
-        <p class="sh__lead">5 tirs pour battre le gardien. Clique dans le but pour viser.</p>
+        <p class="sh__lead">5 tirs pour battre le gardien. Clique (ou tape) dans un coin du but pour viser : le dernier tir se joue au ralenti.</p>
       </header>
       <div class="penalty">
-        <div class="board">
-          <div>TIRS <b id="pkShots">0/5</b></div>
-          <div class="board__dots" id="pkDots"></div>
-          <div>BUTS <b id="pkGoals">0</b></div>
-        </div>
         <div class="pk-scene" id="pkScene">
           <div class="pk-world" id="pkWorld">
-            <div class="pk-crowd" aria-hidden="true"><div class="pk-flashes" id="pkFlashes"></div></div>
-            <div class="pk-boards" aria-hidden="true"><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>JOYEUX ANNIVERSAIRE ARTHUR</span></div>
+            <canvas class="pk-pitch" id="pkPitch" aria-hidden="true"></canvas>
+            <canvas class="pk-crowd" id="pkCrowd" aria-hidden="true"></canvas>
+            <div class="pk-lights" aria-hidden="true"><i></i><i></i></div>
+            <div class="pk-boards" id="pkBoards" aria-hidden="true"><div class="pk-boards__track"><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>ICI C'EST ARTHUR</span><span>JOYEUX ANNIVERSAIRE ARTHUR</span><span>18 ANS</span><span>20.12.2008</span><span>ICI C'EST ARTHUR</span></div></div>
+            <canvas class="pk-net" id="pkNet" aria-hidden="true"></canvas>
             <div class="goal" id="goal">
-              <div class="goal__net" id="goalNet"></div>
-              <div class="net-ripple" id="netRipple"></div>
               <div class="keeper" id="keeper"><div class="keeper__fig" id="keeperFig"></div></div>
               <div class="goal__zones" id="goalZones"></div>
+              <p class="goal__hint" id="pkHint" aria-hidden="true">Choisis ton coin</p>
             </div>
-            <div class="pk-box" aria-hidden="true"></div>
-            <div class="pk-spot" aria-hidden="true"></div>
             <div class="pk-ball-shadow" id="pkShadow" aria-hidden="true"></div>
             <div class="pk-ball" id="pkBall" aria-hidden="true"></div>
-            <div class="kicker" id="kicker" aria-hidden="true"></div>
+            <div class="kicker" id="kicker" aria-hidden="true"><div class="kicker__fig" id="kickerFig"></div></div>
+            <canvas class="pk-fx" id="pkFx" aria-hidden="true"></canvas>
           </div>
+          <div class="pk-flash" id="pkFlash" aria-hidden="true"></div>
+          <div class="pk-letterbox" aria-hidden="true"><i></i><i></i></div>
+          <div class="pk-bug">
+            <span class="pk-bug__live"><i></i>DIRECT</span>
+            <span class="pk-bug__team">ARTHUR</span>
+            <span class="pk-bug__dots" id="pkDots"></span>
+            <b class="pk-bug__score" id="pkGoals">0</b>
+            <span class="pk-bug__shots">TIR <b id="pkShots">0/5</b></span>
+          </div>
+          <div class="pk-tag" id="pkTag" aria-hidden="true"><b>REPLAY</b><span>RALENTI</span></div>
           <div class="banner" id="pkMsg" aria-live="polite"><b></b><small></small></div>
+          <div class="pk-result" id="pkResult" hidden>
+            <div class="pk-result__card">
+              <p class="pk-result__kicker">Fin de la séance</p>
+              <p class="pk-result__score"><b id="pkResScore">0</b><span>/5</span></p>
+              <p class="pk-result__title" id="pkResTitle"></p>
+              <div class="pk-result__shots" id="pkResShots"></div>
+              <p class="pk-result__sub" id="pkResSub"></p>
+              <button class="btn" id="pkReset">Rejouer la séance</button>
+            </div>
+          </div>
         </div>
-        <button class="btn" id="pkReset" hidden>Rejouer la séance</button>
       </div>
     </section>
 
@@ -289,28 +374,39 @@
         <p class="sh__lead">Clique (ou tape) sur le ballon pour le garder en l'air. Objectif : au moins 18 jongles, un par année.</p>
       </header>
       <div class="juggle">
-        <div class="board">
+        <div class="board jg-board">
           <div>JONGLES <b id="jgScore">0</b></div>
+          <div>NIVEAU <b id="jgLvl">1</b></div>
           <div>RECORD <b id="jgBest">0</b></div>
         </div>
-        <div class="juggle__stage">
-          <canvas id="jgCanvas" aria-label="Jeu de jongles"></canvas>
+        <div class="juggle__stage" id="jgStage">
+          <canvas id="jgCanvas" aria-label="Jeu de jongles : tape sur le ballon pour le garder en l'air"></canvas>
           <div class="juggle__overlay" id="jgOverlay">
-            <p id="jgText">Prêt pour l'échauffement ?</p>
-            <button class="btn" id="jgStart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg> <span>Commencer</span></button>
+            <div class="jg-card">
+              <p class="jg-card__kicker" id="jgKicker">Échauffement</p>
+              <p class="jg-card__big" id="jgBig" hidden>0</p>
+              <p class="jg-card__text" id="jgText">Prêt pour l'échauffement ?</p>
+              <ul class="jg-card__stats" id="jgStats" hidden></ul>
+              <div class="jg-card__bar" id="jgBar" hidden><i></i><span>Objectif 18</span></div>
+              <button class="btn" id="jgStart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg> <span>Commencer</span></button>
+              <p class="jg-card__tip">Astuce : touche le ballon en plein centre pour une <b>touche parfaite</b>. Sur les côtés, il part de travers.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ===================== SUPPORTERS ===================== -->
-    <section id="supporters" class="section section--navy" data-menu="Tes supporters">
+    <section id="supporters" class="section section--navy section--stands" data-menu="Tes supporters">
+      <div class="stands" aria-hidden="true"><div class="stands__seats"></div><div class="stands__flashes" id="standFlashes"></div><div class="stands__beam stands__beam--l"></div><div class="stands__beam stands__beam--r"></div></div>
       <header class="sh">
         <div class="sh__meta"><span class="sh__num">09</span><span class="sh__kicker">Les tribunes</span></div>
         <h2 class="sh__title">Tes supporters</h2>
         <p class="sh__lead">Ceux qui t'aiment ont un message pour toi.</p>
       </header>
+      <div class="scarf" aria-hidden="true"><div class="scarf__track"><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b><span>ARTHUR</span><b>18</b><span>ICI C'EST PARIS</span><b>★</b></div></div>
       <div class="wall" id="wall"></div>
+      <p class="wall__hint">Clique sur un message pour lui envoyer de l'amour.</p>
     </section>
 
     <!-- ===================== BOUGIES ===================== -->
@@ -320,13 +416,14 @@
         <h2 class="sh__title">Souffle tes 18 bougies</h2>
         <p class="sh__lead">Clique sur les bougies une par une… ou souffle pour de vrai dans le micro. Et n'oublie pas de faire un vœu.</p>
       </header>
-      <div class="cake-zone">
-        <div class="cake" id="cake">
-          <div class="cake__candles" id="candles"></div>
-          <div class="cake__top"></div>
-          <div class="cake__layer cake__layer--1"><span>ARTHUR</span></div>
-          <div class="cake__layer cake__layer--2"><span>18</span></div>
-          <div class="cake__plate"></div>
+      <div class="cake-zone" id="cakeZone">
+        <div class="cake-stage">
+          <div class="cake-glow" aria-hidden="true"><i></i></div>
+          <div class="cake" id="cake">
+            <div class="cake__body" id="cakeBody" aria-hidden="true"></div>
+            <div class="cake__candles" id="candles" role="group" aria-label="Les 18 bougies"></div>
+            <div class="cake__smoke" id="cakeSmoke" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="cake-actions">
           <button class="btn" id="blowAll"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg> Souffler</button>
@@ -334,6 +431,12 @@
           <button class="btn btn--ghost" id="relight" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3.5.5 1.5 1.5 2.5 2.5 3z"/></svg> Rallumer</button>
         </div>
         <p class="cake-wish" id="cakeWish" aria-live="polite"></p>
+      </div>
+      <div class="cake-night" aria-hidden="true"></div>
+      <div class="wish" id="wishMoment" aria-hidden="true">
+        <div class="wish__stars" id="wishStars"></div>
+        <p class="wish__small">Ferme les yeux…</p>
+        <p class="wish__big">Fais un vœu, Arthur</p>
       </div>
     </section>
 
@@ -344,7 +447,8 @@
         <h2 class="sh__title">Ton billet pour le Parc</h2>
         <p class="sh__lead">Une place rien que pour toi. Gratte la zone dorée du billet pour découvrir ton cadeau.</p>
       </header>
-      <div class="mticket-wrap">
+      <div class="mticket-wrap" id="mticketWrap">
+        <div class="mticket-rays" aria-hidden="true"></div>
         <article class="mticket" id="mticket" aria-label="Billet de match">
           <div class="mticket__head">
             <div class="mticket__lights" aria-hidden="true"></div>
@@ -362,19 +466,22 @@
               <div><small>RANG<i>ROW</i></small><b id="tkRang"></b></div>
               <div><small>SIÈGE<i>SEAT</i></small><b id="tkSiege"></b></div>
             </div>
-            <p class="mticket__scratch-label">Surprise · zone à gratter</p>
+            <p class="mticket__scratch-label"><span>Surprise · zone à gratter</span><span class="mticket__pct" id="scratchPct" aria-hidden="true"></span></p>
             <div class="scratch" id="scratch">
               <div class="scratch__prize">
                 <p class="scratch__title" id="giftTitle"></p>
                 <p class="scratch__text" id="giftText"></p>
               </div>
-              <canvas class="scratch__cover" id="scratchCanvas" aria-label="Zone à gratter"></canvas>
+              <canvas class="scratch__cover" id="scratchCanvas" tabindex="0" role="button" aria-label="Zone à gratter : gratte avec la souris ou le doigt, ou appuie sur Entrée pour tout gratter"></canvas>
+              <div class="scratch__glints" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             </div>
             <div class="mticket__barcode"><svg id="tkBarcode" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"></svg><span id="tkBarNum"></span></div>
           </div>
           <div class="mticket__holo" aria-hidden="true"></div>
+          <div class="mticket__shine" aria-hidden="true"></div>
           <div class="mticket__stamp" aria-hidden="true">VALIDÉ<small>20·12·2026</small></div>
         </article>
+        <canvas class="mticket-fx" id="scratchFx" aria-hidden="true"></canvas>
       </div>
     </section>
 
@@ -386,49 +493,85 @@
         <p class="sh__lead" id="lockerLead">Il est fermé à clé. Il ne s'ouvrira que le 20 décembre 2026, à minuit pile.</p>
       </header>
       <div class="locker-zone">
-        <div class="locker" id="locker">
-          <div class="locker__inside">
-            <p class="locker__title" id="lockerTitle"></p>
-            <p class="locker__text" id="lockerText"></p>
-            <svg class="locker__jersey" viewBox="0 0 120 130" aria-hidden="true">
-              <defs><clipPath id="shirtClip"><path d="M38 14 L18 22 L3 46 L18 56 L28 46 L28 120 L92 120 L92 46 L102 56 L117 46 L102 22 L82 14 Q60 26 38 14 Z"/></clipPath>
-              <linearGradient id="shirtG" x1="0" x2="1"><stop offset="0" stop-color="#1d3584"/><stop offset=".5" stop-color="#13245f"/><stop offset="1" stop-color="#0a1640"/></linearGradient></defs>
-              <path d="M52 8 Q60 0 68 8" fill="none" stroke="#9aa1b1" stroke-width="2.5"/>
-              <path d="M38 14 L18 22 L3 46 L18 56 L28 46 L28 120 L92 120 L92 46 L102 56 L117 46 L102 22 L82 14 Q60 26 38 14 Z" fill="url(#shirtG)"/>
-              <g clip-path="url(#shirtClip)"><rect x="48" y="0" width="24" height="130" fill="#fff"/><rect x="51" y="0" width="18" height="130" fill="#e30613"/></g>
-              <g font-family="Bebas Neue, Impact, sans-serif" text-anchor="middle" fill="#fff" stroke="#0a1640" stroke-width="2.4" paint-order="stroke"><text x="60" y="44" font-size="13" letter-spacing="1">ARTHUR</text><text x="60" y="94" font-size="48">18</text></g>
-            </svg>
-          </div>
-          <button class="locker__door" id="lockerDoor" aria-label="Ouvrir le casier">
-            <span class="locker__vents" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-            <span class="locker__plate">18</span>
-            <span class="locker__name">ARTHUR</span>
+        <div class="locker-room">
+          <div class="locker-rays" aria-hidden="true"></div>
+          <div class="locker-n" aria-hidden="true"><span class="locker-n__vents"><i></i><i></i><i></i><i></i><i></i></span><span class="locker-n__plate">17</span></div>
+          <div class="locker" id="locker">
+            <div class="locker__inside">
+              <span class="locker__lamp" aria-hidden="true"></span>
+              <span class="locker__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <p class="locker__title" id="lockerTitle"></p>
+              <p class="locker__text" id="lockerText"></p>
+              <span class="locker__hang">
+                <svg class="locker__jersey" viewBox="0 0 120 140" aria-hidden="true">
+                  <defs>
+                    <clipPath id="shirtClip"><path d="M38 22 L18 30 L3 54 L18 64 L28 54 L28 132 L92 132 L92 54 L102 64 L117 54 L102 30 L82 22 Q60 34 38 22 Z"/></clipPath>
+                    <linearGradient id="shirtG" x1="0" x2="1"><stop offset="0" stop-color="#0a1640"/><stop offset=".3" stop-color="#22409a"/><stop offset=".55" stop-color="#16296c"/><stop offset="1" stop-color="#070f30"/></linearGradient>
+                    <linearGradient id="shirtFold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+                    <linearGradient id="hangerG" x1="0" x2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset=".5" stop-color="#c88f52"/><stop offset="1" stop-color="#7a4c22"/></linearGradient>
+                  </defs>
+                  <path d="M60 14 V8 a5 5 0 1 1 5 -5" fill="none" stroke="#cfd4de" stroke-width="2.4" stroke-linecap="round"/>
+                  <path d="M60 14 L22 30 Q18 33 22 34 L98 34 Q102 33 98 30 Z" fill="url(#hangerG)"/>
+                  <path d="M38 22 L18 30 L3 54 L18 64 L28 54 L28 132 L92 132 L92 54 L102 64 L117 54 L102 30 L82 22 Q60 34 38 22 Z" fill="url(#shirtG)"/>
+                  <g clip-path="url(#shirtClip)">
+                    <rect x="48" y="0" width="24" height="140" fill="#fff"/><rect x="51" y="0" width="18" height="140" fill="#e30613"/>
+                    <path d="M3 54 L18 64 L28 54 L26 50 L18 58 L6 50 Z M117 54 L102 64 L92 54 L94 50 L102 58 L114 50 Z" fill="#e30613"/>
+                    <rect x="0" y="0" width="120" height="140" fill="url(#shirtFold)"/>
+                    <path d="M34 70 Q40 100 36 132 M86 70 Q80 100 84 132" stroke="#000" stroke-opacity=".18" stroke-width="3" fill="none"/>
+                  </g>
+                  <path d="M38 22 Q60 34 82 22 Q60 40 38 22 Z" fill="#e30613" stroke="#fff" stroke-width="1"/>
+                  <g font-family="Bebas Neue, Impact, sans-serif" text-anchor="middle" fill="#fff" stroke="#0a1640" stroke-width="2.4" paint-order="stroke"><text x="60" y="54" font-size="13" letter-spacing="1">ARTHUR</text><text x="60" y="104" font-size="48">18</text></g>
+                </svg>
+              </span>
+              <span class="locker__shelf" aria-hidden="true"></span>
+            </div>
+            <span class="locker__leak" aria-hidden="true"></span>
+            <button class="locker__door" id="lockerDoor" aria-label="Ouvrir le casier">
+              <span class="door__front" aria-hidden="true">
+                <span class="locker__vents"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="locker__plate">18</span>
+                <span class="locker__name">ARTHUR</span>
+                <span class="locker__handle"></span>
+                <span class="door__rivets"></span>
+              </span>
+              <span class="door__edge" aria-hidden="true"></span>
+              <span class="door__back" aria-hidden="true"><span class="door__sticker">ICI C'EST<b>PARIS</b></span><span class="door__hook"></span></span>
+            </button>
             <span class="locker__lock" id="lockerLock" aria-hidden="true"><svg viewBox="0 0 40 52"><defs><linearGradient id="lockG" x1="0" x2="1"><stop offset="0" stop-color="#f7d86a"/><stop offset=".5" stop-color="#d6a92c"/><stop offset="1" stop-color="#9c7414"/></linearGradient></defs><path class="lock__shackle" d="M10 24 V15 a10 10 0 0 1 20 0 V24" fill="none" stroke="#cfd4de" stroke-width="5" stroke-linecap="round"/><rect x="4" y="22" width="32" height="26" rx="5" fill="url(#lockG)" stroke="rgba(0,0,0,.25)"/><circle cx="20" cy="33" r="3.2" fill="#3b2c08"/><rect x="18.7" y="34" width="2.6" height="7" rx="1" fill="#3b2c08"/></svg></span>
-            <span class="locker__handle" aria-hidden="true"></span>
-          </button>
+          </div>
+          <div class="locker-n" aria-hidden="true"><span class="locker-n__vents"><i></i><i></i><i></i><i></i><i></i></span><span class="locker-n__plate">19</span></div>
         </div>
-        <p class="locker__count" id="lockerCount"></p>
+        <div class="locker-bench" aria-hidden="true"></div>
+        <p class="locker__count" id="lockerCount" aria-live="polite"></p>
       </div>
     </section>
   </main>
 
   <!-- ===================== FINAL ===================== -->
   <footer class="finale" id="finale" data-menu="Coup de sifflet final">
+    <div class="finale__sky" aria-hidden="true"></div>
     <canvas id="fireworks" aria-hidden="true"></canvas>
+    <div class="finale__flash" aria-hidden="true"></div>
+    <div class="finale__stadium" aria-hidden="true"><i class="finale__mast finale__mast--l"></i><i class="finale__mast finale__mast--r"></i></div>
     <div class="finale__content">
       <p class="finale__kicker">Coup de sifflet final</p>
-      <p class="finale__big">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
+      <p class="finale__big" id="finaleBig">JOYEUX ANNIVERSAIRE<br />ARTHUR</p>
       <p class="finale__sub">20.12.2008 → 20.12.2026 · 18 ans de jeu, et le plus beau reste à jouer.<br />On est fiers de toi.</p>
       <p class="finale__credits">Photos du bulldog : <a href="https://www.flickr.com/photos/57387723@N04/6808064757" target="_blank" rel="noopener">Artur Malinowski</a> et licence <a href="https://creativecommons.org/licenses/by/2.0/deed.fr" target="_blank" rel="noopener">CC BY 2.0</a> ; <a href="https://www.flickr.com/photos/7675787@N06/16905957333" target="_blank" rel="noopener">marneejill</a> (« Daisy », mascotte animée), licence <a href="https://creativecommons.org/licenses/by-sa/2.0/deed.fr" target="_blank" rel="noopener">CC BY-SA 2.0</a> (Flickr).</p>
       <button class="btn btn--light" id="replayFireworks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg> Encore un feu d'artifice</button>
     </div>
   </footer>
 
-  <div class="lightbox" id="lightbox" role="dialog" aria-label="Photo" hidden>
-    <button class="lightbox__close" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visionneuse photo" hidden>
+    <div class="lightbox__bg" id="lightboxBg" aria-hidden="true"></div>
+    <div class="lightbox__top">
+      <small id="lightboxCount"></small>
+      <button class="lightbox__close" aria-label="Fermer"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
     <button class="lightbox__nav lightbox__prev" aria-label="Photo précédente"><svg class="ico" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <figure class="lightbox__fig"><img alt="" id="lightboxImg" /><figcaption><span id="lightboxCap"></span><small id="lightboxCount"></small></figcaption></figure>
+    <figure class="lightbox__fig"><div class="lightbox__frame"><img alt="" id="lightboxImg" /></div><figcaption><b id="lightboxAge"></b><span id="lightboxCap"></span></figcaption></figure>
     <button class="lightbox__nav lightbox__next" aria-label="Photo suivante"><svg class="ico" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="lightbox__bar" aria-hidden="true"><i id="lightboxBar"></i></div>
   </div>
   <button class="bulldog" id="bulldog" aria-label="Le bulldog : clique pour qu'il aboie"><span class="bulldog__bubble" id="dogBubble"></span><span class="bulldog__canvas" id="dogCanvas"></span></button>
   <div class="chase-ball" id="chaseBall" aria-hidden="true"></div>
@@ -438,6 +581,7 @@
   <script src="js/sound.js"></script>
   <script src="js/figures.js"></script>
   <script src="js/dog.js"></script>
+  <script src="js/motion.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
