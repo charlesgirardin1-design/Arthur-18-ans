@@ -42,3 +42,10 @@ Le fichier **`middleware.js`** verrouille le site côté serveur (Vercel) jusqu'
 - à l'heure exacte, la page d'attente bascule toute seule sur le site ;
 - les parents gardent l'accès via le lien d'aperçu secret (`?apercu=…`) ; seule son empreinte SHA-256 figure dans le code ;
 - réglages en haut de `middleware.js` : `VERROU_ACTIF` (true/false) et `OUVERTURE` (date et heure, heure de Paris).
+
+## ⚡ Performances
+- `js/perf.js` + `css/perf.css` : les animations des sections hors écran sont mises en pause, et un **mode léger** s'active
+  automatiquement sur les appareils modestes (ou si la cadence mesurée est basse) : grain, flous et effets d'ambiance retirés.
+  Forcer : `?lite` (léger) ou `?full` (complet).
+- Pellicule et frise : miniatures WebP (`images/galerie/mini/`), l'original n'est chargé qu'en plein écran.
+  **Après chaque ajout de photos : `python3 tools/miniatures.py`.**

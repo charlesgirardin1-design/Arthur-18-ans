@@ -200,8 +200,12 @@
 
     if (reduce) { fade.style.opacity = "0.7"; return; }
 
-    let lastT = performance.now();
+    if (window.PERF && PERF.lite) return;
+    let lastT = performance.now(), lastRun = 0;
     const ambient = t => {
+      if (t - lastRun < 32) return;
+      lastRun = t;
+      if (window.PERF && PERF.lite) { stage.style.display = "none"; removeTask(ambient); return; }
       const dt = Math.min(64, t - lastT); lastT = t;
       // apparition après le hero, discrète partout ailleurs
       const heroFade = clamp((scrollY - vh * 0.25) / (vh * 0.6), 0, 1);

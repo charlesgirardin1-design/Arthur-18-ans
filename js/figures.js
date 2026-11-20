@@ -239,9 +239,12 @@ window.FIG = (() => {
         // horloge « ralentissable » : FIG.speed < 1 = ralenti
         let el = 0, prev = performance.now();
         const a = { resolve, raf: 0 };
+        let lastR = 0;
         const step = now => {
           el += (now - prev) * api.speed; prev = now;
           const t = Math.min(1, el / ms), e = ease(t);
+          if (this.maxFps && t < 1 && now - lastR < 1000 / this.maxFps) { a.raf = requestAnimationFrame(step); return; }
+          lastR = now;
           for (const k in target) this.pose[k] = pt(from[k], target[k], e);
           this.render();
           if (t < 1) a.raf = requestAnimationFrame(step); else { this.anim = null; resolve(); }

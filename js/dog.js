@@ -85,8 +85,10 @@ window.DOG = (() => {
       const stride = this.speed / (this.scale * 260);
       this.phase += dt * Math.PI * 2 * Math.min(4.6, stride * 1.6);
       this.hop = Math.max(0, this.hop - dt * 2.2);
-      this.mover.style.transform = `translateX(${this.x - PAD_X * this.scale}px)`;
-      if (this.img) this._draw();
+      const tx = `translateX(${(this.x - PAD_X * this.scale).toFixed(1)}px)`;
+      if (tx !== this._tx) { this._tx = tx; this.mover.style.transform = tx; }
+      const idle = this.speed < 2 && this.hop === 0;
+      if (this.img && (!idle || now - (this._lastDraw || 0) > 80)) { this._lastDraw = now; this._draw(); }
       requestAnimationFrame(this._tick);
     }
 
