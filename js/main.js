@@ -6,7 +6,11 @@
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const fmt = new Intl.NumberFormat("fr-FR");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // miniature WebP légère (images/galerie/mini/) ; l'original n'est chargé qu'en plein écran
+  const mini = src => /^images\/galerie\/[^/]+\.jpg$/.test(src) ? src.replace(/^images\/galerie\/(.+)\.jpg$/, "images/galerie/mini/$1.webp") : src;
+  addEventListener("error", e => { const im = e.target; if (im.tagName === "IMG" && im.dataset.full && im.src.indexOf("/mini/") > -1) im.src = im.dataset.full; }, true);
   const pad = n => String(n).padStart(2, "0");
+  const DPR = () => Math.min(window.PERF && PERF.lite ? 1.25 : 2, devicePixelRatio || 1);
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch {} },
@@ -24,14 +28,14 @@
   const cCanvas = $("#confetti"), cCtx = cCanvas.getContext("2d");
   let pieces = [], cRaf = null;
   const COLORS = ["#e30613", "#ffffff", "#0b1640", "#f5c542", "#3a5bd9"];
-  function sizeConfetti() { cCanvas.width = innerWidth * devicePixelRatio; cCanvas.height = innerHeight * devicePixelRatio; }
+  function sizeConfetti() { cCanvas.width = innerWidth * DPR(); cCanvas.height = innerHeight * DPR(); }
   addEventListener("resize", sizeConfetti); sizeConfetti();
   function confetti(n = 160, colors = COLORS) {
     if (reduceMotion) return;
     const w = cCanvas.width, h = cCanvas.height;
     for (let i = 0; i < n; i++) pieces.push({
       x: Math.random() * w, y: -20 - Math.random() * h * 0.4, vx: (Math.random() - 0.5) * 4, vy: 2 + Math.random() * 4,
-      s: (6 + Math.random() * 8) * devicePixelRatio, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
+      s: (6 + Math.random() * 8) * DPR(), r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
       c: colors[(Math.random() * colors.length) | 0], t: Math.random() * 100,
     });
     if (!cRaf) cRaf = requestAnimationFrame(cTick);
@@ -377,7 +381,7 @@
         i++;
         if (i >= words.length) { setTimeout(finish, 500); return; }
       }
-      raf = requestAnimationFrame(tick);
+      raf = inView ? requestAnimationFrame(tick) : null;
     }
     function start() {
       if (started) return; started = true;
@@ -646,7 +650,7 @@
         <span class="tl-ghost" aria-hidden="true">${e.annee}</span>
         <article class="tl-card">
           <div class="tl-text"><div class="tl-year">${e.annee}</div><h3>${e.titre}</h3><p>${e.texte}</p></div>
-          ${e.photo ? `<figure class="tl-photo"><img src="${e.photo}" alt="${e.titre}" loading="lazy" decoding="async" /></figure>` : ""}
+          ${e.photo ? `<figure class="tl-photo"><img src="${mini(e.photo)}" data-full="${e.photo}" alt="${e.titre}" loading="lazy" decoding="async" /></figure>` : ""}
         </article>
       </li>`).join("");
     const items = $$(".tl-item", tl);
@@ -690,7 +694,7 @@
       <button class="frame${s.src ? "" : " frame--empty"}" data-i="${i}" style="--n:${i}" ${s.src ? "" : 'tabindex="-1"'} aria-label="${ans(s.age)}${s.legende ? " — " + s.legende : ""}">
         <span class="frame__edge" aria-hidden="true"><b>${pad(i + 1)}</b><span>ARTHUR · 18</span><b>${pad(i + 1)}A</b></span>
         <div class="frame__img">${s.src
-          ? `<img src="${s.src}" alt="Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}" loading="lazy" decoding="async" draggable="false" style="object-position:${s.pos || "50% 35%"}" />`
+          ? `<img src="${mini(s.src)}" data-full="${s.src}" width="520" height="520" alt="Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}" loading="lazy" decoding="async" draggable="false" style="object-position:${s.pos || "50% 35%"}" />`
           : `<div class="frame__ph"><b>${s.age}</b>photo à venir</div>`}</div>
         <div class="frame__meta"><b>${ans(s.age)}</b><span>${saison(s.age)}</span></div>
         <div class="frame__cap">${s.legende || ""}</div>
@@ -782,7 +786,7 @@
       lbIdx = (k + withSrc.length) % withSrc.length;
       const s = withSrc[lbIdx];
       lbImg.src = s.src; lbImg.alt = `Arthur à ${s.age} ans${s.legende ? " — " + s.legende : ""}`;
-      lbBg.style.backgroundImage = `url("${s.src}")`;
+      lbBg.style.backgroundImage = `url("${mini(s.src)}")`;
       $("#lightboxAge").textContent = ans(s.age);
       $("#lightboxCap").textContent = s.legende || "";
       $("#lightboxCount").textContent = `${pad(lbIdx + 1)} / ${withSrc.length}`;
@@ -954,7 +958,7 @@
       pkShadow.style.width = V.ballPx * 1.3 + "px"; pkShadow.style.height = V.ballPx * 0.42 + "px";
       V.kickH = KICK_SCALE * 1.8 * V.Kx / Z_KREF * 300 / 257; V.kickW = V.kickH * 2 / 3;
       kicker.style.width = V.kickW + "px"; kicker.style.height = V.kickH + "px";
-      const dpr = Math.min(2, devicePixelRatio || 1);
+      const dpr = DPR();
       pdpr = Math.min(2.5, dpr * 1.3); cdpr = dpr; ndpr = Math.min(2, dpr * 1.2);
       fxCv.width = W * ndpr; fxCv.height = H * ndpr;
       netCv.width = W * ndpr; netCv.height = H * ndpr;
@@ -1343,6 +1347,8 @@
     let raf = 0, lastNow = 0, visible = false, ready = false;
     function wake() { if (!raf && ready) { lastNow = performance.now(); raf = requestAnimationFrame(frame); } }
     function frame(now) {
+      const calm = !busy && !tweens.length && !parts.length;
+      if (calm && now - lastNow < (window.PERF && PERF.lite ? 48 : 31)) { raf = requestAnimationFrame(frame); return; }
       const dt = Math.min(0.05, Math.max(0, (now - lastNow) / 1000)); lastNow = now;
       FIG.speed += (speedTarget - FIG.speed) * Math.min(1, dt * 9);
       if (Math.abs(FIG.speed - speedTarget) < 0.01) FIG.speed = speedTarget;
@@ -1375,7 +1381,8 @@
       keeper.classList.add("idle");
       clearInterval(breathT);
       let b = false;
-      breathT = setInterval(() => { if (!busy) { b = !b; keeperFig.to(b ? "readyB" : "ready", 900, FIG.easeInOut); } }, 950);
+      keeperFig.maxFps = 15;
+      breathT = setInterval(() => { if (!busy && (!window.PERF || PERF.visible(keeper))) { b = !b; keeperFig.to(b ? "readyB" : "ready", 900, FIG.easeInOut); } }, 950);
     }
     function dive(P) {
       keeper.classList.remove("idle");
@@ -1459,7 +1466,7 @@
     }
 
     async function shoot(z) {
-      busy = true; wake();
+      busy = true; keeperFig.maxFps = 0; wake();
       scene.classList.remove("aiming"); hint.classList.add("off");
       $$("button", zonesEl).forEach(b => (b.disabled = true));
       const P = plan(z);
@@ -1647,7 +1654,7 @@
     function resize() {
       const r = cv.getBoundingClientRect();
       if (!r.width) return;
-      dpr = Math.min(2, devicePixelRatio || 1);
+      dpr = DPR();
       W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr;
       ball.r0 = Math.max(22, Math.min(40, Math.min(W, H) * 0.068));
       ball.r = ball.r0 * Math.max(0.72, 1 - (level - 1) * 0.04);
@@ -2003,6 +2010,7 @@
       if (raf) return;
       last = performance.now();
       const frame = now => {
+        if (state === "idle" && now - last < 40) { raf = requestAnimationFrame(frame); return; }
         const dt = Math.min(0.033, Math.max(0, (now - last) / 1000)); last = now;
         update(dt); draw();
         raf = state !== "idle" || visible ? requestAnimationFrame(frame) : 0;
@@ -2324,7 +2332,7 @@
       const size = `${Math.round(r.width)}x${Math.round(r.height)}`;
       if (!force && size === paintedSize) return;
       paintedSize = size;
-      const dpr = Math.min(2, devicePixelRatio || 1), w = r.width, h = r.height;
+      const dpr = DPR(), w = r.width, h = r.height;
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       brush = Math.max(28, Math.min(46, w * 0.11));
@@ -2367,7 +2375,7 @@
     const fxc = $("#scratchFx"), fctx = fxc.getContext("2d");
     let parts = [], fxRaf = null, fxLast = 0, fxW = 0, fxH = 0;
     const GOLDS = ["#f5c542", "#fff1b0", "#d6a92c", "#ffe27a", "#ffffff", "#b8892a"];
-    function fxSize() { const r = fxc.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1); fxW = r.width; fxH = r.height; fxc.width = Math.round(r.width * dpr); fxc.height = Math.round(r.height * dpr); fctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    function fxSize() { const r = fxc.getBoundingClientRect(), dpr = DPR(); fxW = r.width; fxH = r.height; fxc.width = Math.round(r.width * dpr); fxc.height = Math.round(r.height * dpr); fctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
     new ResizeObserver(fxSize).observe(fxc);
     function toFx(p) { const a = cv.getBoundingClientRect(), b = fxc.getBoundingClientRect(); return { x: p.x + a.left - b.left, y: p.y + a.top - b.top }; }
     function flakes(p, n, burst) {
@@ -2545,7 +2553,7 @@
     const small = () => innerWidth < 640;
     let W = 0, H = 0;
     function resize() {
-      const r = cv.getBoundingClientRect(), dpr = Math.min(small() ? 1.5 : 2, devicePixelRatio || 1);
+      const r = cv.getBoundingClientRect(), dpr = Math.min(small() || (window.PERF && PERF.lite) ? 1.25 : 2, devicePixelRatio || 1);
       W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     new ResizeObserver(resize).observe(cv);
